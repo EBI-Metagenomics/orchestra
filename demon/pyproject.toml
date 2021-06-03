@@ -17,6 +17,7 @@ pydantic = "^1.8.2"
 psycopg2-binary = "^2.8.6"
 logzero = "^1.7.0"
 click = "^8.0.1"
+google-cloud-pubsub = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
@@ -37,6 +38,7 @@ darglint = "^1.8.0"
 pre-commit = "^2.13.0"
 nox = "^2020.12.31"
 factory-boy = "^3.2.0"
+Cython = "^0.29.23"
 
 [tool.poetry.scripts]
 demon = "demon.cli.main:main"
