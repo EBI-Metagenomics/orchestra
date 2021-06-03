@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "conductor"
+version = "0.1.0"
+description = "Backend for orchestra"
+authors = ["Ankur Kumar <ank@leoank.me>"]
+license = "Apache License 2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.0.1"
+Flask-Login = "^0.5.0"
+Flask-Cors = "^3.0.10"
+Flask-Migrate = "^3.0.1"
+Flask-SQLAlchemy = "^2.5.1"
+Flask-Bcrypt = "^0.7.1"
+pydantic = "^1.8.2"
+psycopg2-binary = "^2.8.6"
+logzero = "^1.7.0"
+click = "^8.0.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
+coverage = "^5.5"
+pytest-cov = "^2.12.0"
+flake8 = "^3.9.2"
+black = "^21.5b2"
+flake8-black = "^0.2.1"
+flake8-import-order = "^0.18.1"
+flake8-bugbear = "^21.4.3"
+flake8-bandit = "^2.1.2"
+safety = "^1.10.3"
+mypy = "^0.812"
+flake8-annotations = "^2.6.2"
+typeguard = "^2.12.0"
+flake8-docstrings = "^1.6.0"
+darglint = "^1.8.0"
+pre-commit = "^2.13.0"
+nox = "^2020.12.31"
+factory-boy = "^3.2.0"
+
+[tool.poetry.scripts]
+conductor = "conductor.cli.main:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
