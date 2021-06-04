@@ -35,8 +35,12 @@ def download_file(url: str, path: Path) -> None:
 
 # Install conductor deps
 call(["poetry", "install"], cwd=conductor_path)
+# Calling again as a workaround to ensure project root is installed
+call(["poetry", "install"], cwd=conductor_path)
 
 # Install demon deps
+call(["poetry", "install"], cwd=demon_path)
+# Calling again as a workaround to ensure project root is installed
 call(["poetry", "install"], cwd=demon_path)
 
 # Download slurm
