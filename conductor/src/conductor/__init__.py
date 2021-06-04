@@ -1,6 +1,6 @@
-"""Conductor"""
+"""Conductor."""
 
-from importlib.metadata import version, PackageNotFoundError  # type: ignore
+from importlib.metadata import PackageNotFoundError, version  # type: ignore
 
 
 try:
