@@ -2,7 +2,7 @@
 
 import click
 
-from conductor.cli.publish import publish
+from conductor.cli.publish import pub
 
 from .. import __version__
 
@@ -14,4 +14,4 @@ def main() -> None:
     pass
 
 
-main.add_command(publish)
+main.add_command(pub)
