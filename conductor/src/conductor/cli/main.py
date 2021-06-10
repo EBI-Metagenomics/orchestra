@@ -2,6 +2,8 @@
 
 import click
 
+from conductor.cli.publish import publish
+
 from .. import __version__
 
 
@@ -10,3 +12,6 @@ from .. import __version__
 def main() -> None:
     """Conductor console."""
     pass
+
+
+main.add_command(publish)
