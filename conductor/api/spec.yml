@@ -1,0 +1,12 @@
+openapi: "3.0.2"
+info:
+  title: Conductor server
+  version: "1.0"
+servers:
+  - url: http://localhost/v1
+paths:
+  /job:
+    get:
+      responses:
+        "200":
+          description: OK
