@@ -42,3 +42,5 @@ This installs hooks for running python's black formatter and flake8 lint
 ```bash
 pre-commit install
 ```
+
+Now, refer to the `README` of the specific project you want to work on.
