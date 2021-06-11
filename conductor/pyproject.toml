@@ -20,6 +20,8 @@ click = "<8.0"
 google-cloud-pubsub = "^2.5.0"
 xdg = "^5.0.2"
 celery = "^5.1.0"
+gunicorn = "^20.1.0"
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
