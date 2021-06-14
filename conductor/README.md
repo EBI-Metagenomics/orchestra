@@ -13,12 +13,12 @@ poetry install
 ### Configuration
 
 A `conductor.env` is required to configure `conductor`.
-It expects it be present at `$HOME/.config/conductor.env`.
+It expects it be present at `$HOME/.config/orchestra/conductor.env`.
 
 Make sure to add the following environment variables:
 
 ```bash
-# file: .config/conductor.env
+# file: .config/orchestra/conductor.env
 # Replace the values with your own
 
 GOOGLE_APPLICATION_CREDENTIALS="path/to/gcp/credentials/json"

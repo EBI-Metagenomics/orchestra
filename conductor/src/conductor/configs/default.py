@@ -53,4 +53,4 @@ class DefaultConfig(BaseConfig, BaseSettings):
     class Config:
         """Config for the BaseConfig class."""
 
-        env_file = xdg_config_home() / ("conductor.env")
+        env_file = xdg_config_home() / ("orchestra") / ("conductor.env")
