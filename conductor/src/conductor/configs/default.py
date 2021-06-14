@@ -27,6 +27,8 @@ class DefaultConfig(BaseConfig, BaseSettings):
     GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
     GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
     GCP_PUBSUB_TOPIC = "test-topic"
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
     def get_sql_db_uri(self: "DefaultConfig") -> str:
         """Get uri of the sql database.
