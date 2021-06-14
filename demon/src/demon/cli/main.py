@@ -2,6 +2,8 @@
 
 import click
 
+from demon.cli.subscribe import sub
+
 from .. import __version__
 
 
@@ -10,3 +12,6 @@ from .. import __version__
 def main() -> None:
     """Demon console."""
     pass
+
+
+main.add_command(sub)
