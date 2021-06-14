@@ -4,9 +4,16 @@ from typing import Any
 
 from celery import Celery
 
+from conductor.configs import get_config
+
 from flask import Flask
 
-celery_app = Celery(__name__)
+default_config = get_config()
+celery_app = Celery(
+    __name__,
+    broker=default_config.CELERY_BROKER_URL,
+    backend=default_config.CELERY_RESULT_BACKEND,
+)
 
 
 def init_celery(app: Flask, celery_app: Celery) -> None:
