@@ -6,9 +6,6 @@
 from pathlib import Path
 from subprocess import call
 
-from urllib3 import PoolManager
-from urllib3.exceptions import HTTPError
-
 conductor_path = Path(__file__).parents[1].joinpath("conductor")
 demon_path = Path(__file__).parents[1].joinpath("demon")
 
