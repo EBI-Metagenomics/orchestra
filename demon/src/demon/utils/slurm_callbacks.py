@@ -20,6 +20,7 @@ def submit_job_from_msg(msg: Message) -> None:
     job = BaseJob(**job_obj)
     with open(f"{uuid.uuid4()}.json", "w+") as f:
         f.write(job.script)
+        print(f.read())
         job_id = Slurm().submit_job(job_file=os.path.abspath(f.name))
         print(job_id)
     msg.ack()
