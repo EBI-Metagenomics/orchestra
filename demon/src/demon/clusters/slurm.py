@@ -3,23 +3,23 @@
 from typing import List
 
 from demon.clusters.base import BaseCluster
-from demon.jobs.base import BaseJob, JobStatus
+from demon.jobs.base import JobStatus
 from demon.utils.command import call_cli
 
 
 class Slurm(BaseCluster):
     """Slurm interface."""
 
-    def submit_job(self: "BaseCluster", job: BaseJob) -> str:
+    def submit_job(self: "BaseCluster", job_file: str) -> str:
         """Submit job to the cluster.
 
         Args:
-            job (BaseJob): A Job object
+            job_file (str): Path to job script
 
         Returns:
             str: Job ID
         """
-        cmd_args_list = ["echo", job.script, "|", "sbatch"]
+        cmd_args_list = ["sbatch", job_file]
         output = call_cli(cmd_args_list)
         submit_job_id = output.split(" ")[-1]
         return submit_job_id

@@ -1,6 +1,7 @@
 """Pub/Sub callbacks for Slurm."""
 
 import json
+import tempfile
 
 from demon.clusters.slurm import Slurm
 from demon.jobs.base import BaseJob
@@ -16,6 +17,8 @@ def submit_job_from_msg(msg: Message) -> None:
     """
     job_obj = json.loads(msg.data)
     job = BaseJob(**job_obj)
+    with tempfile.NamedTemporaryFile() as f:
+        f.write(job.json().encode())
+        job_id = Slurm().submit_job(job_file=f.name)
+        print(job_id)
     msg.ack()
-    job_id = Slurm().submit_job(job)
-    print(job_id)
