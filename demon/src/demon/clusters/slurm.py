@@ -19,8 +19,7 @@ class Slurm(BaseCluster):
         Returns:
             str: Job ID
         """
-        cmd_args_list = ["sbatch"]
-        cmd_args_list.append(job.script)
+        cmd_args_list = ["echo", job.script, "|", "sbatch"]
         output = call_cli(cmd_args_list)
         submit_job_id = output.split(" ")[-1]
         return submit_job_id
