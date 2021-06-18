@@ -1,0 +1,42 @@
+"""Slurm interface."""
+
+from typing import List
+
+from demon.clusters.base import BaseCluster
+from demon.jobs.base import BaseJob, JobStatus
+from demon.utils.command import call_cli
+
+
+class Slurm(BaseCluster):
+    """Slurm interface."""
+
+    def submit_job(self: "BaseCluster", job: BaseJob) -> str:
+        """Submit job to the cluster.
+
+        Args:
+            job (BaseJob): A Job object
+
+        Returns:
+            str: Job ID
+        """
+        cmd_args_list = ["sbatch"]
+        cmd_args_list.append(job.script)
+        output = call_cli(cmd_args_list)
+        submit_job_id = output.split(" ")[-1]
+        return submit_job_id
+
+    def get_job_status(self: "BaseCluster", job_id: str) -> List[JobStatus]:
+        """Get status of a job by Job.
+
+        Args:
+            job_id (str): ID of the job
+
+        Returns:
+            List[JobStatus]: List of status of the jobs
+        """
+        cmd_args_list = ["sacct", "--format", "State", "-j", job_id]
+        output = call_cli(cmd_args_list)
+        job_status_list = [
+            JobStatus(status) for status in output.strip().split("\n")[2:]
+        ]
+        return job_status_list
