@@ -14,6 +14,6 @@ repos:
         types: [python]
       - id: flake8
         name: flake8
-        entry: python ./scripts/run_black.py
+        entry: python ./scripts/run_flake8.py
         language: system
         types: [python]
