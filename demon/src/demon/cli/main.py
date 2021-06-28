@@ -2,6 +2,7 @@
 
 import click
 
+from demon.cli.db import db
 from demon.cli.subscribe import sub
 
 from .. import __version__
@@ -15,3 +16,4 @@ def main() -> None:
 
 
 main.add_command(sub)
+main.add_command(db)
