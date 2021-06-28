@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, List, Union
 
-from demon.extensions import DBSession
+from demon.extentions import DBSession
 
 from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.orm import declarative_base

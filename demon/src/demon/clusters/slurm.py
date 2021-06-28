@@ -3,7 +3,7 @@
 from typing import List
 
 from demon.clusters.base import BaseCluster
-from demon.jobs.base import JobStatus
+from demon.schemas.jobs.base import JobStatus
 from demon.utils.command import call_cli
 
 

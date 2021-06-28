@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from demon.jobs.base import BaseJob, JobStatus
+from demon.schemas.jobs.base import BaseJob, JobStatus
 
 
 class BaseCluster(ABC):
