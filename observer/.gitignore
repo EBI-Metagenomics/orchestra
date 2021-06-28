@@ -1,0 +1,9 @@
+/.idea
+/build
+
+.DS_Store
+/observer
+/observer.test
+*.pyc
+
+vendor
