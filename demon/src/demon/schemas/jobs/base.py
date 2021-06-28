@@ -4,22 +4,9 @@ from enum import Enum, unique
 
 from demon.schemas.meta.mixins import DBModel, SurrogatePK, TimestampMixin
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from sqlalchemy import Column, String
-
-
-class BaseJob(BaseModel):
-    """Base job schema."""
-
-    script: str
-
-
-class BaseJobDB(DBModel, TimestampMixin, SurrogatePK):
-    """Base job table for DB."""
-
-    __tablename___ = "job"
-    script = Column(String(), nullable=False)
 
 
 @unique
@@ -32,3 +19,30 @@ class JobStatus(Enum):
     COMPLETING = "COMPLETING"
     RESIZING = "RESIZING"
     SUSPENDED = "SUSPENDED"
+
+
+class BaseJob(BaseModel):
+    """Base job schema."""
+
+    script: str
+    status: JobStatus = JobStatus.PENDING
+
+    @validator("status", always=True)
+    def convert_status_enum_to_str(cls: "BaseJob", v: JobStatus) -> str:
+        """Convert enum to string.
+
+        Args:
+            v (JobStatus): JobStatus enum
+
+        Returns:
+            str: Str repr of enum
+        """
+        return v.value
+
+
+class BaseJobDB(DBModel, TimestampMixin, SurrogatePK):
+    """Base job table for DB."""
+
+    __tablename__ = "job"
+    script = Column(String(), nullable=False)
+    status = Column(String(), nullable=False)
