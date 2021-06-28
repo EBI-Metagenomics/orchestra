@@ -1,4 +1,5 @@
 #! /bin/python3
+"""Helper script to run black in all python sub projects."""
 
 from pathlib import Path
 from subprocess import call
