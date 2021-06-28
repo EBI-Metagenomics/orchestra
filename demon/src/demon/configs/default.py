@@ -12,7 +12,7 @@ class DefaultConfig(BaseConfig, BaseSettings):
 
     HOME: str
     DB_TYPE: str = "postgresql"
-    DB_NAME: str = "conductor"
+    DB_NAME: str = "demon"
     DB_URI: str = None
     DB_USER: str = "postgres"
     DB_PASS: str = "postgres"
@@ -23,6 +23,8 @@ class DefaultConfig(BaseConfig, BaseSettings):
     GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
     GCP_PUBSUB_TOPIC = "test-topic"
     GCP_PUBSUB_SUB_ID = "test-sub"
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
     def get_sql_db_uri(self: "DefaultConfig") -> str:
         """Get uri of the sql database.
