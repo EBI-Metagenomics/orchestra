@@ -5,7 +5,7 @@ import os
 import uuid
 
 from demon.clusters.slurm import Slurm
-from demon.jobs.base import BaseJob
+from demon.schemas.jobs.base import BaseJob
 
 from google.cloud.pubsub_v1.subscriber.message import Message
 
