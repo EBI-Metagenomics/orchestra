@@ -1,8 +1,9 @@
 """Server factory."""
 
 from conductor.configs.base import BaseConfig
-from conductor.extentions import celery_app, init_celery
+from conductor.extentions import celery_app
 from conductor.routes.job import job_bp
+from conductor.tasks import init_celery
 
 from flask import Flask
 
