@@ -4,6 +4,7 @@
 from celery import Celery
 
 from conductor import global_config
+from conductor.messenger import get_messenger
 
 
 from sqlalchemy import create_engine
@@ -19,3 +20,5 @@ celery_app = Celery(
     broker=global_config.CELERY_BROKER_URL,
     backend=global_config.CELERY_RESULT_BACKEND,
 )
+
+messenger = get_messenger()
