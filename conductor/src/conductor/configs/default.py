@@ -24,6 +24,7 @@ class DefaultConfig(BaseConfig, BaseSettings):
     DB_PORT: int = 5432
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "ADD_A_RANDOM_KEY_HERE"  # noqa: S105
+    MESSENGER = "GCP"
     GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
     GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
     GCP_PUBSUB_TOPIC = "test-topic"
