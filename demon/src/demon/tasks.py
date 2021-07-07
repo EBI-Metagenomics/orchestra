@@ -1,9 +1,9 @@
 """Celery tasks."""
 
-from typing import Any
+from typing import Any, List
 
 from demon.extentions import DBSession, celery_app
-from demon.schemas.jobs.base import BaseJobDB
+from demon.schemas.jobs.base import BaseJobDB, JobStatus
 from demon.utils.slurm_callbacks import submit_slurm_job
 
 from sqlalchemy import select
@@ -15,10 +15,11 @@ def publish_slurm_job_from_db() -> None:
     pending_jobs = []
     stmt = select(BaseJobDB).where(BaseJobDB.status == "PENDING")
     with DBSession() as session:
-        pending_jobs = session.execute(stmt).scalars().all()
+        pending_jobs: List[BaseJobDB] = session.execute(stmt).scalars().all()
         print(f"Pending jobs: {len(pending_jobs)}")
-    for job in pending_jobs:
-        submit_slurm_job(job)
+        for job in pending_jobs:
+            submit_slurm_job(job)
+            job.update(status=JobStatus.RUNNING.value)
 
 
 @celery_app.on_after_configure.connect
