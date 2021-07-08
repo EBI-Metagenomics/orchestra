@@ -2,20 +2,19 @@
 
 from typing import List
 
-from conductor.models.job import JobDB
-from conductor.schemas.api.job.post import JobCreate
 from conductor.schemas.api.job.get import JobGetQueryParams
+from conductor.schemas.api.job.post import JobCreate
 from conductor.schemas.job import Job
 
 
-def create_job(job_create: JobCreate) -> JobDB:
+def create_job(job_create: JobCreate) -> Job:
     """Create job in the DB from JobCreate request.
 
     Args:
         job_create (JobCreate): JobCreate request
 
     Returns:
-        JobDB: Instance of SQLAlchemy model JobDB
+        JobDB: Instance of Job
     """
     pass
 
