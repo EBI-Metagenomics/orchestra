@@ -58,4 +58,4 @@ def get_job() -> Response:
     response_body = JobGetResponse(
         msg="job successfully retrieved", items=jobs
     )  # noqa: E501
-    return make_response(response_body, HTTPStatus.OK)
+    return make_response(response_body.json(), HTTPStatus.OK)

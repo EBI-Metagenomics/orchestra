@@ -36,7 +36,7 @@ def post_job() -> Response:
             response_body.json(), HTTPStatus.INTERNAL_SERVER_ERROR
         )  # noqa: E501
 
-    # ceate job in DB
+    # ceate job in DB and publish msg
     try:
         job = create_job(job_create)
     except SQLAlchemyError:
@@ -56,6 +56,6 @@ def post_job() -> Response:
 
     # return created job in response
     response_body = JobPOSTResponse(
-        msg="job successfully created", items=[job]
+        msg="job successfully created", items=[job.dict()]
     )  # noqa: E501
     return make_response(response_body.json(), HTTPStatus.OK)
