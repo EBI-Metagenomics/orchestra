@@ -5,6 +5,8 @@ from celery import Celery
 
 from conductor import global_config
 from conductor.messenger import get_messenger
+from conductor.observer import get_observer
+from conductor.scheduler import get_scheduler
 
 
 from sqlalchemy import create_engine
@@ -22,3 +24,5 @@ celery_app = Celery(
 )
 
 messenger = get_messenger()
+scheduler = get_scheduler()
+observer = get_observer()
