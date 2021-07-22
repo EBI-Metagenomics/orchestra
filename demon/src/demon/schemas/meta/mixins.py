@@ -53,7 +53,7 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession() as session:
+        with DBSession as session:
             session.bulk_save_objects(instance_list)
             session.commit()
         return True
@@ -92,7 +92,7 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession() as session:
+        with DBSession as session:
             session.bulk_update_mappings(list)
             session.commit()
         return instance_list
@@ -109,7 +109,7 @@ class CRUDMixin(object):
         Returns:
             Any: Instance of self
         """
-        with DBSession() as session:
+        with DBSession as session:
             session.add(self)
             if commit:
                 session.commit()
@@ -127,7 +127,7 @@ class CRUDMixin(object):
         Returns:
             Union[bool, Any]: True if commit is successful
         """
-        with DBSession() as session:
+        with DBSession as session:
             session.delete(self)
             return commit and session.commit()
 
