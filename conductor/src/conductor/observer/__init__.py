@@ -22,4 +22,4 @@ def get_observer() -> BaseObserver:
     Returns:
         BaseObserver : An instance of a class that inherits BaseObserver
     """
-    return ObserverEnum[global_config.OBSERVER].value(global_config)
+    return ObserverEnum[global_config.OBSERVER].value()

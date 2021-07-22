@@ -22,4 +22,4 @@ def get_scheduler() -> BaseScheduler:
     Returns:
         BaseScheduler : An instance of a class that inherits BaseScheduler
     """
-    return SchedulerEnum[global_config.SCHEDULER].value(global_config)
+    return SchedulerEnum[global_config.SCHEDULER].value()
