@@ -1,5 +1,5 @@
 """Schedule commands."""
-# flake8:
+# flake8: noqa: DAR101
 
 from pathlib import Path
 
@@ -33,3 +33,6 @@ def random(file: str) -> None:
 def sched() -> None:
     """Schedule jobs."""
     pass
+
+
+sched.add_command(random)

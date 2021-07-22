@@ -4,6 +4,7 @@ import click
 
 from conductor.cli.db import db
 from conductor.cli.publish import pub
+from conductor.cli.schedule import sched
 
 from .. import __version__
 
@@ -17,3 +18,4 @@ def main() -> None:
 
 main.add_command(db)
 main.add_command(pub)
+main.add_command(sched)
