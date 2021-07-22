@@ -16,5 +16,6 @@ class ClusterDB(DBModel, TimestampMixin, SurrogatePKUUID):
 
     __tablename__ = "cluster"
     name = Column(String(), nullable=False)
+    cluster_type = Column(String(), nullable=False)
     status = Column(String(), nullable=False)
     cluster_caps = Column(String(), nullable=True)
