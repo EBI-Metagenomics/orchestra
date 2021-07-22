@@ -19,7 +19,7 @@ def publish_slurm_job_from_db() -> None:
         print(f"Pending jobs: {len(pending_jobs)}")
         for job in pending_jobs:
             submit_slurm_job(job)
-            job.update(status=JobStatus.RUNNING.value)
+            job.update(session, status=JobStatus.RUNNING.value)
 
 
 @celery_app.on_after_configure.connect
