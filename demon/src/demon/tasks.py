@@ -17,9 +17,9 @@ def publish_slurm_job_from_db() -> None:
     with DBSession() as session:
         pending_jobs: List[BaseJobDB] = session.execute(stmt).scalars().all()
         print(f"Pending jobs: {len(pending_jobs)}")
-        for job in pending_jobs:
-            submit_slurm_job(job)
-            job.update(session, status=JobStatus.RUNNING.value)
+        if len(pending_jobs) != 0:
+            submit_slurm_job(pending_jobs[0])
+            pending_jobs[0].update(session, status=JobStatus.RUNNING.value)
 
 
 @celery_app.on_after_configure.connect
