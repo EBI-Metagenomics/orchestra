@@ -21,6 +21,7 @@ class BaseCluster(ABC):
         """
         pass
 
+    @abstractmethod
     def get_job_status(self: "BaseCluster", job_id: str) -> List[JobStatus]:
         """Get status of a job by Job.
 
