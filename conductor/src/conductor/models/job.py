@@ -21,8 +21,8 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     __tablename__ = "job"
     name = Column(String(), nullable=False)
     script = Column(String(), nullable=False)
-    status = Column(String(), nullable=False)
-    assigned_cluster_id = Column(GUID(), nullable=False)
+    status = Column(String(), nullable=False, default="PENDING")
+    assigned_cluster_id = Column(GUID(), nullable=True)
     cluster_caps_req = Column(String(), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
     # protagonist_id = reference_col("protagonist")
