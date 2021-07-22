@@ -44,5 +44,6 @@ class BaseJobDB(DBModel, TimestampMixin, SurrogatePK):
     """Base job table for DB."""
 
     __tablename__ = "job"
+    name = Column(String(), nullable=False)
     script = Column(String(), nullable=False)
-    status = Column(String(), nullable=False)
+    status = Column(String(), nullable=False, default="PENDING")
