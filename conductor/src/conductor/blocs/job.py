@@ -32,7 +32,7 @@ def create_job(job_create: JobCreate) -> JobDB:
         message = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
             data=job_create.job.dict(),
-            timestamp=datetime.now(),
+            timestamp=str(datetime.now()),
         )
         messenger.publish(message, global_config.GCP_PUBSUB_TOPIC)
 
