@@ -26,17 +26,18 @@ class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD operations."""
 
     @classmethod
-    def create(cls: Any, **kwargs: Any) -> Any:
+    def create(cls: Any, DBSession: Session, **kwargs: Any) -> Any:
         """Create a new record and save it to the database.
 
         Args:
+            DBSession: (Session): database session to use
             **kwargs (Any): kwargs to pass to cls for init
 
         Returns:
             Any: Instance of self
         """
         instance = cls(**kwargs)
-        return instance.save()
+        return instance.save(DBSession)
 
     @classmethod
     def bulk_create(cls: Any, list: List[Any], DBSession: Session) -> Any:
@@ -75,7 +76,7 @@ class CRUDMixin(object):
         """
         for attr, value in kwargs.items():
             setattr(self, attr, value)
-        return commit and self.save() or self
+        return commit and self.save(DBSession) or self
 
     @classmethod
     def bulk_update(cls: Any, list: List[Any], DBSession: Session) -> Any:
@@ -102,8 +103,8 @@ class CRUDMixin(object):
         """Save the record.
 
         Args:
-            commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
             DBSession: (Session): database session to use
+            commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
 
         Returns:
             Any: Instance of self
