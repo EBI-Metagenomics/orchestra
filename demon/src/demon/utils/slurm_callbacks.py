@@ -6,9 +6,11 @@ import uuid
 from typing import Union
 
 from demon.clusters.slurm import Slurm
+from demon.schemas.job import Job
 from demon.schemas.jobs.base import BaseJob, BaseJobDB
+from demon.schemas.message import Message
 
-from google.cloud.pubsub_v1.subscriber.message import Message
+from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
 
 
 def submit_slurm_job(job: Union[BaseJobDB, BaseJob]) -> str:
@@ -43,13 +45,14 @@ def submit_job_from_msg(msg: Message) -> None:
     msg.ack()
 
 
-def save_job_from_msg(msg: Message) -> None:
+def save_job_from_msg(msg: GCPMessage) -> None:
     """Save jobs to DB from Pub/Sub msgs.
 
     Args:
-        msg (Message): Pub/Sub Msg
+        msg (GCPMessage): Pub/Sub Msg
     """
-    job_obj = BaseJob.parse_raw(msg.data)
-    job = BaseJobDB(**job_obj.dict())
-    job.save()
+    parsed_msg = Message.parse_raw(msg.data)
+    job = Job(**parsed_msg)
+    jobdb = BaseJobDB(**job.dict())
+    jobdb.save()
     msg.ack()
