@@ -109,10 +109,9 @@ class CRUDMixin(object):
         Returns:
             Any: Instance of self
         """
-        with DBSession as session:
-            session.add(self)
-            if commit:
-                session.commit()
+        DBSession.add(self)
+        if commit:
+            DBSession.commit()
         return self
 
     def delete(
