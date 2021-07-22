@@ -5,7 +5,7 @@ import os
 import uuid
 from typing import Union
 
-from demon.clusters.slurm import Slurm
+from demon.clusters.slurm import SlurmCluster
 from demon.schemas.job import Job
 from demon.schemas.jobs.base import BaseJob, BaseJobDB
 from demon.schemas.message import Message
@@ -25,7 +25,7 @@ def submit_slurm_job(job: Union[BaseJobDB, BaseJob]) -> str:
     with open(f"{uuid.uuid4()}.json", "w+") as f:
         f.write(job.script)
         f.read()
-        job_id = Slurm().submit_job(job_file=os.path.abspath(f.name))
+        job_id = SlurmCluster().submit_job(job_file=os.path.abspath(f.name))
         return job_id
 
 
@@ -40,7 +40,7 @@ def submit_job_from_msg(msg: Message) -> None:
     with open(f"{uuid.uuid4()}.json", "w+") as f:
         f.write(job.script)
         print(f.read())
-        job_id = Slurm().submit_job(job_file=os.path.abspath(f.name))
+        job_id = SlurmCluster().submit_job(job_file=os.path.abspath(f.name))
         print(job_id)
     msg.ack()
 

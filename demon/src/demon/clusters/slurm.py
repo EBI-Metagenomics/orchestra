@@ -7,7 +7,7 @@ from demon.schemas.jobs.base import JobStatus
 from demon.utils.command import call_cli
 
 
-class Slurm(BaseCluster):
+class SlurmCluster(BaseCluster):
     """Slurm interface."""
 
     def submit_job(self: "BaseCluster", job_file: str) -> str:
