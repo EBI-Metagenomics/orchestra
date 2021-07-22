@@ -21,7 +21,7 @@ def random(file: str) -> None:
         job_file_path = Path(file)
         with open(job_file_path) as job_file:
             data = job_file.read()
-            job = Job().parse_raw(data)
+            job = Job.parse_raw(data)
             job_create = JobCreate(job=job)
             created_job = create_job(job_create)
             logger.info(f"\nSuccess!\nJob: {created_job}")
