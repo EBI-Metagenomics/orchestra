@@ -5,6 +5,7 @@ import os
 import uuid
 from typing import Union
 
+from demon.extentions import DBSession
 from demon.clusters.slurm import SlurmCluster
 from demon.schemas.job import Job
 from demon.schemas.jobs.base import BaseJob, BaseJobDB
@@ -54,5 +55,6 @@ def save_job_from_msg(msg: GCPMessage) -> None:
     parsed_msg = Message.parse_raw(msg.data)
     job = Job(**parsed_msg.data)
     jobdb = BaseJobDB(**job.dict())
-    jobdb.save()
+    with DBSession() as session:
+        jobdb.save(session)
     msg.ack()
