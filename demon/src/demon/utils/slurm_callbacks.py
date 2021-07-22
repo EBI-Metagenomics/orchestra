@@ -52,7 +52,7 @@ def save_job_from_msg(msg: GCPMessage) -> None:
         msg (GCPMessage): Pub/Sub Msg
     """
     parsed_msg = Message.parse_raw(msg.data)
-    job = Job(**parsed_msg)
+    job = Job(**parsed_msg.dict())
     jobdb = BaseJobDB(**job.dict())
     jobdb.save()
     msg.ack()
