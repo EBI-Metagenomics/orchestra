@@ -159,7 +159,7 @@ class SurrogatePKUUID(object):
 
     __table_args__ = {"extend_existing": True}
 
-    id = Column(GUID(), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(GUID, primary_key=True, default=lambda: str(uuid.uuid4()))
 
     @classmethod
     def get_by_uuid(
