@@ -18,8 +18,16 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     __tablename__ = "job"
     name = Column(String(), nullable=False)
     script = Column(String(), nullable=False)
-    status = Column(String(), nullable=False, default="PENDING")
+
     cluster_caps_req = Column(String(), nullable=True)
-    finished_at = Column(DateTime(timezone=True), nullable=True)
+
+    # FIXME: remove, this is recorded in the schedule
+    # finished_at = Column(DateTime(timezone=True), nullable=True)
+
     protagonist_id = reference_col("protagonist")
     protagonist = relationship("ProtagonistDB", backref="jobs")
+
+    # it's going ot be more performance to keep a counter
+    # on this table than queries the schedules count each time
+    # we can create a db trigger to keep this updated
+    schedules_count = Column(Int(), nullable=False, default=0)
