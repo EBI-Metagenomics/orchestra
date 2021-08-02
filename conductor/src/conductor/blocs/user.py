@@ -14,20 +14,20 @@ from logzero import logger
 from sqlalchemy import select
 
 
-def create_user(user_create: UserCreate) -> ProtagonistDB:
+def create_user(user_create_list: List[UserCreate]) -> List[ProtagonistDB]:
     """Create user and save to DB from UserCreate request.
 
     Args:
-        user_create (UserCreate): UserCreate request
+        user_create_list (UserCreate): UserCreate request
 
     Returns:
         ProtagonistDB: Created user
     """
     try:
-        user = auther.register_user(UserCreate)
-        return user
+        user_list = auther.register_user(user_create_list)
+        return user_list
     except Exception as e:
-        logger.error(f"Unable to register user: {UserCreate.user} due to {e}")
+        logger.error(f"Unable to register users due to {e}")
         # TODO: Raise error
 
 
