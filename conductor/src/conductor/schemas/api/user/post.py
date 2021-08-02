@@ -12,6 +12,7 @@ class UserCreate(BaseModel):
     """Schema to parse create User requests."""
 
     user: User
+    password: str
 
 
 class UserPOSTRequest(BaseModel):
