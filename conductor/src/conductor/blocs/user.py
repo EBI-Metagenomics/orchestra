@@ -2,7 +2,8 @@
 
 from typing import List
 
-from conductor.extentions import DBSession, auther
+from conductor import DBSession
+from conductor.extentions import auther
 from conductor.models.protagonist import ProtagonistDB
 from conductor.schemas.api.user.delete import UserDelete
 from conductor.schemas.api.user.get import UserGetQueryParams, UserQueryType

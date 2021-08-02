@@ -5,8 +5,8 @@ from typing import List
 
 from bcrypt import gensalt, hashpw
 
+from conductor import DBSession
 from conductor.auther.base import BaseAuther
-from conductor.extentions import DBSession
 from conductor.models.protagonist import ProtagonistDB
 from conductor.schemas.api.user.post import UserCreate
 
@@ -47,3 +47,12 @@ class CookieAuther(BaseAuther):
             except Exception as e:
                 logger.error(f"Unable to register users due to {e}")
                 # TODO: raise errors
+
+    def login_user(self: "BaseAuther") -> None:
+        return super().login_user()
+
+    def logout_user(self: "BaseAuther") -> None:
+        return super().logout_user()
+
+    def authorize_user(self: "BaseAuther") -> None:
+        return super().authorize_user()

@@ -2,7 +2,7 @@
 
 import click
 
-from conductor.extentions import db_engine
+from conductor import db_engine
 from conductor.models.meta.mixins import DBModel
 
 
