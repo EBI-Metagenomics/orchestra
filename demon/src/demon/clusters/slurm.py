@@ -33,7 +33,15 @@ class SlurmCluster(BaseCluster):
         Returns:
             List[JobStatus]: List of status of the jobs
         """
-        cmd_args_list = ["sacct", "--format", "State", "-j", job_id]
+        cmd_args_list = [
+            "sacct",
+            "-S",
+            "1970-01-01",
+            "--format",
+            "State,ExitCode",
+            "-j",
+            job_id,
+        ]
         output = call_cli(cmd_args_list)
         job_status_list = [
             JobStatus(status) for status in output.strip().split("\n")[2:]
