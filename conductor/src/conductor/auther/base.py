@@ -13,7 +13,7 @@ class BaseAuther(ABC):
     @abstractclassmethod
     def register_user(
         self: "BaseAuther", user_create_list: List[UserCreate]
-    ) -> ProtagonistDB:  # noqa: E501
+    ) -> List[ProtagonistDB]:  # noqa: E501
         """Register user."""
         pass
 
