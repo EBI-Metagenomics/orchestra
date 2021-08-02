@@ -67,8 +67,8 @@ class CRUDMixin(object):
         """Update specific fields of a record.
 
         Args:
-            commit (bool): Flag to control commit behaviour. Defaults to True.
             DBSession: (Session): database session to use
+            commit (bool): Flag to control commit behaviour. Defaults to True.
             **kwargs (Any): kwargs to update cls params
 
         Returns:

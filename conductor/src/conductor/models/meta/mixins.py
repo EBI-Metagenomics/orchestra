@@ -4,11 +4,11 @@ import uuid
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
-from conductor.extentions import DBSession
 from conductor.models.meta.helpers import GUID
 
 from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm.session import Session
 
 
 # declarative base class
@@ -28,10 +28,11 @@ class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD operations."""
 
     @classmethod
-    def create(cls: Any, **kwargs: Any) -> Any:
+    def create(cls: Any, DBSession: Session, **kwargs: Any) -> Any:
         """Create a new record and save it to the database.
 
         Args:
+            DBSession: (Session): database session to use
             **kwargs (Any): kwargs to pass to cls for init
 
         Returns:
@@ -41,11 +42,12 @@ class CRUDMixin(object):
         return instance.save()
 
     @classmethod
-    def bulk_create(cls: Any, list: List[Any]) -> Any:
+    def bulk_create(cls: Any, list: List[Any], DBSession: Session) -> Any:
         """Create a new records and save them to the database.
 
         Args:
             list (List[Any]): List of self
+            DBSession: (Session): database session to use
 
         Returns:
             Any: True if scuccess
@@ -53,15 +55,21 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession() as session:
+        with DBSession as session:
             session.bulk_save_objects(instance_list)
             session.commit()
         return True
 
-    def update(self: "CRUDMixin", commit: bool = True, **kwargs: Any) -> Any:
+    def update(
+        self: "CRUDMixin",
+        DBSession: Session,
+        commit: bool = True,
+        **kwargs: Any  # noqa: E501
+    ) -> Any:
         """Update specific fields of a record.
 
         Args:
+            DBSession: (Session): database session to use
             commit (bool): Flag to control commit behaviour. Defaults to True.
             **kwargs (Any): kwargs to update cls params
 
@@ -70,14 +78,15 @@ class CRUDMixin(object):
         """
         for attr, value in kwargs.items():
             setattr(self, attr, value)
-        return commit and self.save() or self
+        return commit and self.save(DBSession) or self
 
     @classmethod
-    def bulk_update(cls: Any, list: List[Any]) -> Any:
+    def bulk_update(cls: Any, list: List[Any], DBSession: Session) -> Any:
         """Create a new records and save them to the database.
 
         Args:
             list (List[Any]): List of instances of self
+            DBSession: (Session): database session to use
 
         Returns:
             Any: List of updated instances self
@@ -85,36 +94,42 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession() as session:
+        with DBSession as session:
             session.bulk_update_mappings(list)
             session.commit()
         return instance_list
 
-    def save(self: "CRUDMixin", commit: bool = True) -> Any:
+    def save(
+        self: "CRUDMixin", DBSession: Session, commit: bool = True
+    ) -> Any:  # noqa: E501
         """Save the record.
 
         Args:
+            DBSession: (Session): database session to use
             commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
 
         Returns:
             Any: Instance of self
         """
-        with DBSession() as session:
+        with DBSession as session:
             session.add(self)
             if commit:
                 session.commit()
         return self
 
-    def delete(self: "CRUDMixin", commit: bool = True) -> Union[bool, Any]:
+    def delete(
+        self: "CRUDMixin", DBSession: Session, commit: bool = True
+    ) -> Union[bool, Any]:
         """Remove the record from the database.
 
         Args:
+            DBSession: (Session): database session to use
             commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
 
         Returns:
             Union[bool, Any]: True if commit is successful
         """
-        with DBSession() as session:
+        with DBSession as session:
             session.delete(self)
             return commit and session.commit()
 
