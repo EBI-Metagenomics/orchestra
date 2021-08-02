@@ -173,11 +173,6 @@ class SurrogatePKUUID(object):
         Returns:
             Union[None, Any]: Return the instance of self if found or else None
         """
-        if any(
-            (
-                isinstance(record_id, str),
-                isinstance(record_id, uuid.UUID),
-            )
-        ):
+        if any((isinstance(record_id, str), isinstance(record_id, uuid.UUID))):
             return cls.query.get(uuid.UUID(str(record_id)))
         return None
