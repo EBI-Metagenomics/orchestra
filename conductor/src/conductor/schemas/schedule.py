@@ -8,3 +8,4 @@ class Schedule(BaseModel):
 
     job_id: str
     assigned_cluster_id: str
+    status: str = "PENDING"
