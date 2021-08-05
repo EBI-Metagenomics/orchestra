@@ -7,4 +7,4 @@ from pydantic.types import UUID4
 class UserDelete(BaseModel):
     """Schema to parse delete user requests."""
 
-    id: UUID4
+    user_id: UUID4

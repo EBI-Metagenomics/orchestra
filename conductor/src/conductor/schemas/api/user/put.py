@@ -9,7 +9,7 @@ from pydantic.types import UUID4
 class UserUpdate(BaseModel):
     """Schema to parse update user requests."""
 
-    id: UUID4
+    user_id: UUID4
     name: Optional[str]
     email: Optional[str]
     organisation: Optional[str]
