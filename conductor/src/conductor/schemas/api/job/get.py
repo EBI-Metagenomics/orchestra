@@ -9,17 +9,6 @@ from conductor.schemas.job import Job
 from pydantic import BaseModel
 
 
-class JobGetQueryParams(BaseModel):
-    """Job GET request query params schema."""
-
-    job_id: Optional[str]
-    protagonist_id: Optional[str]
-    cluster_id: Optional[str]
-    create_timerange: Optional[str]
-    finished_timerange: Optional[str]
-    job_status: Optional[str]
-
-
 class JobGetResponse(ResponseSchema):
     """Job GET response schema."""
 
@@ -37,3 +26,15 @@ class JobQueryType(Enum):
     GET_JOBS_BY_CREATE_TIMERANGE = "get_jobs_by_create_timerange"
     GET_JOBS_BY_FINISHED_TIMERANGE = "get_jobs_by_finished_timerange"
     GET_JOBS_BY_STATUS = "get_jobs_by_status"
+
+
+class JobGetQueryParams(BaseModel):
+    """Job GET request query params schema."""
+
+    query_type: JobQueryType
+    job_id: Optional[str]
+    protagonist_id: Optional[str]
+    cluster_id: Optional[str]
+    create_timerange: Optional[str]
+    finished_timerange: Optional[str]
+    job_status: Optional[str]
