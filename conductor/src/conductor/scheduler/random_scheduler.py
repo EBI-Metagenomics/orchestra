@@ -1,23 +1,64 @@
 """Random Scheduler implementation of Scheduler."""
 
+import random
+from typing import List
 
-from typing import Dict
-
+from conductor import DBSession
+from conductor.models.cluster import ClusterDB
+from conductor.models.schedule import ScheduleDB
 from conductor.scheduler.base import BaseScheduler
-from conductor.schemas.job import Job
+from conductor.schemas.api.schedule.post import ScheduleCreate
+
+from logzero import logger
+
+from sqlalchemy.sql.expression import select
 
 
 class RandomScheduler(BaseScheduler):
     """Random scheduler schedule jobs randomly."""
 
-    def schedule(self: "RandomScheduler", job: Job, metrics: str) -> Dict:
-        """Schedule a job.
+    def schedule(
+        self: "BaseScheduler", schedule_create: ScheduleCreate
+    ) -> ScheduleDB:  # noqa: E501
+        """Create schedule from schedule request.
 
         Args:
-            job (Job): Job to schedule
-            metrics (str): Current metrics from clusters
+            schedule_create (ScheduleCreate): Schedule create request
+
+        Raises:
+            Exception: No cluster available
 
         Returns:
-            Dict: Job Schedule
+            ScheduleDB: Instance of ScheduleDB
         """
-        return {}
+        # fetch available clusters
+        cluster_list: List[ClusterDB] = []
+        with DBSession() as session:
+            try:
+                stmt = select(ClusterDB)
+                cluster_list.append(session.execute(stmt).scalars().all())  # noqa: E501
+            except Exception as e:
+                logger.error(f"Unable to fetch clusters: {e}")
+                # TODO: raise errros
+
+        # Raise error if no cluster available
+        if len(cluster_list) == 0:
+            logger.error("No cluster available")
+            raise Exception("cluster_list: List[ClusterDB]")
+
+        # Randomly selects a cluster
+        selected_cluster = random.choice(cluster_list)  # noqa: S311
+
+        schedule_create.schedule.assigned_cluster_id = selected_cluster.id
+
+        # Add schedule to DB
+        try:
+            schedule = ScheduleDB(
+                protagonist_id=schedule_create.user.id,
+                **schedule_create.schedule.dict(),
+            )
+            schedule.save(session)
+            return schedule
+        except Exception as e:
+            logger.error(f"Unable to save schedule to DB: {e}")
+            raise e
