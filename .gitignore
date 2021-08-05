@@ -12,3 +12,4 @@ __pycache__/
 .vim
 scratch
 keys.json
+observer/observer.yml
