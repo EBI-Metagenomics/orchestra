@@ -1,23 +1,24 @@
 """Base Scheduler class."""
 
 from abc import ABC, abstractclassmethod
-from typing import Dict
 
-from conductor.schemas.job import Job
+from conductor.models.schedule import ScheduleDB
+from conductor.schemas.api.schedule.post import ScheduleCreate
 
 
 class BaseScheduler(ABC):
     """Base Scheduler class."""
 
     @abstractclassmethod
-    def schedule(self: "BaseScheduler", job: Job, metrics: str) -> Dict:  # noqa: E501
-        """Schedule a job.
+    def schedule(
+        self: "BaseScheduler", schedule_create: ScheduleCreate
+    ) -> ScheduleDB:  # noqa: E501
+        """Create schedule from schedule request.
 
         Args:
-            job (Job): Job to schedule
-            metrics (str): Current metrics from clusters
+            schedule_create (ScheduleCreate): Schedule create request
 
         Returns:
-            Dict: Job Schedule # noqa: DAR202
+            ScheduleDB: Instance of ScheduleDB
         """
-        pass
+        return ScheduleDB()
