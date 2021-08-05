@@ -26,7 +26,9 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
     with DBSession() as sesssion:
         try:
             job_db_create_list: List[JobDB] = [
-                JobDB(**job_create.job.dict())
+                JobDB(
+                    protagonist_id=job_create.user.id, **job_create.job.dict()
+                )  # noqa: E501
                 for job_create in job_create_list  # noqa: E501
             ]
             JobDB.bulk_create(job_db_create_list, sesssion)
