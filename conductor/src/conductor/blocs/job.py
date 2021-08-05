@@ -105,6 +105,7 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
             except Exception as e:
                 session.rollback()
                 logger.error(f"Unable to fetch jobs due to {e}")
+    return job_list
 
 
 def update_job(job_update: JobUpdate) -> JobDB:
@@ -116,13 +117,13 @@ def update_job(job_update: JobUpdate) -> JobDB:
     Returns:
         JobDB: Instance of Updated Job
     """
-    stmt = select(JobDB).where(JobDB.id == job_update.id)
+    stmt = select(JobDB).where(JobDB.id == job_update.job_id)
     with DBSession() as session:
         try:
             job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
             if len(job_list) == 1:
                 job_update_dict = job_update.dict()
-                job_update_dict.pop("id")
+                job_update_dict.pop("job_id")
                 updated_job = job_list[0].update(
                     session, **job_update.dict()
                 )  # noqa: E501
