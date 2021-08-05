@@ -36,7 +36,7 @@ class SlurmCluster(BaseCluster):
         cmd_args_list = [
             "sacct",
             "-S",
-            "1970-01-01",
+            "1970-01-02",
             "--format",
             "State,ExitCode",
             "-j",
