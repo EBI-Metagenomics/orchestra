@@ -19,10 +19,10 @@ def create_user(user_create_list: List[UserCreate]) -> List[ProtagonistDB]:
     """Create user and save to DB from UserCreate request.
 
     Args:
-        user_create_list (UserCreate): UserCreate request
+        user_create_list (List[UserCreate]): List of UserCreate request
 
     Returns:
-        ProtagonistDB: Created user
+        List[ProtagonistDB]: Created user
     """
     try:
         user_list = auther.register_user(user_create_list)
@@ -106,7 +106,7 @@ def update_user(user_update: UserUpdate) -> ProtagonistDB:
     Returns:
         ProtagonistDB: Instance of updated user
     """
-    stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_update.id)
+    stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_update.user_id)
     with DBSession() as session:
         try:
             user_list: List[ProtagonistDB] = (
@@ -114,7 +114,7 @@ def update_user(user_update: UserUpdate) -> ProtagonistDB:
             )  # noqa: E501
             if len(user_list) == 1:
                 user_update_dict = user_update.dict()
-                user_update_dict.pop("id")
+                user_update_dict.pop("user_id")
                 updated_user = user_list[0].update(
                     session, **user_update.dict()
                 )  # noqa: E501
@@ -136,7 +136,7 @@ def delete_user(user_delete: UserDelete) -> ProtagonistDB:
     Returns:
         ProtagonistDB: Instance of deleted user
     """
-    stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_delete.id)
+    stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_delete.user_id)
     with DBSession() as session:
         try:
             user_list: List[ProtagonistDB] = (
