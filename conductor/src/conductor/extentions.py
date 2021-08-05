@@ -16,7 +16,8 @@ celery_app = Celery(
     backend=global_config.CELERY_RESULT_BACKEND,
 )
 
+# order of initialization is important
 auther = get_auther()
 messenger = get_messenger()
-scheduler = get_scheduler()
 observer = get_observer()
+scheduler = get_scheduler()

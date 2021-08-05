@@ -19,7 +19,5 @@ class ClusterDB(DBModel, TimestampMixin, SurrogatePKUUID):
     cluster_type = Column(String(), nullable=False)
     status = Column(String(), nullable=False)
     cluster_caps = Column(String(), nullable=True)
-    # suggestion
     messenger = Column(String(), nullable=False, default="GCP")
-    # for GCP this would be the topic
     messenger_queue = Column(String(), nullable=False)
