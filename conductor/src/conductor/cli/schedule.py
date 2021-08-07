@@ -27,6 +27,7 @@ def random(file: str) -> None:
             logger.info(f"\nSuccess!\nJob: {created_job}")
     except Exception as e:
         logger.error(f"failed to schedule the job: {e}")
+        raise e
 
 
 @click.group()

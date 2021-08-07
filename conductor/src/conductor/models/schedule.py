@@ -20,6 +20,7 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
     job = relationship("JobDB", backref="schedules")
     assigned_cluster_id = reference_col("cluster")
     assigned_cluster = relationship("ClusterDB", backref="schedules")
+    # TODO: this should be an Enum with the possible status values
     status = Column(String, nullable=False, default="PENDING")
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)

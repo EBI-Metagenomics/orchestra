@@ -19,7 +19,6 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     cluster_caps_req = Column(String(), nullable=True)
     protagonist_id = Column(String(), nullable=False)
 
-    # it's going ot be more performance to keep a counter
-    # on this table than queries the schedules count each time
-    # we can create a db trigger to keep this updated
+    # it's going to be more performant to keep a counter
+    # on this table than to query the schedules table
     schedules_count = Column(Integer, nullable=False, default=0)

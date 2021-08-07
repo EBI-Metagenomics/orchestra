@@ -15,6 +15,8 @@ from google.cloud import pubsub_v1
 default_config = get_config()
 
 
+# TODO: delete this method
+
 def publish_msg(
     msg: str,
     topic_id: str,

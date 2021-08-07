@@ -17,3 +17,4 @@ def publish_gcp_msg(msg: str) -> None:
         publish_msg(msg=msg)
     except Exception as e:
         logger.error(e)
+        raise e

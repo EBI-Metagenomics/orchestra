@@ -10,6 +10,8 @@ from conductor.schemas.message import Message
 from google.auth import jwt
 from google.cloud import pubsub_v1
 
+from logzero import logger
+
 
 class GCPMessenger(BaseMessenger):
     """GCP(Pub/Sub) implementation of Messenger."""
@@ -84,4 +86,5 @@ class GCPMessenger(BaseMessenger):
             try:
                 streaming_pull_future.result(timeout=timeout)
             except TimeoutError:
+                logger.error(f"GCPMessenger timeout error while pulling messages. Error: {e}")  # noqa: E501
                 streaming_pull_future.cancel()
