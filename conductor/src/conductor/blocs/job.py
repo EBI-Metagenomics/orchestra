@@ -20,6 +20,9 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
     Args:
         job_create_list (List[JobCreate]): JobCreate request
 
+    Raises:
+        Exception: error
+
     Returns:
         List[JobDB]: Instance of Job
     """
@@ -45,6 +48,9 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
     Args:
         query_params (JobGetQueryParams): Query params from request
 
+    Raises:
+        Exception: error
+
     Returns:
         List[JobDB]: List of jobs returned from DB
     """
@@ -65,9 +71,7 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
 
     with DBSession() as session:
         try:
-            job_list: List[JobDB] = (
-                session.execute(stmt).scalars().all()
-            )  # noqa: E501
+            job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
             return job_list
         except Exception as e:
             session.rollback()
@@ -82,6 +86,9 @@ def update_job(job_update: JobUpdate) -> JobDB:
 
     Args:
         job_update (JobUpdate): JobUpdate request
+
+    Raises:
+        Exception: error
 
     Returns:
         JobDB: Instance of Updated Job
@@ -113,6 +120,9 @@ def delete_job(job_delete: JobDelete) -> JobDB:
 
     Args:
         job_delete (JobDelete): JobDelete request
+
+    Raises:
+        Exception: error
 
     Returns:
         JobDB: Instance of Deleted Job
