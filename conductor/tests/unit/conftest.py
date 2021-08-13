@@ -6,8 +6,9 @@ from bcrypt import gensalt, hashpw
 
 
 from conductor import db_engine
-from conductor.models.meta.mixins import DBModel
 from conductor.models.cluster import ClusterDB
+from conductor.models.job import JobDB
+from conductor.models.meta.mixins import DBModel
 from conductor.models.protagonist import ProtagonistDB
 
 from logzero import logger
@@ -85,3 +86,25 @@ def cluster() -> ClusterDB:
         cluster.save(session)
 
     return cluster
+
+
+@pytest.fixture(scope="session")
+def job(user: ProtagonistDB) -> JobDB:
+    """Job from the DB.
+
+    Args:
+        user (ProtagonistDB): A User
+
+    Returns:
+        JobDB: Instance of JobDB.
+    """
+    job = JobDB(
+        name="demo job",
+        script="#! /bin/bash\n\n/bin/hostname\nsrun -l /bin/hostname\nsrun -l /bin/hostname\n",
+        cluster_caps_req="CPU",
+        protagonist_id=user.id,
+    )
+    with db() as session:
+        job.save(session)
+
+    return job
