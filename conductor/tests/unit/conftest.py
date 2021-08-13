@@ -2,8 +2,12 @@
 
 from typing import Generator
 
+from bcrypt import gensalt, hashpw
+
+
 from conductor import db_engine
 from conductor.models.meta.mixins import DBModel
+from conductor.models.protagonist import ProtagonistDB
 
 from logzero import logger
 
@@ -39,3 +43,23 @@ def db() -> Generator[Session, None, None]:
         DBModel.metadata.drop_all(db_engine)
     except Exception:
         raise Exception("Unable to clean up Database")
+
+
+@pytest.fixture(scope="session")
+def user() -> ProtagonistDB:
+    """User from the DB.
+
+    Returns:
+        ProtagonistDB: Instance of ProtagonistDB.
+    """
+    passwd = hashpw("random_key".encode(), gensalt())
+    user = ProtagonistDB(
+        name="Bruce Wayne",
+        email="bruce@wayne.com",
+        password=passwd,
+        organisation="Justice League",
+    )
+    with db() as session:
+        user.save(session)
+
+    return user
