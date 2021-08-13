@@ -7,6 +7,7 @@ from bcrypt import gensalt, hashpw
 
 from conductor import db_engine
 from conductor.models.meta.mixins import DBModel
+from conductor.models.cluster import ClusterDB
 from conductor.models.protagonist import ProtagonistDB
 
 from logzero import logger
@@ -63,3 +64,24 @@ def user() -> ProtagonistDB:
         user.save(session)
 
     return user
+
+
+@pytest.fixture(scope="session")
+def cluster() -> ClusterDB:
+    """Cluster from the DB.
+
+    Returns:
+        ClusterDB: Instance of ClusterDB.
+    """
+    cluster = ClusterDB(
+        name="EBI_Embassy",
+        cluster_type="SLURM",
+        status="ACTIVE",
+        cluster_caps="CPU,GPU",
+        messenger="GCP",
+        messenger_queue="test-topic",
+    )
+    with db() as session:
+        cluster.save(session)
+
+    return cluster
