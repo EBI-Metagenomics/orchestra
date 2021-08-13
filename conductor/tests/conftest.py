@@ -48,8 +48,11 @@ def db() -> Generator[Session, None, None]:
 
 
 @pytest.fixture(scope="session")
-def user() -> ProtagonistDB:
+def user(db: Session) -> ProtagonistDB:
     """User from the DB.
+
+    Args:
+        db(Session): SQLAlchemy Session
 
     Returns:
         ProtagonistDB: Instance of ProtagonistDB.
@@ -68,8 +71,11 @@ def user() -> ProtagonistDB:
 
 
 @pytest.fixture(scope="session")
-def cluster() -> ClusterDB:
+def cluster(db: Session) -> ClusterDB:
     """Cluster from the DB.
+
+    Args:
+        db(Session): SQLAlchemy Session
 
     Returns:
         ClusterDB: Instance of ClusterDB.
@@ -89,11 +95,12 @@ def cluster() -> ClusterDB:
 
 
 @pytest.fixture(scope="session")
-def job(user: ProtagonistDB) -> JobDB:
+def job(user: ProtagonistDB, db: Session) -> JobDB:
     """Job from the DB.
 
     Args:
         user (ProtagonistDB): A User
+        db(Session): SQLAlchemy Session
 
     Returns:
         JobDB: Instance of JobDB.
