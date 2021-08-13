@@ -100,7 +100,7 @@ def job(user: ProtagonistDB) -> JobDB:
     """
     job = JobDB(
         name="demo job",
-        script="#! /bin/bash\n\n/bin/hostname\nsrun -l /bin/hostname\nsrun -l /bin/hostname\n",
+        script="#! /bin/bash\n\n/bin/hostname\nsrun -l /bin/hostname\nsrun -l /bin/hostname\n",  # noqa: E501
         cluster_caps_req="CPU",
         protagonist_id=user.id,
     )
