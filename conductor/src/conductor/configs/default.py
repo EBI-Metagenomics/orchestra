@@ -24,6 +24,7 @@ class DefaultConfig(BaseConfig, BaseSettings):
     DB_PORT: int = 5432
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "ADD_A_RANDOM_KEY_HERE"  # noqa: S105
+    ACCESS_TOKEN_EXPIRE_MINUTES = 1440
     AUTHER = "COOKIE"
     MESSENGER = "GCP"
     SCHEDULER = "RANDOM"
