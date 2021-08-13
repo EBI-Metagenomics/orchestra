@@ -3,6 +3,7 @@
 from conductor.configs.base import BaseConfig
 from conductor.extentions import celery_app
 from conductor.routes.job import job_bp
+from conductor.routes.schedule import schedule_bp
 from conductor.routes.user import user_bp
 from conductor.tasks import init_celery
 
@@ -54,3 +55,4 @@ def register_blueprints(app: Flask) -> None:
     """
     app.register_blueprint(job_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(schedule_bp)
