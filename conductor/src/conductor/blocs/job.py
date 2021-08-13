@@ -23,7 +23,7 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
     Returns:
         List[JobDB]: Instance of Job
     """
-    with DBSession() as sesssion:
+    with DBSession() as session:
         try:
             job_db_create_list: List[JobDB] = [
                 JobDB(
@@ -31,12 +31,12 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
                 )  # noqa: E501
                 for job_create in job_create_list  # noqa: E501
             ]
-            JobDB.bulk_create(job_db_create_list, sesssion)
+            JobDB.bulk_create(job_db_create_list, session)
             return job_db_create_list
         except Exception as e:
-            sesssion.rollback()
-            # TODO: Raise errors
+            session.rollback()
             logger.error(f"Unable to create jobs: {e}")
+            raise e
 
 
 def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
@@ -50,61 +50,30 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
     """
     job_list: List[JobDB] = []
 
+    stmt = ""
+
     if query_params.query_type == JobQueryType.GET_ALL_JOBS:
         stmt = select(JobDB)
-        with DBSession() as session:
-            try:
-                job_list: List[JobDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return job_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch jobs due to {e}")
     if query_params.query_type == JobQueryType.GET_JOBS_BY_ID:
         stmt = select(JobDB).where(JobDB.id == query_params.job_id)
-        with DBSession() as session:
-            try:
-                job_list: List[JobDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return job_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch jobs due to {e}")
     if query_params.query_type == JobQueryType.GET_JOBS_BY_CLUSTER_ID:
         stmt = select(JobDB).where(JobDB.id == query_params.cluster_id)
-        with DBSession() as session:
-            try:
-                job_list: List[JobDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return job_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch jobs due to {e}")
     if query_params.query_type == JobQueryType.GET_JOBS_BY_PROTAGONIST_ID:
         stmt = select(JobDB).where(JobDB.id == query_params.protagonist_id)
-        with DBSession() as session:
-            try:
-                job_list: List[JobDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return job_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch jobs due to {e}")
     if query_params.query_type == JobQueryType.GET_JOBS_BY_STATUS:
         stmt = select(JobDB).where(JobDB.id == query_params.job_status)
-        with DBSession() as session:
-            try:
-                job_list: List[JobDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return job_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch jobs due to {e}")
+
+    with DBSession() as session:
+        try:
+            job_list: List[JobDB] = (
+                session.execute(stmt).scalars().all()
+            )  # noqa: E501
+            return job_list
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Unable to fetch jobs due to {e}")
+            raise e
+
     return job_list
 
 
@@ -128,12 +97,15 @@ def update_job(job_update: JobUpdate) -> JobDB:
                     session, **job_update.dict()
                 )  # noqa: E501
                 return updated_job
+            if len(job_list) == 0:
+                # TODO: Raise not found
+                pass
         except Exception as e:
             session.rollback()
             logger.error(
                 f"Unable to update job: {job_update.dict()} due to {e}"
             )  # noqa: E501
-            # TODO: Raise error
+            raise e
 
 
 def delete_job(job_delete: JobDelete) -> JobDB:
@@ -152,9 +124,12 @@ def delete_job(job_delete: JobDelete) -> JobDB:
             if len(job_list) == 1:
                 deleted_job = job_list[0].delete(session)
                 return deleted_job
+            if len(job_list) == 0:
+                # TODO: Raise not found
+                pass
         except Exception as e:
             session.rollback()
             logger.error(
                 f"Unable to delete job: {job_delete.dict()} due to {e}"
             )  # noqa: E501
-            # TODO: Raise error
+            raise e

@@ -18,6 +18,7 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
     __tablename__ = "schedule"
     job_id = reference_col("job")
     job = relationship("JobDB", backref="schedules")
+    # TODO: this should be an enum
     status = Column(String, nullable=False, default="PENDING")
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)

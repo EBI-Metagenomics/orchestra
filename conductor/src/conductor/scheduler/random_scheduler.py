@@ -39,7 +39,7 @@ class RandomScheduler(BaseScheduler):
                 cluster_list.append(session.execute(stmt).scalars().all())  # noqa: E501
             except Exception as e:
                 logger.error(f"Unable to fetch clusters: {e}")
-                # TODO: raise errros
+                raise e
 
         # Raise error if no cluster available
         if len(cluster_list) == 0:

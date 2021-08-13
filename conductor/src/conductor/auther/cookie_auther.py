@@ -45,8 +45,9 @@ class CookieAuther(BaseAuther):
                     {**user_create["user"]} for user_create in user_create_list
                 ]  # noqa: E501
             except Exception as e:
+                session.rollback()
                 logger.error(f"Unable to register users due to {e}")
-                # TODO: raise errors
+                raise e
 
     def login_user(self: "BaseAuther") -> None:
         return super().login_user()

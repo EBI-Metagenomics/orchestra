@@ -27,4 +27,5 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     # it's going ot be more performance to keep a counter
     # on this table than queries the schedules count each time
     # we can create a db trigger to keep this updated
+    # TODO: add a signal to keep this value updated
     schedules_count = Column(Integer, nullable=False, default=0)

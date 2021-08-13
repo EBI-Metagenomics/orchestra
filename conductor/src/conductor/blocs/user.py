@@ -29,7 +29,7 @@ def create_user(user_create_list: List[UserCreate]) -> List[ProtagonistDB]:
         return user_list
     except Exception as e:
         logger.error(f"Unable to register users due to {e}")
-        # TODO: Raise error
+        raise e
 
 
 def get_users(query_params: UserGetQueryParams) -> List[ProtagonistDB]:
@@ -45,54 +45,29 @@ def get_users(query_params: UserGetQueryParams) -> List[ProtagonistDB]:
 
     if query_params.query_type == UserQueryType.GET_ALL_USERS:
         stmt = select(ProtagonistDB)
-        with DBSession() as session:
-            try:
-                user_list: List[ProtagonistDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return user_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch users due to {e}")
     if query_params.query_type == UserQueryType.GET_USERS_BY_ID:
         stmt = select(ProtagonistDB).where(
             ProtagonistDB.id == query_params.user_id
         )  # noqa: E501
-        with DBSession() as session:
-            try:
-                user_list: List[ProtagonistDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return user_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch users due to {e}")
     if query_params.query_type == UserQueryType.GET_USERS_BY_EMAIL:
         stmt = select(ProtagonistDB).where(
             ProtagonistDB.email == query_params.email
         )  # noqa: E501
-        with DBSession() as session:
-            try:
-                user_list: List[ProtagonistDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return user_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch users due to {e}")
     if query_params.query_type == UserQueryType.GET_USERS_BY_ORGANISATION:
         stmt = select(ProtagonistDB).where(
             ProtagonistDB.organisation == query_params.organisation
         )
-        with DBSession() as session:
-            try:
-                user_list: List[ProtagonistDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return user_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch users due to {e}")
+
+    with DBSession() as session:
+        try:
+            user_list: List[ProtagonistDB] = (
+                session.execute(stmt).scalars().all()
+            )  # noqa: E501
+            return user_list
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Unable to fetch users due to {e}")
+            raise e
 
     return user_list
 
@@ -112,6 +87,9 @@ def update_user(user_update: UserUpdate) -> ProtagonistDB:
             user_list: List[ProtagonistDB] = (
                 session.execute(stmt).scalars().all()
             )  # noqa: E501
+            if not user_list:
+                # TODO: raise not found error
+                pass
             if len(user_list) == 1:
                 user_update_dict = user_update.dict()
                 user_update_dict.pop("user_id")
@@ -142,6 +120,9 @@ def delete_user(user_delete: UserDelete) -> ProtagonistDB:
             user_list: List[ProtagonistDB] = (
                 session.execute(stmt).scalars().all()
             )  # noqa: E501
+            if not user_list:
+                # TODO: raise not found error
+                pass
             if len(user_list) == 1:
                 deleted_user = user_list[0].delete(session)
                 return deleted_user
@@ -150,4 +131,4 @@ def delete_user(user_delete: UserDelete) -> ProtagonistDB:
             logger.error(
                 f"Unable to delete user: {user_delete.dict()} due to {e}"
             )  # noqa: E501
-            # TODO: Raise error
+            raise e

@@ -31,24 +31,21 @@ def create_schedule(
     Returns:
         List[ScheduleDB]: Instance of Schedule from DB
     """
-    try:
+    schedule_list: List[ScheduleDB] = [
+        scheduler.schedule(schedule_create)
+        for schedule_create in schedule_create_list
+    ]
 
-        schedule_list: List[ScheduleDB] = [
-            scheduler.schedule(schedule_create)
-            for schedule_create in schedule_create_list
-        ]
+    # publish msg to demon
+    for schedule in schedule_list:
+        message = Message(
+            msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
+            data=schedule.dict(),
+            timestamp=str(datetime.now()),
+        )
+        messenger.publish(message, global_config.GCP_PUBSUB_TOPIC)
 
-        # publish msg to demon
-        for schedule in schedule_list:
-            message = Message(
-                msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-                data=schedule.dict(),
-                timestamp=str(datetime.now()),
-            )
-            messenger.publish(message, global_config.GCP_PUBSUB_TOPIC)
-        return schedule_list
-    except Exception as e:
-        logger.error(f"Unable to create and publish schedules: {e}")
+    return schedule_list
 
 
 def get_schedules(query_params: ScheduleGetQueryParams) -> List[ScheduleDB]:
@@ -63,28 +60,10 @@ def get_schedules(query_params: ScheduleGetQueryParams) -> List[ScheduleDB]:
     schedule_list: List[ScheduleDB]
     if query_params.query_type == ScheduleQueryType.GET_ALL_SCHEDULES:
         stmt = select(ScheduleDB)
-        with DBSession() as session:
-            try:
-                schedule_list: List[ScheduleDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return schedule_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch schedules due to {e}")
     if query_params.query_type == ScheduleQueryType.GET_SCHEDULE_BY_ID:
         stmt = select(ScheduleDB).where(
             ScheduleDB.id == query_params.schedule_id
         )  # noqa: E501
-        with DBSession() as session:
-            try:
-                schedule_list: List[ScheduleDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return schedule_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch schedules due to {e}")
     if (
         query_params.query_type
         == ScheduleQueryType.GET_SCHEDULES_BY_PROTAGONIST_ID  # noqa: E501
@@ -92,15 +71,6 @@ def get_schedules(query_params: ScheduleGetQueryParams) -> List[ScheduleDB]:
         stmt = select(ScheduleDB).where(
             ScheduleDB.protagonist_id == query_params.protagonist_id
         )  # noqa: E501
-        with DBSession() as session:
-            try:
-                schedule_list: List[ScheduleDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return schedule_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch schedules due to {e}")
     if (
         query_params.query_type
         == ScheduleQueryType.GET_SCHEDULES_BY_CLUSTER_ID  # noqa: E501
@@ -108,15 +78,18 @@ def get_schedules(query_params: ScheduleGetQueryParams) -> List[ScheduleDB]:
         stmt = select(ScheduleDB).where(
             ScheduleDB.assigned_cluster_id == query_params.cluster_id
         )  # noqa: E501
-        with DBSession() as session:
-            try:
-                schedule_list: List[ScheduleDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
-                return schedule_list
-            except Exception as e:
-                session.rollback()
-                logger.error(f"Unable to fetch schedules due to {e}")
+
+    with DBSession() as session:
+        try:
+            schedule_list: List[ScheduleDB] = (
+                session.execute(stmt).scalars().all()
+            )  # noqa: E501
+            return schedule_list
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Unable to fetch schedules due to {e}")
+            raise e
+
     return schedule_list
 
 
@@ -137,6 +110,8 @@ def update_schedule(schedule_update: ScheduleUpdate) -> ScheduleDB:
             schedule_list: List[ScheduleDB] = (
                 session.execute(stmt).scalars().all()
             )  # noqa: E501
+            if schedule_list is None:
+                # raise NotFound exception - 404
             if len(schedule_list) == 1:
                 schedule_update_dict = schedule_update.dict()
                 schedule_update_dict.pop("schedule_id")
@@ -149,7 +124,7 @@ def update_schedule(schedule_update: ScheduleUpdate) -> ScheduleDB:
             logger.error(
                 f"Unable to update schedule: {schedule_update.dict()} due to {e}"  # noqa: E501
             )
-            # TODO: Raise error
+            raise e
 
 
 def delete_schedule(schedule_delete: ScheduleDelete) -> ScheduleDB:
@@ -169,6 +144,9 @@ def delete_schedule(schedule_delete: ScheduleDelete) -> ScheduleDB:
             schedule_list: List[ScheduleDB] = (
                 session.execute(stmt).scalars().all()
             )  # noqa: E501
+            if not schedule_list:
+                # TODO: raise not found exception
+                pass
             if len(schedule_list) == 1:
                 deleted_schedule = schedule_list[0].delete(session)
                 return deleted_schedule
@@ -177,4 +155,4 @@ def delete_schedule(schedule_delete: ScheduleDelete) -> ScheduleDB:
             logger.error(
                 f"Unable to delete schedule: {schedule_delete.dict()} due to {e}"  # noqa: E501
             )
-            # TODO: Raise error
+            raise e
