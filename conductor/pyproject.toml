@@ -42,6 +42,7 @@ darglint = "^1.8.0"
 pre-commit = "^2.13.0"
 nox = "^2020.12.31"
 factory-boy = "^3.2.0"
+pytest-mock = "^3.6.1"
 
 [tool.poetry.scripts]
 conductor = "conductor.cli.main:main"
