@@ -1,6 +1,6 @@
 """Conductor Schedule POST route schemas."""
 
-from typing import Optional
+from typing import List, Optional
 
 from conductor.schemas.schedule import Schedule
 from conductor.schemas.user import User
@@ -8,16 +8,10 @@ from conductor.schemas.user import User
 from pydantic import BaseModel
 
 
-class SchedulePOSTRequest(BaseModel):
-    """Schedule POST request schema."""
-
-    pass
-
-
 class SchedulePOSTResponse(BaseModel):
     """Schedule POST response schema."""
 
-    pass
+    items: List[Schedule]
 
 
 class ScheduleCreate(BaseModel):
@@ -25,3 +19,9 @@ class ScheduleCreate(BaseModel):
 
     schedule: Schedule
     user: Optional[User]
+
+
+class SchedulePOSTRequest(BaseModel):
+    """Schedule POST request schema."""
+
+    schedules: List[ScheduleCreate]

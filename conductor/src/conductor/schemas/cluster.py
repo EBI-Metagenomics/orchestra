@@ -10,7 +10,7 @@ class Cluster(BaseModel):
 
     name: str
     cluster_type: str
-    status: str
+    status: str = "ONLINE"
     cluster_caps: Optional[str]
     messenger: str
     messenger_queue: str
