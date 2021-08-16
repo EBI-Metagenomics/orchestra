@@ -13,4 +13,4 @@ class User(BaseModel):
     name: str
     organisation: str
     email: str
-    active: bool
+    active: bool = True

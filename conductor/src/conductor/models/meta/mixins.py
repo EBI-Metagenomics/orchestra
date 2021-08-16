@@ -112,7 +112,6 @@ class CRUDMixin(object):
         Returns:
             Any: Instance of self
         """
-
         DBSession.add(self)
         if commit:
             DBSession.commit()
