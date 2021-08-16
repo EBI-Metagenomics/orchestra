@@ -1,6 +1,6 @@
 """Conductor conftest."""
 
-from typing import Generator
+from typing import Dict, Generator
 
 from bcrypt import gensalt, hashpw
 
@@ -48,7 +48,7 @@ def db() -> Generator[Session, None, None]:
 
 
 @pytest.fixture(scope="session")
-def user(db: Session) -> ProtagonistDB:
+def user_dict(db: Session) -> ProtagonistDB:
     """User from the DB.
 
     Args:
@@ -66,12 +66,11 @@ def user(db: Session) -> ProtagonistDB:
     )
     with db() as session:
         user.save(session)
-
-    return user
+        return user.to_dict()
 
 
 @pytest.fixture(scope="session")
-def cluster(db: Session) -> ClusterDB:
+def cluster_dict(db: Session) -> ClusterDB:
     """Cluster from the DB.
 
     Args:
@@ -90,16 +89,15 @@ def cluster(db: Session) -> ClusterDB:
     )
     with db() as session:
         cluster.save(session)
-
-    return cluster
+        return cluster.to_dict()
 
 
 @pytest.fixture(scope="session")
-def job(user: ProtagonistDB, db: Session) -> JobDB:
+def job_dict(user_dict: Dict, db: Session) -> JobDB:
     """Job from the DB.
 
     Args:
-        user (ProtagonistDB): A User
+        user_dict (Dict): A User dict
         db(Session): SQLAlchemy Session
 
     Returns:
@@ -109,9 +107,8 @@ def job(user: ProtagonistDB, db: Session) -> JobDB:
         name="demo job",
         script="#! /bin/bash\n\n/bin/hostname\nsrun -l /bin/hostname\nsrun -l /bin/hostname\n",  # noqa: E501
         cluster_caps_req="CPU",
-        protagonist_id=user.id,
+        protagonist_id=user_dict["id"],
     )
     with db() as session:
         job.save(session)
-
-    return job
+        return job.to_dict()
