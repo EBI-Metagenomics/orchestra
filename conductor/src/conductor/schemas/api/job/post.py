@@ -1,6 +1,6 @@
 """Conductor Job POST route schemas."""
 
-from typing import Optional
+from typing import List, Optional
 
 from conductor.schemas.job import Job
 from conductor.schemas.user import User
@@ -8,16 +8,10 @@ from conductor.schemas.user import User
 from pydantic import BaseModel
 
 
-class JobPOSTRequest(BaseModel):
-    """Job POST request schema."""
-
-    pass
-
-
 class JobPOSTResponse(BaseModel):
     """Job POST response schema."""
 
-    pass
+    items: List[Job]
 
 
 class JobCreate(BaseModel):
@@ -25,3 +19,9 @@ class JobCreate(BaseModel):
 
     job: Job
     user: Optional[User]
+
+
+class JobPOSTRequest(BaseModel):
+    """Job POST request schema."""
+
+    jobs: List[JobCreate]
