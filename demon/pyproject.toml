@@ -10,9 +10,6 @@ python = "^3.8"
 Flask = "^2.0.1"
 Flask-Login = "^0.5.0"
 Flask-Cors = "^3.0.10"
-Flask-Migrate = "^3.0.1"
-Flask-SQLAlchemy = "^2.5.1"
-Flask-Bcrypt = "^0.7.1"
 pydantic = { extras=["dotenv"], version="^1.8.2" }
 psycopg2-binary = "^2.8.6"
 logzero = "^1.7.0"
@@ -23,6 +20,7 @@ Cython = "^0.29.23"
 celery = "^5.1.1"
 redis = "^3.5.3"
 bcrypt = "^3.2.0"
+SQLAlchemy = "^1.4.22"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"

@@ -20,6 +20,7 @@ gunicorn = "^20.1.0"
 redis = "^3.5.3"
 bcrypt = "^3.2.0"
 PyJWT = "^2.1.0"
+SQLAlchemy = "^1.4.22"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
