@@ -24,7 +24,7 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
         Exception: error
 
     Returns:
-        List[JobDB]: Instance of Job
+        List[JobDB]: List of created clusters
     """
     with DBSession() as session:
         try:
