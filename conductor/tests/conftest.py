@@ -5,11 +5,14 @@ from typing import Dict, Generator
 from bcrypt import gensalt, hashpw
 
 
-from conductor import db_engine
+from conductor import db_engine, global_config
 from conductor.models.cluster import ClusterDB
 from conductor.models.job import JobDB
 from conductor.models.meta.mixins import DBModel
 from conductor.models.protagonist import ProtagonistDB
+from conductor.server import create_app
+
+from flask import Flask
 
 from logzero import logger
 
@@ -17,6 +20,18 @@ import pytest
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+
+
+@pytest.fixture(scope="session")
+def app() -> Flask:
+    """Flask app.
+
+    Returns:
+        Flask: Instance of flask app
+    """
+    app = create_app(global_config)
+    app.testing = True
+    return app
 
 
 @pytest.fixture(scope="session")
