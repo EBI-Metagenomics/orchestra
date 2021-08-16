@@ -57,9 +57,8 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession as session:
-            session.bulk_save_objects(instance_list)
-            session.commit()
+        DBSession.bulk_save_objects(instance_list)
+        DBSession.commit()
         return True
 
     def update(
@@ -96,9 +95,9 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession as session:
-            session.bulk_update_mappings(list)
-            session.commit()
+
+        DBSession.bulk_update_mappings(list)
+        DBSession.commit()
         return instance_list
 
     def save(
@@ -113,10 +112,10 @@ class CRUDMixin(object):
         Returns:
             Any: Instance of self
         """
-        with DBSession as session:
-            session.add(self)
-            if commit:
-                session.commit()
+
+        DBSession.add(self)
+        if commit:
+            DBSession.commit()
         return self
 
     def delete(
@@ -131,9 +130,8 @@ class CRUDMixin(object):
         Returns:
             Union[bool, Any]: True if commit is successful
         """
-        with DBSession as session:
-            session.delete(self)
-            return commit and session.commit()
+        DBSession.delete(self)
+        return commit and DBSession.commit()
 
 
 class DBModel(CRUDMixin, SerializerMixin, Base):
