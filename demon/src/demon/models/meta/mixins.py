@@ -10,6 +10,8 @@ from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.session import Session
 
+from sqlalchemy_serializer import SerializerMixin
+
 
 # declarative base class
 Base = declarative_base()
@@ -134,7 +136,7 @@ class CRUDMixin(object):
             return commit and session.commit()
 
 
-class DBModel(CRUDMixin, Base):
+class DBModel(CRUDMixin, SerializerMixin, Base):
     """Base model class that includes CRUD convenience methods."""
 
     __abstract__ = True
