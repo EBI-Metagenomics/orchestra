@@ -36,7 +36,7 @@ class RandomScheduler(BaseScheduler):
         with DBSession() as session:
             try:
                 stmt = select(ClusterDB)
-                cluster_list.append(session.execute(stmt).scalars().all())  # noqa: E501
+                cluster_list = session.execute(stmt).scalars().all()  # noqa: E501
             except Exception as e:
                 logger.error(f"Unable to fetch clusters: {e}")
                 raise e
@@ -52,10 +52,12 @@ class RandomScheduler(BaseScheduler):
         schedule_create.schedule.assigned_cluster_id = selected_cluster.id
 
         # Add schedule to DB
+        schedule_dict = schedule_create.schedule.dict()
+        user_id = schedule_dict.pop("user_id")
         try:
             schedule = ScheduleDB(
-                protagonist_id=schedule_create.user.id,
-                **schedule_create.schedule.dict(),
+                protagonist_id=user_id,
+                **schedule_dict,
             )
             schedule.save(session)
             return schedule
