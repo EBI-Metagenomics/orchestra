@@ -31,7 +31,7 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
             job_db_create_list: List[JobDB] = [
                 JobDB(
                     protagonist_id=job_create.user.id, **job_create.job.dict()
-                )  # noqa: E501
+                ).to_dict()  # noqa: E501
                 for job_create in job_create_list  # noqa: E501
             ]
             JobDB.bulk_create(job_db_create_list, session)
