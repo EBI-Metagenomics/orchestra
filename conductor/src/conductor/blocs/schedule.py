@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import List
 
-from conductor import DBSession, global_config
+from conductor import DBSession
 from conductor.extentions import messenger, scheduler
 from conductor.models.schedule import ScheduleDB
 from conductor.schemas.api.schedule.delete import ScheduleDelete
@@ -40,10 +40,10 @@ def create_schedule(
     for schedule in schedule_list:
         message = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-            data=schedule.dict(),
+            data=schedule.to_dict(),
             timestamp=str(datetime.now()),
         )
-        messenger.publish(message, global_config.GCP_PUBSUB_TOPIC)
+        messenger.publish(message, schedule.assigned_cluster.messenger_queue)
 
     return schedule_list
 

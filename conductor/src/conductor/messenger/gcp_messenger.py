@@ -85,6 +85,8 @@ class GCPMessenger(BaseMessenger):
         with self.subscriber:
             try:
                 streaming_pull_future.result(timeout=timeout)
-            except TimeoutError:
-                logger.error(f"GCPMessenger timeout error while pulling messages. Error: {e}")  # noqa: E501
+            except TimeoutError as e:
+                logger.error(
+                    f"GCPMessenger timeout error while pulling messages. Error: {e}"  # noqa: E501
+                )  # noqa: E501
                 streaming_pull_future.cancel()

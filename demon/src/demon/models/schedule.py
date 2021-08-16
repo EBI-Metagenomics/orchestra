@@ -17,7 +17,11 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
 
     __tablename__ = "schedule"
     job_id = reference_col("job")
-    job = relationship("JobDB", backref="schedules")
+    job = relationship("JobDB", backref="schedules", lazy=False)
+    assigned_cluster_id = reference_col("cluster")
+    assigned_cluster = relationship(
+        "ClusterDB", backref="schedules", lazy=False
+    )  # noqa: E501
     # TODO: this should be an enum
     status = Column(String, nullable=False, default="PENDING")
     started_at = Column(DateTime(timezone=True), nullable=True)
