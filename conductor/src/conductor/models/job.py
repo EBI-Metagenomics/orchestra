@@ -16,6 +16,7 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     """Job table."""
 
     __tablename__ = "job"
+    serialize_rules = ("-protagonist.jobs",)
     name = Column(String(), nullable=False)
     script = Column(String(), nullable=False)
 

@@ -16,6 +16,11 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
     """Schedule table."""
 
     __tablename__ = "schedule"
+    serialize_rules = (
+        "-cluster.schedules",
+        "-job.schedules",
+        "-protagonist.schedules",
+    )
     job_id = reference_col("job")
     job = relationship("JobDB", backref="schedules")
     assigned_cluster_id = reference_col("cluster")
