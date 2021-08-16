@@ -21,6 +21,9 @@ def create_user(user_create_list: List[UserCreate]) -> List[ProtagonistDB]:
     Args:
         user_create_list (List[UserCreate]): List of UserCreate request
 
+    Raises:
+        Exception: error
+
     Returns:
         List[ProtagonistDB]: Created user
     """
@@ -37,6 +40,9 @@ def get_users(query_params: UserGetQueryParams) -> List[ProtagonistDB]:
 
     Args:
         query_params (UserGetQueryParams): User Query params
+
+    Raises:
+        Exception: error
 
     Returns:
         List[ProtagonistDB]: List of Users
@@ -110,6 +116,9 @@ def delete_user(user_delete: UserDelete) -> ProtagonistDB:
 
     Args:
         user_delete (UserDelete): User delete request
+
+    Raises:
+        Exception: error
 
     Returns:
         ProtagonistDB: Instance of deleted user
