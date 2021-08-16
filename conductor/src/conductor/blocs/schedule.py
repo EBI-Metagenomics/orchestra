@@ -33,7 +33,7 @@ def create_schedule(
     """
     schedule_list: List[ScheduleDB] = [
         scheduler.schedule(schedule_create)
-        for schedule_create in schedule_create_list
+        for schedule_create in schedule_create_list  # noqa: E501
     ]
 
     # publish msg to demon
@@ -53,6 +53,9 @@ def get_schedules(query_params: ScheduleGetQueryParams) -> List[ScheduleDB]:
 
     Args:
         query_params (ScheduleGetQueryParams): Query params from request
+
+    Raises:
+        Exception: error
 
     Returns:
         List[Schedule]: List of schedules returned from DB
@@ -99,6 +102,9 @@ def update_schedule(schedule_update: ScheduleUpdate) -> ScheduleDB:
     Args:
         schedule_update (ScheduleUpdate): ScheduleUpdate request
 
+    Raises:
+        Exception: error
+
     Returns:
         ScheduleDB: Instance of Updated Schedule
     """
@@ -110,8 +116,8 @@ def update_schedule(schedule_update: ScheduleUpdate) -> ScheduleDB:
             schedule_list: List[ScheduleDB] = (
                 session.execute(stmt).scalars().all()
             )  # noqa: E501
-            if schedule_list is None:
-                # raise NotFound exception - 404
+            # if schedule_list is None:
+            # raise NotFound exception - 404
             if len(schedule_list) == 1:
                 schedule_update_dict = schedule_update.dict()
                 schedule_update_dict.pop("schedule_id")
@@ -132,6 +138,9 @@ def delete_schedule(schedule_delete: ScheduleDelete) -> ScheduleDB:
 
     Args:
         schedule_delete (ScheduleDelete): ScheduleDelete request
+
+    Raises:
+        Exception: error
 
     Returns:
         ScheduleDB: Instance of Deleted Schedule
