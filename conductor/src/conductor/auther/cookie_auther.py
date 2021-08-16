@@ -44,16 +44,17 @@ class CookieAuther(BaseAuther):
                     [
                         {
                             "password": hashpw(
-                                user_create["password"].encode(), gensalt()
+                                user_create.password.encode(), gensalt()
                             ),
-                            **user_create["user"],
+                            **user_create.user.dict(),
                         }  # noqa: E501
                         for user_create in user_create_list
                     ],
                     session,
                 )
                 return [
-                    {**user_create["user"]} for user_create in user_create_list
+                    {**user_create.user.dict()}
+                    for user_create in user_create_list  # noqa: E501
                 ]  # noqa: E501
             except Exception as e:
                 session.rollback()
