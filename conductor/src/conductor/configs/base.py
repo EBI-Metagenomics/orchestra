@@ -34,6 +34,7 @@ class BaseConfig(ABC, BaseSettings):
     GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
     GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
     GCP_PUBSUB_TOPIC = "test-topic"
+    GCP_PUBSUB_SUB_ID = "test-sub"
     CELERY_BROKER_URL = "redis://localhost:6379/0"
     CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
