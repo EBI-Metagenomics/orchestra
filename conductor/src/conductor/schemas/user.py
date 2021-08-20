@@ -9,7 +9,7 @@ from pydantic.types import UUID4
 class User(BaseModel):
     """User schema."""
 
-    id: Optional[UUID4]
+    user_id: Optional[UUID4]
     name: str
     organisation: str
     email: str
