@@ -1,12 +1,14 @@
 """publish commands."""
 # flake8: noqa: DAR101
 
+from datetime import datetime
 import random
 from pathlib import Path
 
 import click
 
-from conductor.utils.publish import publish_msg
+from conductor.schemas.message import Message, MessageType
+from conductor.tasks.pub_messenger import publish_messenger
 
 from logzero import logger
 
@@ -20,7 +22,12 @@ def chatter(topic: str) -> None:
     logger.info("Trying to publish a random msg...")
     try:
         msg = f"Your lucky number is: {random.randint(1, 10)}"
-        msg_id = publish_msg(msg, topic)
+        msg = Message(
+            msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
+            data={"msg": msg},
+            timestamp=datetime.now(),
+        )
+        msg_id = publish_messenger(msg, topic)
         logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {msg}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
@@ -35,7 +42,12 @@ def custom(topic: str, data: str) -> None:
     """Publish user provided string."""
     logger.info("Trying to publish a custom string...")
     try:
-        msg_id = publish_msg(data, topic)
+        msg = Message(
+            msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
+            data={"msg": data},
+            timestamp=datetime.now(),
+        )
+        msg_id = publish_messenger(msg, topic)
         logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {data}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
@@ -53,7 +65,12 @@ def job(topic: str, file: str) -> None:
         job_file_path = Path(file)
         with open(job_file_path) as job_file:
             data = job_file.read()
-            msg_id = publish_msg(data, topic)
+            msg = Message(
+                msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
+                data={"msg": data},
+                timestamp=datetime.now(),
+            )
+            msg_id = publish_messenger(msg, topic)
             logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {data}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")

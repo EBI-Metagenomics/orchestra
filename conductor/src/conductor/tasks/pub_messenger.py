@@ -7,7 +7,7 @@ from logzero import logger
 
 
 @celery_app.task
-def publish_gcp_msg(msg: Message, topic_id: str) -> None:
+def publish_messenger(msg: Message, topic_id: str) -> str:
     """Publish msgs to GCP Pub/Sub topic.
 
     Args:
@@ -16,9 +16,12 @@ def publish_gcp_msg(msg: Message, topic_id: str) -> None:
 
     Raises:
         Exception: error
+
+    Returns:
+        str: Published Msg ID
     """
     try:
-        messenger.publish(msg=msg, topic_id=topic_id)
+        return messenger.publish(msg=msg, topic_id=topic_id)
     except Exception as e:
         logger.error(e)
         raise e
