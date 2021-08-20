@@ -41,7 +41,7 @@ def create_schedule(
     for schedule in schedule_list:
         message = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-            data=schedule.to_dict(),
+            data=schedule.dict(),
             timestamp=str(datetime.now()),
         )
         messenger.publish(message, schedule.assigned_cluster.messenger_queue)
