@@ -1,15 +1,15 @@
 """Conductor create commands."""
 # flake8: noqa
 
+from pathlib import Path
 import click
 
-from conductor import global_config, DBSession
+from conductor import global_config
 from conductor.blocs.cluster import create_cluster
 from conductor.blocs.job import create_job
 from conductor.blocs.schedule import create_schedule
 from conductor.blocs.user import create_user
 from conductor.extentions import auther
-from conductor.models.protagonist import ProtagonistDB
 from conductor.schemas.api.cluster.post import ClusterCreate
 from conductor.schemas.api.job.post import JobCreate
 from conductor.schemas.api.schedule.post import ScheduleCreate
@@ -18,10 +18,6 @@ from conductor.schemas.cluster import Cluster
 from conductor.schemas.job import Job
 from conductor.schemas.schedule import Schedule
 from conductor.schemas.user import User
-
-from logzero import logger
-
-from sqlalchemy import select
 
 
 @click.command()
@@ -62,7 +58,46 @@ def cluster(name, cluster_type, cluster_caps, messenger, queue) -> None:
     )
 
     created_cluster_list = create_cluster([cluster_create_request])
-    click.secho(f"User successfully created!\n\n{created_cluster_list[0]}", fg="green")
+    click.secho(
+        f"Cluster successfully created!\n\n{created_cluster_list[0]}", fg="green"
+    )
+
+
+@click.command()
+@click.option("--name", required=True, help="name of the job")
+@click.option("--script", required=True, help="path of the script")
+def job(name, script) -> None:
+    """Create cluster."""
+    # fetch a user first
+    user_access_token = global_config.USER_ACCESS_TOKEN
+    user = auther.extract_user_from_token(user_access_token)
+    script_path = Path(script)
+    with open(script_path) as script_file:
+        script_content = script_file.read()
+    job_create_request = JobCreate(
+        job=Job(name=name, script=script_content),
+        user=user,
+    )
+    created_job_list = create_job([job_create_request])
+    click.secho(f"Job successfully created!\n\n{created_job_list[0]}", fg="green")
+
+
+@click.command()
+@click.option("--job_id", required=True, help="id of the job")
+def schedule(job_id) -> None:
+    """Create cluster."""
+    # fetch a user first
+    user_access_token = global_config.USER_ACCESS_TOKEN
+    user = auther.extract_user_from_token(user_access_token)
+
+    schedule_create_request = ScheduleCreate(
+        schedule=Schedule(job_id=job_id, user_id=user.user_id),
+        user=user,
+    )
+    created_schedule_list = create_schedule([schedule_create_request])
+    click.secho(
+        f"Schedule successfully created!\n\n{created_schedule_list[0]}", fg="green"
+    )
 
 
 @click.group()
@@ -72,3 +107,6 @@ def create() -> None:
 
 
 create.add_command(user)
+create.add_command(cluster)
+create.add_command(job)
+create.add_command(schedule)
