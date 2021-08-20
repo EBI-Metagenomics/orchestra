@@ -1,6 +1,7 @@
 """Task to publish msgs to GCP Pub/Sub topic."""
 
-from conductor.extentions import celery_app, messenger
+from conductor import celery_app
+from conductor.extentions import messenger
 from conductor.schemas.message import Message
 
 from logzero import logger

@@ -45,7 +45,7 @@ def create_schedule(
             data=schedule.dict(),
             timestamp=str(datetime.now()),
         )
-        publish_messenger.s(message, schedule.messenger_queue)
+        publish_messenger.delay(message, schedule.messenger_queue)
 
     return schedule_list
 
