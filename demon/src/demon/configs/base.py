@@ -20,6 +20,7 @@ class BaseConfig(ABC, BaseSettings):
     DB_PORT: int = 5432
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MESSENGER = "GCP"
+    CLUSTER = "SLURM"
     GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
     GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
     GCP_PUBSUB_TOPIC = "test-topic"
