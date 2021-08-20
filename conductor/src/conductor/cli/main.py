@@ -28,7 +28,7 @@ def login(email, password) -> None:
         click.secho("Login failed!", fg="red")
     else:
         click.secho(f"Your token: {login_tuple[1]}")
-        click.secho(f"Adding it to your env...")
+        click.secho(f"Add it to your env\n\n export USER_ACCESS_TOKEN={login_tuple[1]}")
 
 
 @click.group()
