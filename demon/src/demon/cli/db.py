@@ -3,7 +3,7 @@
 import click
 
 from demon.extentions import db_engine
-from demon.schemas.meta.mixins import DBModel
+from demon.models.meta.mixins import DBModel
 
 
 @click.command()
