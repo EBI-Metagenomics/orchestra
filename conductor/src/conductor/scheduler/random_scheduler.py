@@ -57,7 +57,9 @@ class RandomScheduler(BaseScheduler):
         )  # noqa: E501
 
         # Add schedule to DB
-        schedule_dict = schedule_create.schedule.dict(exclude={"schedule_id"})
+        schedule_dict = schedule_create.schedule.dict(
+            exclude={"schedule_id", "messenger", "messenger_queue"}
+        )
         user_id = schedule_dict.pop("user_id")
         try:
             schedule = ScheduleDB(
