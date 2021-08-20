@@ -1,20 +1,24 @@
 """Task to publish msgs to GCP Pub/Sub topic."""
 
-from conductor.extentions import celery_app
-from conductor.utils.publish import publish_msg
+from conductor.extentions import celery_app, messenger
+from conductor.schemas.message import Message
 
 from logzero import logger
 
 
 @celery_app.task
-def publish_gcp_msg(msg: str) -> None:
+def publish_gcp_msg(msg: Message, topic_id: str) -> None:
     """Publish msgs to GCP Pub/Sub topic.
 
     Args:
-        msg (str): msg to publish
+        msg (Message): msg to publish
+        topic_id (str): Id of the topic
+
+    Raises:
+        Exception: error
     """
     try:
-        publish_msg(msg=msg)
+        messenger.publish(msg=msg, topic_id=topic_id)
     except Exception as e:
         logger.error(e)
         raise e

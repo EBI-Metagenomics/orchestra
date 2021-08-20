@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List
 
 from conductor import DBSession
-from conductor.extentions import messenger, scheduler
+from conductor.extentions import scheduler
 from conductor.models.schedule import ScheduleDB
 from conductor.schemas.api.schedule.delete import ScheduleDelete
 from conductor.schemas.api.schedule.get import (
@@ -15,6 +15,7 @@ from conductor.schemas.api.schedule.post import ScheduleCreate
 from conductor.schemas.api.schedule.put import ScheduleUpdate
 from conductor.schemas.message import Message, MessageType
 from conductor.schemas.schedule import Schedule
+from conductor.tasks.pub_gcp import publish_gcp_msg
 
 from logzero import logger
 
@@ -44,7 +45,7 @@ def create_schedule(
             data=schedule.dict(),
             timestamp=str(datetime.now()),
         )
-        messenger.publish(message, schedule.messenger_queue)
+        publish_gcp_msg.s(message, schedule.messenger_queue)
 
     return schedule_list
 
