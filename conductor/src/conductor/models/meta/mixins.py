@@ -44,7 +44,7 @@ class CRUDMixin(object):
         return instance.save()
 
     @classmethod
-    def bulk_create(cls: Any, list: List[Any], DBSession: Session) -> Any:
+    def bulk_create(cls: Any, obj_list: List[Any], DBSession: Session) -> Any:
         """Create a new records and save them to the database.
 
         Args:
@@ -54,10 +54,7 @@ class CRUDMixin(object):
         Returns:
             Any: True if scuccess
         """
-        instance_list: List[Any] = []
-        for item in list:
-            instance_list.append(cls(**item))
-        DBSession.bulk_save_objects(instance_list)
+        DBSession.bulk_save_objects(obj_list, return_defaults=True)
         DBSession.commit()
         return True
 
