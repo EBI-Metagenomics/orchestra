@@ -3,12 +3,17 @@
 import json
 from typing import Callable, Optional
 
+from demon import DBSession
 from demon.configs.base import BaseConfig
 from demon.messenger.base import BaseMessenger
+from demon.models.job import JobDB
+from demon.schemas.job import Job
 from demon.schemas.message import Message
+
 
 from google.auth import jwt
 from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
 
 
 class GCPMessenger(BaseMessenger):
@@ -85,3 +90,16 @@ class GCPMessenger(BaseMessenger):
                 streaming_pull_future.result(timeout=timeout)
             except TimeoutError:
                 streaming_pull_future.cancel()
+
+    def save_job_msg(self: "GCPMessenger", msg: GCPMessage) -> None:
+        """Save jobs to DB from Pub/Sub msgs.
+
+        Args:
+            msg (GCPMessage): Pub/Sub Msg
+        """
+        parsed_msg = Message.parse_raw(msg.data)
+        job = Job(**parsed_msg.data)
+        jobdb = JobDB(id=job.job_id, **job.dict(exclude={"job_id"}))
+        with DBSession() as session:
+            jobdb.save(session)
+        msg.ack()

@@ -1,7 +1,7 @@
 """Base messenger class."""
 
-from abc import ABC, abstractclassmethod
-from typing import Callable, Optional
+from abc import ABC, abstractclassmethod, abstractmethod
+from typing import Any, Callable, Optional
 
 from demon.schemas.message import Message
 
@@ -34,5 +34,14 @@ class BaseMessenger(ABC):
             callback (Callable): Callback to invoke when a msg is received
             sub_id (str): Id of the topic.
             timeout (Union[float, None]): Time to wait for msgs. Defaults to None. # noqa: E501
+        """
+        pass
+
+    @abstractmethod
+    def save_job_msg(self: "BaseMessenger", msg: Any) -> None:
+        """Save jobs to DB from Pub/Sub msgs.
+
+        Args:
+            msg (Any): Pub/Sub Msg
         """
         pass
