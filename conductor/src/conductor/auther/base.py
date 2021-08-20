@@ -3,7 +3,6 @@
 from abc import ABC, abstractclassmethod
 from typing import List, Optional, Tuple
 
-from conductor.models.protagonist import ProtagonistDB
 from conductor.schemas.api.auth.post import AuthUserCreds
 from conductor.schemas.api.user.post import UserCreate
 from conductor.schemas.user import User
@@ -17,7 +16,7 @@ class BaseAuther(ABC):
     @abstractclassmethod
     def register_user(
         self: "BaseAuther", user_create_list: List[UserCreate]
-    ) -> List[ProtagonistDB]:  # noqa: E501
+    ) -> List[User]:  # noqa: E501
         """Register user.
 
         Args:
@@ -27,14 +26,14 @@ class BaseAuther(ABC):
             Exception: error  # noqa: DAR402
 
         Returns:
-            List(ProtagonistDB): List of registered users  # noqa: DAR202
+            List(User): List of registered users  # noqa: DAR202
         """
         pass
 
     @abstractclassmethod
     def login_user(
         self: "BaseAuther", user_creds: AuthUserCreds
-    ) -> Optional[Tuple[ProtagonistDB, str]]:
+    ) -> Optional[Tuple[User, str]]:
         """Login user.
 
         Args:
@@ -44,7 +43,7 @@ class BaseAuther(ABC):
             Exception: error  # noqa: DAR402
 
         Returns:
-            Optional[Tuple[ProtagonistDB, str]]: user and cookie tuple or None
+            Optional[Tuple[User, str]]: user and cookie tuple or None
         """
         pass
 
@@ -56,19 +55,19 @@ class BaseAuther(ABC):
         pass
 
     @abstractclassmethod
-    def extract_user_from_flask_req(
-        self: "BaseAuther", request: Request
-    ) -> Optional[ProtagonistDB]:  # noqa: E501
-        """Extract user from flask request.
+    def extract_user_from_token(
+        self: "BaseAuther", token: str
+    ) -> Optional[User]:  # noqa: E501
+        """Extract user from token.
 
         Args:
-            request (Request): Instance of flask request
+            token (str): user access token
 
         Raises:
             Exception: error  # noqa: DAR402
 
         Returns:
-            Optional[ProtagonistDB]: Instance of ProtagonistDB or None
+            Optional[User]: Instance of User or None
         """
         pass
 

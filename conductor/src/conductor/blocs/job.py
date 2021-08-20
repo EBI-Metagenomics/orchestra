@@ -8,13 +8,14 @@ from conductor.schemas.api.job.delete import JobDelete
 from conductor.schemas.api.job.get import JobGetQueryParams, JobQueryType
 from conductor.schemas.api.job.post import JobCreate
 from conductor.schemas.api.job.put import JobUpdate
+from conductor.schemas.job import Job
 
 from logzero import logger
 
 from sqlalchemy import select
 
 
-def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
+def create_job(job_create_list: List[JobCreate]) -> List[Job]:
     """Create jobs in the DB from JobCreate request.
 
     Args:
@@ -24,25 +25,29 @@ def create_job(job_create_list: List[JobCreate]) -> List[JobDB]:
         Exception: error
 
     Returns:
-        List[JobDB]: List of created clusters
+        List[Job]: List of created clusters
     """
     with DBSession() as session:
         try:
             job_db_create_list: List[JobDB] = [
                 JobDB(
-                    protagonist_id=job_create.user.id, **job_create.job.dict()
-                ).to_dict()  # noqa: E501
-                for job_create in job_create_list  # noqa: E501
+                    protagonist_id=job_create.user.user_id,
+                    **job_create.job.dict(exclude={"job_id"}),  # noqa: E501
+                )
+                for job_create in job_create_list
             ]
             JobDB.bulk_create(job_db_create_list, session)
-            return job_db_create_list
+            return [
+                Job(job_id=obj.id, **obj.to_dict())
+                for obj in job_db_create_list  # noqa: E501
+            ]
         except Exception as e:
             session.rollback()
             logger.error(f"Unable to create jobs: {e}")
             raise e
 
 
-def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
+def get_jobs(query_params: JobGetQueryParams) -> List[Job]:
     """Query DB for jobs.
 
     Args:
@@ -52,7 +57,7 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
         Exception: error
 
     Returns:
-        List[JobDB]: List of jobs returned from DB
+        List[Job]: List of jobs returned from DB
     """
     job_list: List[JobDB] = []
 
@@ -72,7 +77,7 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
     with DBSession() as session:
         try:
             job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
-            return job_list
+            return [Job(job_id=obj.id, **obj.to_dict()) for obj in job_list]
         except Exception as e:
             session.rollback()
             logger.error(f"Unable to fetch jobs due to {e}")
@@ -81,7 +86,7 @@ def get_jobs(query_params: JobGetQueryParams) -> List[JobDB]:
     return job_list
 
 
-def update_job(job_update: JobUpdate) -> JobDB:
+def update_job(job_update: JobUpdate) -> Job:
     """Update job in the DB from JobUpdate request.
 
     Args:
@@ -91,7 +96,7 @@ def update_job(job_update: JobUpdate) -> JobDB:
         Exception: error
 
     Returns:
-        JobDB: Instance of Updated Job
+        Job: Instance of Updated Job
     """
     stmt = select(JobDB).where(JobDB.id == job_update.job_id)
     with DBSession() as session:
@@ -103,7 +108,7 @@ def update_job(job_update: JobUpdate) -> JobDB:
                 updated_job = job_list[0].update(
                     session, **job_update.dict()
                 )  # noqa: E501
-                return updated_job
+                return Job(job_id=updated_job.id, **updated_job.to_dict())
             if len(job_list) == 0:
                 # TODO: Raise not found
                 pass
@@ -115,7 +120,7 @@ def update_job(job_update: JobUpdate) -> JobDB:
             raise e
 
 
-def delete_job(job_delete: JobDelete) -> JobDB:
+def delete_job(job_delete: JobDelete) -> Job:
     """Delete job in the DB from JobDelete request.
 
     Args:
@@ -125,7 +130,7 @@ def delete_job(job_delete: JobDelete) -> JobDB:
         Exception: error
 
     Returns:
-        JobDB: Instance of Deleted Job
+        Job: Instance of Deleted Job
     """
     stmt = select(JobDB).where(JobDB.id == job_delete.job_id)
     with DBSession() as session:
@@ -133,7 +138,7 @@ def delete_job(job_delete: JobDelete) -> JobDB:
             job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
             if len(job_list) == 1:
                 deleted_job = job_list[0].delete(session)
-                return deleted_job
+                return Job(job_id=deleted_job.id, **deleted_job.to_dict())
             if len(job_list) == 0:
                 # TODO: Raise not found
                 pass

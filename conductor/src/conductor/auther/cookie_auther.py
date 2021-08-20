@@ -26,7 +26,7 @@ class CookieAuther(BaseAuther):
 
     def register_user(
         self: "BaseAuther", user_create_list: List[UserCreate]
-    ) -> ProtagonistDB:
+    ) -> List[User]:
         """Register user.
 
         Args:
@@ -36,26 +36,24 @@ class CookieAuther(BaseAuther):
             Exception: error
 
         Returns:
-            List(ProtagonistDB): List of registered users
+            List(User): List of registered users
         """
         with DBSession() as session:
             try:
-                ProtagonistDB.bulk_create(
-                    [
-                        {
-                            "password": hashpw(
-                                user_create.password.encode(), gensalt()
-                            ),
-                            **user_create.user.dict(),
-                        }  # noqa: E501
-                        for user_create in user_create_list
-                    ],
-                    session,
-                )
+                protagonist_objs = [
+                    ProtagonistDB(
+                        password=hashpw(
+                            user_create.password.encode(), gensalt()
+                        ),  # noqa:E501
+                        **user_create.user.dict(exclude={"user_id"}),
+                    )
+                    for user_create in user_create_list
+                ]
+                ProtagonistDB.bulk_create(protagonist_objs, session)
                 return [
-                    {**user_create.user.dict()}
-                    for user_create in user_create_list  # noqa: E501
-                ]  # noqa: E501
+                    User(user_id=obj.id, **obj.to_dict())
+                    for obj in protagonist_objs  # noqa: E501
+                ]
             except Exception as e:
                 session.rollback()
                 logger.error(f"Unable to register users due to {e}")
@@ -63,7 +61,7 @@ class CookieAuther(BaseAuther):
 
     def login_user(
         self: "BaseAuther", user_creds: AuthUserCreds
-    ) -> Optional[Tuple[ProtagonistDB, str]]:
+    ) -> Optional[Tuple[User, str]]:
         """Login user.
 
         Args:
@@ -73,7 +71,7 @@ class CookieAuther(BaseAuther):
             Exception: error
 
         Returns:
-            Optional[Tuple[ProtagonistDB, str]]: Tuple containing user and cookie or None  # noqa: E501
+            Optional[Tuple[User, str]]: Tuple containing user and cookie or None  # noqa: E501
         """
         with DBSession() as session:
             try:
@@ -106,7 +104,12 @@ class CookieAuther(BaseAuther):
                         },
                         global_config.SECRET_KEY,
                     )
-                    return (user_list[0], user_cookie)
+                    return (
+                        User(
+                            user_id=user_list[0].id, **user_list[0].to_dict()
+                        ),  # noqa: E501
+                        user_cookie,
+                    )
                 else:
                     return None
             except Exception as e:
@@ -118,22 +121,22 @@ class CookieAuther(BaseAuther):
         """Logout user."""
         pass
 
-    def extract_user_from_flask_req(
-        self: "BaseAuther", request: Request
-    ) -> Optional[ProtagonistDB]:
-        """Extract user from flask request.
+    def extract_user_from_token(
+        self: "BaseAuther", token: str
+    ) -> Optional[User]:  # noqa: E501
+        """Extract user from token.
 
         Args:
-            request (Request): Instance of flask request
+            token (str): user access token
 
         Raises:
             Exception: error
 
         Returns:
-            Optional[ProtagonistDB]: Instance of ProtagonistDB or None
+            Optional[User]: Instance of User or None
         """
         with DBSession() as session:
-            user_cookie_encoded = request.cookies.get(global_config.FLASK_APP)
+            user_cookie_encoded = token
             # return early if cookie not found in request
             if user_cookie_encoded is None:
                 return None
@@ -160,7 +163,7 @@ class CookieAuther(BaseAuther):
             if len(user_list) == 0:
                 return None
             else:
-                return user_list[0]
+                return User(user_id=user_list[0].id, **user_list[0].to_dict())
 
     def authorize_user(
         self: "BaseAuther", user: User, request: Request
