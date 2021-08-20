@@ -22,4 +22,4 @@ def get_cluster() -> BaseCluster:
     Returns:
         BaseCluster: An instance of a class that inherits BaseCluster
     """
-    return ClusterEnum[global_config.Cluster].value()
+    return ClusterEnum[global_config.CLUSTER].value()
