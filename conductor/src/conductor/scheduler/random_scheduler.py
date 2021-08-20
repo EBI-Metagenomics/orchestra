@@ -8,6 +8,7 @@ from conductor.models.cluster import ClusterDB
 from conductor.models.schedule import ScheduleDB
 from conductor.scheduler.base import BaseScheduler
 from conductor.schemas.api.schedule.post import ScheduleCreate
+from conductor.schemas.schedule import Schedule
 
 from logzero import logger
 
@@ -19,7 +20,7 @@ class RandomScheduler(BaseScheduler):
 
     def schedule(
         self: "BaseScheduler", schedule_create: ScheduleCreate
-    ) -> ScheduleDB:  # noqa: E501
+    ) -> Schedule:  # noqa: E501
         """Create schedule from schedule request.
 
         Args:
@@ -29,7 +30,7 @@ class RandomScheduler(BaseScheduler):
             Exception: No cluster available
 
         Returns:
-            ScheduleDB: Instance of ScheduleDB
+            Schedule: Instance of Created Schedule
         """
         # fetch available clusters
         cluster_list: List[ClusterDB] = []
@@ -52,7 +53,7 @@ class RandomScheduler(BaseScheduler):
         schedule_create.schedule.assigned_cluster_id = selected_cluster.id
 
         # Add schedule to DB
-        schedule_dict = schedule_create.schedule.dict()
+        schedule_dict = schedule_create.schedule.dict(exclude={"schedule_id"})
         user_id = schedule_dict.pop("user_id")
         try:
             schedule = ScheduleDB(
@@ -60,7 +61,7 @@ class RandomScheduler(BaseScheduler):
                 **schedule_dict,
             )
             schedule.save(session)
-            return schedule
+            return Schedule(schedule_id=schedule.id, **schedule.to_dict())
         except Exception as e:
             logger.error(f"Unable to save schedule to DB: {e}")
             raise e

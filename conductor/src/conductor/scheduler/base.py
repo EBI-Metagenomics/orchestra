@@ -2,8 +2,8 @@
 
 from abc import ABC, abstractclassmethod
 
-from conductor.models.schedule import ScheduleDB
 from conductor.schemas.api.schedule.post import ScheduleCreate
+from conductor.schemas.schedule import Schedule
 
 
 class BaseScheduler(ABC):
@@ -12,13 +12,13 @@ class BaseScheduler(ABC):
     @abstractclassmethod
     def schedule(
         self: "BaseScheduler", schedule_create: ScheduleCreate
-    ) -> ScheduleDB:  # noqa: E501
+    ) -> Schedule:  # noqa: E501
         """Create schedule from schedule request.
 
         Args:
             schedule_create (ScheduleCreate): Schedule create request
 
         Returns:
-            ScheduleDB: Instance of ScheduleDB
+            Schedule: Instance of Schedule
         """
-        return ScheduleDB()
+        pass
