@@ -2,7 +2,7 @@
 
 import click
 
-from demon.extentions import db_engine
+from demon import db_engine
 from demon.models.meta.mixins import DBModel
 
 
