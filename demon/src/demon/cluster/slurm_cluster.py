@@ -1,37 +1,63 @@
 """Slurm interface."""
 
+from pathlib import Path
+from os import makedirs
 from typing import List
 
-from demon.clusters.base import BaseCluster
-from demon.schemas.jobs.base import JobStatus
+from demon.cluster.base import BaseCluster
+from demon.schemas.job import Job
 from demon.utils.command import call_cli
+
+from xdg import xdg_data_home
 
 
 class SlurmCluster(BaseCluster):
     """Slurm interface."""
 
-    def submit_job(self: "BaseCluster", job_file: str) -> str:
+    def prepare_job(self: "SlurmCluster", job: Job) -> None:
+        """Prepare job for submission.
+
+        Args:
+            job (Job): Job object
+        """
+        job_data_path: Path = (
+            xdg_data_home() / "orchestra" / "demon" / "jobs" / job.job_id
+        )  # noqa: E501
+        makedirs(job_data_path, exist_ok=True)
+        with open(job_data_path.joinpath("start.sh"), "w+") as f:
+            f.write(job.script)
+
+    def submit_job(self: "SlurmCluster", job: Job) -> str:
         """Submit job to the cluster.
 
         Args:
-            job_file (str): Path to job script
+            job (Job): Job Object
 
         Returns:
             str: Job ID
         """
-        cmd_args_list = ["sbatch", job_file]
+        self.prepare_job(job)
+        job_script_path: Path = (
+            xdg_data_home()
+            / "orchestra"
+            / "demon"
+            / "jobs"
+            / job.job_id
+            / "start.sh"  # noqa: E501
+        )
+        cmd_args_list = ["sbatch", job_script_path.absolute()]
         output = call_cli(cmd_args_list)
         submit_job_id = output.split(" ")[-1]
         return submit_job_id
 
-    def get_job_status(self: "BaseCluster", job_id: str) -> List[JobStatus]:
+    def get_job_status(self: "SlurmCluster", job_id: str) -> List[str]:
         """Get status of a job by Job.
 
         Args:
             job_id (str): ID of the job
 
         Returns:
-            List[JobStatus]: List of status of the jobs
+            List[str]: List of status of the jobs
         """
         cmd_args_list = [
             "sacct",
@@ -43,7 +69,5 @@ class SlurmCluster(BaseCluster):
             job_id,
         ]
         output = call_cli(cmd_args_list)
-        job_status_list = [
-            JobStatus(status) for status in output.strip().split("\n")[2:]
-        ]
+        job_status_list = [status for status in output.strip().split("\n")[2:]]
         return job_status_list
