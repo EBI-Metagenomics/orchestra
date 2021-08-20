@@ -25,21 +25,29 @@ class GCPMessenger(BaseMessenger):
         Args:
             config (BaseConfig): Config to initialize messenger
         """
-        self.audience = (
+        self.pub_audience = (
             "https://pubsub.googleapis.com/google.pubsub.v1.Publisher"  # noqa: E501
+        )
+        self.sub_audience = (
+            "https://pubsub.googleapis.com/google.pubsub.v1.Subscriber"  # noqa: E501
         )
         self.service_account_info = json.load(
             open(config.GOOGLE_APPLICATION_CREDENTIALS)
         )  # noqa: E501
-        self.credentials = jwt.Credentials.from_service_account_info(
-            self.service_account_info, audience=self.audience
+        self.pub_credentials = jwt.Credentials.from_service_account_info(
+            self.service_account_info, audience=self.pub_audience
         )
+
+        self.sub_credentials = jwt.Credentials.from_service_account_info(
+            self.service_account_info, audience=self.sub_audience
+        )
+
         self.publisher = pubsub_v1.PublisherClient(
-            credentials=self.credentials
+            credentials=self.pub_credentials
         )  # noqa: E501
 
         self.subscriber = pubsub_v1.SubscriberClient(
-            credentials=self.credentials
+            credentials=self.sub_credentials
         )  # noqa: E501
         self.project_id = config.GCP_PROJECT_ID
 
