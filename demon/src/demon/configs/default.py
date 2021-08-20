@@ -2,29 +2,9 @@
 
 from demon.configs.base import BaseConfig
 
-from pydantic import BaseSettings
 
-from xdg import xdg_config_home
-
-
-class DefaultConfig(BaseConfig, BaseSettings):
+class DefaultConfig(BaseConfig):
     """Default conductor config."""
-
-    HOME: str
-    DB_TYPE: str = "postgresql"
-    DB_NAME: str = "demon"
-    DB_URI: str = None
-    DB_USER: str = "postgres"
-    DB_PASS: str = "postgres"
-    DB_HOST: str = "localhost"
-    DB_PORT: int = 5432
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
-    GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
-    GCP_PUBSUB_TOPIC = "test-topic"
-    GCP_PUBSUB_SUB_ID = "test-sub"
-    CELERY_BROKER_URL = "redis://localhost:6379/0"
-    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
     def get_sql_db_uri(self: "DefaultConfig") -> str:
         """Get uri of the sql database.
@@ -45,8 +25,3 @@ class DefaultConfig(BaseConfig, BaseSettings):
             return self.DB_URI
         else:
             return self.get_sql_db_uri()
-
-    class Config:
-        """Config for the BaseConfig class."""
-
-        env_file = xdg_config_home() / ("orchestra") / ("demon.env")
