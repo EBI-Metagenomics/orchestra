@@ -2,38 +2,9 @@
 
 from conductor.configs.base import BaseConfig
 
-from pydantic import BaseSettings
 
-from xdg import xdg_config_home
-
-
-class DefaultConfig(BaseConfig, BaseSettings):
+class DefaultConfig(BaseConfig):
     """Default conductor config."""
-
-    HOME: str
-    FLASK_APP: str = "conductor"
-    FLASK_HOST: str = "localhost"
-    FLASK_PORT: int = 9991
-    FLASK_ENV: str = "development"
-    DB_TYPE: str = "postgresql"
-    DB_NAME: str = "conductor"
-    DB_URI: str = None
-    DB_USER: str = "postgres"
-    DB_PASS: str = "postgres"
-    DB_HOST: str = "localhost"
-    DB_PORT: int = 5432
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = "ADD_A_RANDOM_KEY_HERE"  # noqa: S105
-    ACCESS_TOKEN_EXPIRE_MINUTES = 1440
-    AUTHER = "COOKIE"
-    MESSENGER = "GCP"
-    SCHEDULER = "RANDOM"
-    OBSERVER = "ELASTIC"
-    GOOGLE_APPLICATION_CREDENTIALS = "./keys.json"
-    GCP_PROJECT_ID = "YOUR_GCP_PROJECT_ID"
-    GCP_PUBSUB_TOPIC = "test-topic"
-    CELERY_BROKER_URL = "redis://localhost:6379/0"
-    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
     def get_sql_db_uri(self: "DefaultConfig") -> str:
         """Get uri of the sql database.
@@ -54,8 +25,3 @@ class DefaultConfig(BaseConfig, BaseSettings):
             return self.DB_URI
         else:
             return self.get_sql_db_uri()
-
-    class Config:
-        """Config for the BaseConfig class."""
-
-        env_file = xdg_config_home() / ("orchestra") / ("conductor.env")
