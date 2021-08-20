@@ -1,22 +1,18 @@
 """Base messenger class."""
 
 from abc import ABC, abstractclassmethod
-from typing import Callable, Optional
-
-from conductor.schemas.message import Message
+from typing import Callable, Dict, Optional
 
 
 class BaseMessenger(ABC):
     """Base messenger class."""
 
     @abstractclassmethod
-    def publish(
-        self: "BaseMessenger", msg: Message, topic_id: str
-    ) -> str:  # noqa: E501
+    def publish(self: "BaseMessenger", msg: Dict, topic_id: str) -> str:  # noqa: E501
         """Publish a msg.
 
         Args:
-            msg (Message): Message to publish
+            msg (Dict): Message to publish
             topic_id (str): Id of the topic
         """
         pass

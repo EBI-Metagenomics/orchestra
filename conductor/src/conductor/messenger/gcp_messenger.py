@@ -1,11 +1,10 @@
 """GCP implementation of messenger."""
 
 import json
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional
 
 from conductor.configs.base import BaseConfig
 from conductor.messenger.base import BaseMessenger
-from conductor.schemas.message import Message
 
 from google.auth import jwt
 from google.cloud import pubsub_v1
@@ -48,11 +47,11 @@ class GCPMessenger(BaseMessenger):
         )  # noqa: E501
         self.project_id = config.GCP_PROJECT_ID
 
-    def publish(self: "GCPMessenger", msg: Message, topic_id: str) -> str:
+    def publish(self: "GCPMessenger", msg: Dict, topic_id: str) -> str:
         """Publish msg on the GCP Pub/Sub queue.
 
         Args:
-            msg (Message): Messsag to publish
+            msg (Dict): Messsag to publish
             topic_id (str): Id of the topic
 
         Returns:
@@ -61,7 +60,8 @@ class GCPMessenger(BaseMessenger):
         topic_path = self.publisher.topic_path(self.project_id, topic_id)
 
         # Msg must be a bytestring
-        msg = msg.json().encode("utf-8")
+
+        msg = json.dumps(msg).encode("utf-8")
 
         # Wait for the returned future
         future = self.publisher.publish(topic_path, msg)

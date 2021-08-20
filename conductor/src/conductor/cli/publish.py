@@ -27,7 +27,7 @@ def chatter(topic: str) -> None:
             data={"msg": msg},
             timestamp=datetime.now(),
         )
-        msg_id = publish_messenger.delay(msg, topic)
+        msg_id = publish_messenger.delay(msg.dict(), topic)
         logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {msg}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
@@ -47,7 +47,7 @@ def custom(topic: str, data: str) -> None:
             data={"msg": data},
             timestamp=datetime.now(),
         )
-        msg_id = publish_messenger.delay(msg, topic)
+        msg_id = publish_messenger.delay(msg.dict(), topic)
         logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {data}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
@@ -70,7 +70,7 @@ def job(topic: str, file: str) -> None:
                 data={"msg": data},
                 timestamp=datetime.now(),
             )
-            msg_id = publish_messenger.delay(msg, topic)
+            msg_id = publish_messenger.delay(msg.dict(), topic)
             logger.info(f"\nSuccess!\nMsg ID: {msg_id}\nMsg: {data}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
