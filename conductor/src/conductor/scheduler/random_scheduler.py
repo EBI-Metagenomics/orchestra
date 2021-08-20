@@ -61,7 +61,9 @@ class RandomScheduler(BaseScheduler):
                 **schedule_dict,
             )
             schedule.save(session)
-            return Schedule(schedule_id=schedule.id, **schedule.to_dict())
+            return Schedule(
+                schedule_id=schedule.id, user_id=user_id, **schedule.to_dict()
+            )
         except Exception as e:
             logger.error(f"Unable to save schedule to DB: {e}")
             raise e

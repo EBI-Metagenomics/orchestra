@@ -14,6 +14,7 @@ from conductor.schemas.api.schedule.get import (
 from conductor.schemas.api.schedule.post import ScheduleCreate
 from conductor.schemas.api.schedule.put import ScheduleUpdate
 from conductor.schemas.message import Message, MessageType
+from conductor.schemas.schedule import Schedule
 
 from logzero import logger
 
@@ -22,16 +23,16 @@ from sqlalchemy import select
 
 def create_schedule(
     schedule_create_list: List[ScheduleCreate],
-) -> List[ScheduleDB]:  # noqa: E501
+) -> List[Schedule]:  # noqa: E501
     """Create schedules and save to DB from ScheduleCreate requests.
 
     Args:
         schedule_create_list (List[ScheduleCreate]): List of ScheduleCreate request  # noqa: E501
 
     Returns:
-        List[ScheduleDB]: Instance of Schedule from DB
+        List[Schedule]: Instance of Schedule from DB
     """
-    schedule_list: List[ScheduleDB] = [
+    schedule_list: List[Schedule] = [
         scheduler.schedule(schedule_create)
         for schedule_create in schedule_create_list  # noqa: E501
     ]
