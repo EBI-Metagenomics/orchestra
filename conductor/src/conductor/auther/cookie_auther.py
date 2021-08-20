@@ -143,10 +143,13 @@ class CookieAuther(BaseAuther):
             # try to decode the cookie
             try:
                 user_cookie_decoded = jwt.decode(
-                    user_cookie_encoded, global_config.SECRET_KEY
+                    user_cookie_encoded,
+                    global_config.SECRET_KEY,
+                    algorithms=["HS256"],  # noqa: E501
                 )
-            except jwt.DecodeError:
+            except jwt.DecodeError as e:
                 # return none if failed to decode cookie
+                logger.error(f"Unable to decode cookie due to: {e}")
                 return None
             except Exception as e:
                 logger.error(f"Unable to decode cookie due to: {e}")
