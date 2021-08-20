@@ -103,3 +103,12 @@ class GCPMessenger(BaseMessenger):
         with DBSession() as session:
             jobdb.save(session)
         msg.ack()
+
+    def echo_msg(self: "GCPMessenger", msg: Message) -> None:
+        """Echo msgs to stdout.
+
+        Args:
+            msg (Message): Message to echo
+        """
+        print(msg)
+        msg.ack()

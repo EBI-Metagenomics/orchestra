@@ -45,3 +45,12 @@ class BaseMessenger(ABC):
             msg (Any): Pub/Sub Msg
         """
         pass
+
+    @abstractmethod
+    def echo_msg(self: "BaseMessenger", msg: Message) -> None:
+        """Echo msgs to stdout.
+
+        Args:
+            msg (Message): Message to echo
+        """
+        pass

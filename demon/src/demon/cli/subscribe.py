@@ -6,41 +6,34 @@ from pathlib import Path
 
 import click
 
-from demon.utils.slurm_callbacks import save_job_from_msg, submit_job_from_msg
-from demon.utils.subscribe import echo_msg, subscribe_topic
+from demon import global_config
+from demon.extentions import messenger
 
 from logzero import logger
 
 
 @click.command()
-@click.option("--id", default="test-sub", help="Subscription Id")
-def echo(id: str) -> None:
+@click.option(
+    "--sub_id", default=global_config.GCP_PUBSUB_SUB_ID, help="Subscription Id"
+)
+def echo(sub_id: str) -> None:
     """subscribe and echo msgs"""
     logger.info("Trying to subscribe and read messages...")
     try:
-        subscribe_topic(sub_id=id, callback=echo_msg)
+        messenger.subscribe(callback=messenger.echo_msg, sub_id=sub_id)
     except Exception as e:
         logger.error(f"failed to subscribe: {e}")
 
 
 @click.command()
-@click.option("--id", default="test-sub", help="Subscription Id")
-def slurm(id: str) -> None:
-    """subscribe and submit msgs to slurm"""
-    logger.info("Trying to subscribe and read messages...")
-    try:
-        subscribe_topic(sub_id=id, callback=submit_job_from_msg)
-    except Exception as e:
-        logger.error(f"failed to subscribe: {e}")
-
-
-@click.command()
-@click.option("--id", default="test-sub", help="Subscription Id")
-def slurmdb(id: str) -> None:
+@click.option(
+    "--sub_id", default=global_config.GCP_PUBSUB_SUB_ID, help="Subscription Id"
+)
+def job(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")
     try:
-        subscribe_topic(sub_id=id, callback=save_job_from_msg)
+        messenger.subscribe(callback=messenger.save_job_msg, sub_id=sub_id)
     except Exception as e:
         logger.error(f"failed to subscribe: {e}")
 
@@ -52,5 +45,4 @@ def sub() -> None:
 
 
 sub.add_command(echo)
-sub.add_command(slurm)
-sub.add_command(slurmdb)
+sub.add_command(job)
