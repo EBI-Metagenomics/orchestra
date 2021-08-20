@@ -17,6 +17,7 @@ class GUID(TypeDecorator):
     """
 
     impl = CHAR
+    cache_ok = True
 
     def load_dialect_impl(self: "GUID", dialect: Any) -> Any:
         """Return column type to create based on dialect.

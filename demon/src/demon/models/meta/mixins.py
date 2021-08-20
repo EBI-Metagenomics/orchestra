@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
-from demon.models.meta.helpers import GUID
+from conductor.models.meta.helpers import GUID
 
 from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy.orm import declarative_base
@@ -44,7 +44,7 @@ class CRUDMixin(object):
         return instance.save()
 
     @classmethod
-    def bulk_create(cls: Any, list: List[Any], DBSession: Session) -> Any:
+    def bulk_create(cls: Any, obj_list: List[Any], DBSession: Session) -> Any:
         """Create a new records and save them to the database.
 
         Args:
@@ -54,12 +54,8 @@ class CRUDMixin(object):
         Returns:
             Any: True if scuccess
         """
-        instance_list: List[Any] = []
-        for item in list:
-            instance_list.append(cls(**item))
-        with DBSession as session:
-            session.bulk_save_objects(instance_list)
-            session.commit()
+        DBSession.bulk_save_objects(obj_list, return_defaults=True)
+        DBSession.commit()
         return True
 
     def update(
@@ -96,9 +92,9 @@ class CRUDMixin(object):
         instance_list: List[Any] = []
         for item in list:
             instance_list.append(cls(**item))
-        with DBSession as session:
-            session.bulk_update_mappings(list)
-            session.commit()
+
+        DBSession.bulk_update_mappings(list)
+        DBSession.commit()
         return instance_list
 
     def save(
@@ -113,10 +109,9 @@ class CRUDMixin(object):
         Returns:
             Any: Instance of self
         """
-        with DBSession as session:
-            session.add(self)
-            if commit:
-                session.commit()
+        DBSession.add(self)
+        if commit:
+            DBSession.commit()
         return self
 
     def delete(
@@ -131,9 +126,8 @@ class CRUDMixin(object):
         Returns:
             Union[bool, Any]: True if commit is successful
         """
-        with DBSession as session:
-            session.delete(self)
-            return commit and session.commit()
+        DBSession.delete(self)
+        return commit and DBSession.commit()
 
 
 class DBModel(CRUDMixin, SerializerMixin, Base):

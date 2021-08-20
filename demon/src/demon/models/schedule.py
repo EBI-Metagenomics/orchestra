@@ -9,7 +9,8 @@ from demon.models.meta.mixins import (
 from demon.models.meta.orm import reference_col
 
 from sqlalchemy import Column, DateTime, String
-from sqlalchemy.orm import relationship
+
+# from sqlalchemy.orm import relationship
 
 
 class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
@@ -17,11 +18,7 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
 
     __tablename__ = "schedule"
     job_id = reference_col("job")
-    job = relationship("JobDB", backref="schedules", lazy=False)
-    assigned_cluster_id = reference_col("cluster")
-    assigned_cluster = relationship(
-        "ClusterDB", backref="schedules", lazy=False
-    )  # noqa: E501
+    # job = relationship("JobDB", backref="schedules", lazy=False)
     # TODO: this should be an enum
     status = Column(String, nullable=False, default="PENDING")
     started_at = Column(DateTime(timezone=True), nullable=True)
