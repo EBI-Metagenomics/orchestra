@@ -3,12 +3,14 @@
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic.types import UUID4
 
 
 class Schedule(BaseModel):
     """Schedule schema."""
 
-    user_id: Optional[str]
-    job_id: str
-    assigned_cluster_id: Optional[str]
+    schedule_id: Optional[UUID4]
+    user_id: Optional[UUID4]
+    job_id: UUID4
+    assigned_cluster_id: Optional[UUID4]
     status: str = "PENDING"
