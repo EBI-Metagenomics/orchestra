@@ -13,4 +13,6 @@ class Schedule(BaseModel):
     user_id: Optional[UUID4]
     job_id: UUID4
     assigned_cluster_id: Optional[UUID4]
+    messenger: Optional[str]
+    messenger_queue: Optional[str]
     status: str = "PENDING"

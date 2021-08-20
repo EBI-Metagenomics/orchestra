@@ -44,7 +44,7 @@ def create_schedule(
             data=schedule.dict(),
             timestamp=str(datetime.now()),
         )
-        messenger.publish(message, schedule.assigned_cluster.messenger_queue)
+        messenger.publish(message, schedule.messenger_queue)
 
     return schedule_list
 
