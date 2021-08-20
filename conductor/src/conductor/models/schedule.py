@@ -9,7 +9,8 @@ from conductor.models.meta.mixins import (
 from conductor.models.meta.orm import reference_col
 
 from sqlalchemy import Column, DateTime, String
-from sqlalchemy.orm import relationship
+
+# from sqlalchemy.orm import relationship
 
 
 class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
@@ -22,12 +23,12 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
         "-protagonist.schedules",
     )
     job_id = reference_col("job")
-    job = relationship("JobDB", backref="schedules")
+    # job = relationship("JobDB", backref="schedules")
     assigned_cluster_id = reference_col("cluster")
-    assigned_cluster = relationship("ClusterDB", backref="schedules")
+    # assigned_cluster = relationship("ClusterDB", backref="schedules")
     # TODO: this should be an Enum with the possible status values
     status = Column(String, nullable=False, default="PENDING")
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
     protagonist_id = reference_col("protagonist")
-    protagonist = relationship("ProtagonistDB", backref="schedules")
+    # protagonist = relationship("ProtagonistDB", backref="schedules")

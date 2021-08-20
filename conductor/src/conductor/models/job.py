@@ -9,7 +9,8 @@ from conductor.models.meta.mixins import (
 from conductor.models.meta.orm import reference_col
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
+
+# from sqlalchemy.orm import relationship
 
 
 class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
@@ -23,7 +24,7 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     cluster_caps_req = Column(String(), nullable=True)
 
     protagonist_id = reference_col("protagonist")
-    protagonist = relationship("ProtagonistDB", backref="jobs")
+    # protagonist = relationship("ProtagonistDB", backref="jobs")
 
     # it's going ot be more performance to keep a counter
     # on this table than queries the schedules count each time
