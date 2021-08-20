@@ -3,7 +3,7 @@
 from enum import Enum, unique
 from typing import Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 @unique
@@ -20,3 +20,15 @@ class Message(BaseModel):
     msg_type: MessageType
     data: Dict
     timestamp: str
+
+    @validator("msg_type")
+    def convert_msg_type_enum_to_str(cls: "Message", v: MessageType) -> str:
+        """Convert enum to str.
+
+        Args:
+            v (MessageType): MessageType Enum
+
+        Returns:
+            str: string value of enum
+        """
+        return v.value
