@@ -51,10 +51,6 @@ class RandomScheduler(BaseScheduler):
         selected_cluster = random.choice(cluster_list)  # noqa: S311
 
         schedule_create.schedule.assigned_cluster_id = selected_cluster.id
-        schedule_create.schedule.messenger = selected_cluster.messenger
-        schedule_create.schedule.messenger_queue = (
-            selected_cluster.messenger_queue
-        )  # noqa: E501
 
         # Add schedule to DB
         schedule_dict = schedule_create.schedule.dict(
@@ -68,7 +64,11 @@ class RandomScheduler(BaseScheduler):
             )
             schedule.save(session)
             return Schedule(
-                schedule_id=schedule.id, user_id=user_id, **schedule.to_dict()
+                schedule_id=schedule.id,
+                user_id=user_id,
+                messenger=selected_cluster.messenger,
+                messenger_queue=selected_cluster.messenger_queue,
+                **schedule.to_dict(),
             )
         except Exception as e:
             logger.error(f"Unable to save schedule to DB: {e}")
