@@ -11,6 +11,6 @@ class Schedule(BaseModel):
 
     schedule_id: Optional[UUID4]
     user_id: Optional[UUID4]
-    job_id: str
-    assigned_cluster_id: Optional[str]
+    job_id: UUID4
+    assigned_cluster_id: Optional[UUID4]
     status: str = "PENDING"
