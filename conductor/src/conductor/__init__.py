@@ -19,4 +19,4 @@ global_config = get_config()
 
 db_engine = create_engine(global_config.get_sql_db_uri())
 # Use this session for all db operations in the app
-DBSession = sessionmaker(db_engine, expire_on_commit=False)
+DBSession = sessionmaker(db_engine)
