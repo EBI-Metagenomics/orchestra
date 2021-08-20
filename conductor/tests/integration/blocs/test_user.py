@@ -27,16 +27,18 @@ def test_create_user_bloc(db: Session) -> None:
     ]
     created_user_list = create_user(create_user_list)
     with db() as session:
-        stmt = select(ProtagonistDB)
+        stmt = select(ProtagonistDB).where(
+            ProtagonistDB.id == created_user_list[0].user_id
+        )
         try:
             fetched_users = session.execute(stmt).scalars().all()
         except Exception as e:
             logger.error(f"Unable tofetch user: {e}")
             raise e
-        assert "tony@stark.com" in [str(u.email) for u in fetched_users]
+        assert created_user_list[0].email == fetched_users[0].email
 
 
 def test_get_all_user_bloc(user_dict: Dict) -> None:
     query_params = UserGetQueryParams(query_type=UserQueryType.GET_ALL_USERS)
     returned_users = get_users(query_params)
-    assert user_dict["id"] in [str(u.id) for u in returned_users]
+    assert user_dict["id"] in [str(u.user_id) for u in returned_users]

@@ -28,9 +28,9 @@ from sqlalchemy.orm.session import Session
 def test_scheduler_schedule(
     user_dict: Dict, job_dict: Dict, db: Session, cluster_dict: Dict
 ) -> None:
-    user = User(**user_dict)
+    user = User(user_id=user_dict["id"], **user_dict)
     schedule = Schedule(
-        user_id=str(user.id),
+        user_id=user.user_id,
         job_id=job_dict["id"],
     )
     schedule_create_request = ScheduleCreate(user=user, schedule=schedule)
