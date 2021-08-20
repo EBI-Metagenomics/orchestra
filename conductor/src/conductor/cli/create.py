@@ -8,6 +8,7 @@ from conductor.blocs.cluster import create_cluster
 from conductor.blocs.job import create_job
 from conductor.blocs.schedule import create_schedule
 from conductor.blocs.user import create_user
+from conductor.extentions import auther
 from conductor.models.protagonist import ProtagonistDB
 from conductor.schemas.api.cluster.post import ClusterCreate
 from conductor.schemas.api.job.post import JobCreate
@@ -46,15 +47,9 @@ def user(email, password, name, org) -> None:
 def cluster(name, cluster_type, cluster_caps, messenger, queue) -> None:
     """Create cluster."""
     # fetch a user first
-    user_dict = {}
-    with DBSession() as session:
-        stmt = select(ProtagonistDB).where(ProtagonistDB.id == global_config.USER_ID)
-        try:
-            fetched_user = session.execute(stmt).scalars().all()[0]
-            user_dict = fetched_user.to_dict()
-        except Exception as e:
-            logger.error(f"Unable tofetch user: {e}")
-            raise e
+    user_access_token = global_config.USER_ACCESS_TOKEN
+    user = auther.extract_user_from_token(user_access_token)
+
     cluster_create_request = ClusterCreate(
         cluster=Cluster(
             name=name,
@@ -63,7 +58,7 @@ def cluster(name, cluster_type, cluster_caps, messenger, queue) -> None:
             messenger=messenger,
             messenger_queue=queue,
         ),
-        user=User(**user_dict),
+        user=user,
     )
 
     created_cluster_list = create_cluster([cluster_create_request])
