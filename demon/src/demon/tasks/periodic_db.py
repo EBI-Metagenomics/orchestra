@@ -6,7 +6,7 @@ from demon import celery_app
 from demon.tasks.pub_cluster import publish_slurm_job_from_db
 
 
-@celery_app.on_after_configure.connect
+@celery_app.on_after_finalize.connect
 def setup_periodic_tasks(sender: Any, **kwargs: Any) -> None:
     """Set up periodic tasks.
 
