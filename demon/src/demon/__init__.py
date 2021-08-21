@@ -25,4 +25,5 @@ celery_app = Celery(
     __name__,
     broker=global_config.CELERY_BROKER_URL,
     backend=global_config.CELERY_RESULT_BACKEND,
+    include=["demon.tasks"],
 )

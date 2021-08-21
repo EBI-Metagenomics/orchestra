@@ -6,6 +6,8 @@ from celery import Celery
 
 from flask import Flask
 
+from conductor.tasks.pub_messenger import publish_messenger  # noqa: F401
+
 
 def init_celery(app: Flask, celery_app: Celery) -> None:
     """Initialize celery app.
