@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from demon.extentions import celery_app
+from demon import celery_app
 from demon.tasks.pub_cluster import publish_slurm_job_from_db
 
 
