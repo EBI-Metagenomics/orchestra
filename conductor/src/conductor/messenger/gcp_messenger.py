@@ -5,6 +5,7 @@ from typing import Callable, Dict, Optional
 
 from conductor.configs.base import BaseConfig
 from conductor.messenger.base import BaseMessenger
+from conductor.utils.json_encoders import UUIDEncoder
 
 from google.auth import jwt
 from google.cloud import pubsub_v1
@@ -61,7 +62,7 @@ class GCPMessenger(BaseMessenger):
 
         # Msg must be a bytestring
 
-        msg = json.dumps(msg).encode("utf-8")
+        msg = json.dumps(msg, default=UUIDEncoder).encode("utf-8")
 
         # Wait for the returned future
         future = self.publisher.publish(topic_path, msg)
