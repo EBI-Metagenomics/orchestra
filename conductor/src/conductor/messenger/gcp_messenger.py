@@ -62,7 +62,7 @@ class GCPMessenger(BaseMessenger):
 
         # Msg must be a bytestring
 
-        msg = json.dumps(msg, default=UUIDEncoder).encode("utf-8")
+        msg = json.dumps(msg, cls=UUIDEncoder).encode("utf-8")
 
         # Wait for the returned future
         future = self.publisher.publish(topic_path, msg)
