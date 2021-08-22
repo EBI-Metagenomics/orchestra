@@ -123,6 +123,7 @@ class GCPMessenger(BaseMessenger):
                     # Create the job
                     jobdb = JobDB(
                         id=schedule.job_id,
+                        protagonist_id=schedule.user_id,
                         **schedule.job.dict(exclude={"job_id"}),  # noqa: E501
                     )
                     jobdb.save(session)
