@@ -17,6 +17,8 @@ from google.auth import jwt
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
 
+from logzero import logger
+
 from sqlalchemy.sql.expression import select
 
 
@@ -111,6 +113,7 @@ class GCPMessenger(BaseMessenger):
         """
         parsed_msg = Message.parse_raw(msg.data)
         if parsed_msg.msg_type == MessageType.TO_DEMON_SCHEDULE_MSG:
+            logger.info(f"Recieved msg: {parsed_msg.dict()}")
             schedule = Schedule(**parsed_msg.data)
             # Check if job already exists
             stmt = select(JobDB).where(JobDB.id == schedule.job_id)
@@ -120,7 +123,7 @@ class GCPMessenger(BaseMessenger):
                     # Create the job
                     jobdb = JobDB(
                         id=schedule.job_id,
-                        **schedule.job.dict(exclude={"job_id"})  # noqa: E501
+                        **schedule.job.dict(exclude={"job_id"}),  # noqa: E501
                     )
                     jobdb.save(session)
                 # Create schedule

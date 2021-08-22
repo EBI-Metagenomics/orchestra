@@ -115,6 +115,7 @@ class GCPMessenger(BaseMessenger):
         """
         parsed_msg = Message.parse_raw(msg.data)
         if parsed_msg.msg_type == MessageType.TO_CONDUCTOR_JOB_STATUS_UPDATE:
+            logger.info(f"Recieved msg: {parsed_msg.dict()}")
             schedule = Schedule(**parsed_msg.data)
             # Check if job already exists
             stmt = select(ScheduleDB).where(
