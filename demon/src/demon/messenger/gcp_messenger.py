@@ -10,6 +10,7 @@ from demon.models.job import JobDB
 from demon.models.schedule import ScheduleDB
 from demon.schemas.message import Message, MessageType
 from demon.schemas.schedule import Schedule
+from demon.utils.json_encoders import UUIDEncoder
 
 
 from google.auth import jwt
@@ -67,7 +68,7 @@ class GCPMessenger(BaseMessenger):
         topic_path = self.publisher.topic_path(self.project_id, topic_id)
 
         # Msg must be a bytestring
-        msg = msg.json().encode("utf-8")
+        msg = json.dumps(msg, cls=UUIDEncoder).encode("utf-8")
 
         # Wait for the returned future
         future = self.publisher.publish(topic_path, msg)

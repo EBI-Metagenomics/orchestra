@@ -1,7 +1,7 @@
 """Slurm interface."""
 
-from pathlib import Path
 from os import makedirs
+from pathlib import Path
 from typing import List
 
 from demon.cluster.base import BaseCluster
