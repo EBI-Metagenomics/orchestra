@@ -33,9 +33,13 @@ def publish_slurm_job_from_db() -> None:
             fetched_jobs = session.execute(stmt).scalars().all()
             if len(fetched_jobs) != 0:
                 cluster.submit_job(
-                    Job(
+                    Schedule(
+                        schedule_id=pending_schedules[0].id,
                         job_id=pending_schedules[0].job_id,
-                        **fetched_jobs[0].to_dict(),
+                        job=Job(
+                            job_id=pending_schedules[0].job_id,
+                            **fetched_jobs[0].to_dict(),
+                        ),
                     )
                 )
                 pending_schedules[0].update(session, status="SUBMITTED")

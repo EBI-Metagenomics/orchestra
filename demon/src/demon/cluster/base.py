@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from demon.schemas.job import Job
+from demon.schemas.schedule import Schedule
 
 
 class BaseCluster(ABC):
@@ -18,11 +19,11 @@ class BaseCluster(ABC):
         """
 
     @abstractmethod
-    def submit_job(self: "BaseCluster", job: Job) -> str:
+    def submit_job(self: "BaseCluster", schedule: Schedule) -> str:
         """Submit job to the cluster.
 
         Args:
-            job (Job): A Job object
+            schedule (Schedule): Schedule Object
 
         Returns:
             str: Job ID

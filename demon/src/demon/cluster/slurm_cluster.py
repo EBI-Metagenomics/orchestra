@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 from demon.cluster.base import BaseCluster
-from demon.schemas.job import Job
+from demon.schemas.schedule import Schedule
 from demon.utils.command import call_cli
 
 from xdg import xdg_data_home
@@ -14,29 +14,58 @@ from xdg import xdg_data_home
 class SlurmCluster(BaseCluster):
     """Slurm interface."""
 
-    def prepare_job(self: "SlurmCluster", job: Job) -> None:
+    def prepare_job(self: "SlurmCluster", schedule: Schedule) -> None:
         """Prepare job for submission.
 
         Args:
-            job (Job): Job object
+            schedule (Schedule): Schedule Object
         """
+        job = schedule.job
         job_data_path: Path = (
             xdg_data_home() / "orchestra" / "demon" / "jobs" / str(job.job_id)
         )  # noqa: E501
         makedirs((job_data_path / "out"), exist_ok=True)
         with open(job_data_path.joinpath("start.sh"), "w+") as f:
             f.write(job.script)
+        with open(job_data_path.joinpath("notify_start.sh"), "w+") as f:
+            f.write(
+                f"""
+                #! /bin/bash
+                conda activate orchestra
 
-    def submit_job(self: "SlurmCluster", job: Job) -> str:
+                demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=RUNNING  # noqa: E501
+                """
+            )
+        with open(job_data_path.joinpath("notify_ok.sh"), "w+") as f:
+            f.write(
+                f"""
+                #! /bin/bash
+                conda activate orchestra
+
+                demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=COMPLETED  # noqa: E501
+                """
+            )
+        with open(job_data_path.joinpath("notify_not_ok.sh"), "w+") as f:
+            f.write(
+                f"""
+                #! /bin/bash
+                conda activate orchestra
+
+                demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=FAILED  # noqa: E501
+                """
+            )
+
+    def submit_job(self: "SlurmCluster", schedule: Schedule) -> str:
         """Submit job to the cluster.
 
         Args:
-            job (Job): Job Object
+            schedule (Schedule): Schedule Object
 
         Returns:
             str: Job ID
         """
-        self.prepare_job(job)
+        job = schedule.job
+        self.prepare_job(schedule)
         job_data_path: Path = (
             xdg_data_home()
             / "orchestra"
@@ -53,6 +82,8 @@ class SlurmCluster(BaseCluster):
             job_out_path.absolute(),
         ]
         output = call_cli(cmd_args_list)
+
+        # example: Submitted batch job 45
         submit_job_id = output.split(" ")[-1]
         return submit_job_id
 
