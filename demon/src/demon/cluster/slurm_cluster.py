@@ -71,9 +71,9 @@ class SlurmCluster(BaseCluster):
             / str(job.job_id)  # noqa: E501
         )
         job_script_path: Path = job_data_path / "start.sh"
-        notify_start_script_path: Path = job_data_path / "notify_start.sh"
-        notify_ok_script_path: Path = job_data_path / "notify_ok.sh"
-        notify_not_ok_script_path: Path = job_data_path / "notify_not_ok.sh"
+        # notify_start_script_path: Path = job_data_path / "notify_start.sh"
+        # notify_ok_script_path: Path = job_data_path / "notify_ok.sh"
+        # notify_not_ok_script_path: Path = job_data_path / "notify_not_ok.sh"
         job_out_path: Path = job_data_path / "out"
         main_job_cmd_args_list = [
             "sbatch",
@@ -85,34 +85,34 @@ class SlurmCluster(BaseCluster):
 
         # example: Submitted batch job 45
         main_job_id = output.split(" ")[-1]
-
+        # TODO: Fix notify scripts
         # Add notify jobs
-        notify_start_job_cmd_args_list = [
-            "sbatch",
-            f"--dependency=after:{main_job_id}",
-            notify_start_script_path.absolute(),
-            "-o",
-            job_out_path.absolute(),
-        ]
-        call_cli(notify_start_job_cmd_args_list)
+        # notify_start_job_cmd_args_list = [
+        #     "sbatch",
+        #     f"--dependency=after:{main_job_id}",
+        #     notify_start_script_path.absolute(),
+        #     "-o",
+        #     job_out_path.absolute(),
+        # ]
+        # call_cli(notify_start_job_cmd_args_list)
 
-        notify_ok_job_cmd_args_list = [
-            "sbatch",
-            f"--dependency=afterok:{main_job_id}",
-            notify_ok_script_path.absolute(),
-            "-o",
-            job_out_path.absolute(),
-        ]
-        call_cli(notify_ok_job_cmd_args_list)
+        # notify_ok_job_cmd_args_list = [
+        #     "sbatch",
+        #     f"--dependency=afterok:{main_job_id}",
+        #     notify_ok_script_path.absolute(),
+        #     "-o",
+        #     job_out_path.absolute(),
+        # ]
+        # call_cli(notify_ok_job_cmd_args_list)
 
-        notify_not_ok_job_cmd_args_list = [
-            "sbatch",
-            f"--dependency=afternotok:{main_job_id}",
-            notify_not_ok_script_path.absolute(),
-            "-o",
-            job_out_path.absolute(),
-        ]
-        call_cli(notify_not_ok_job_cmd_args_list)
+        # notify_not_ok_job_cmd_args_list = [
+        #     "sbatch",
+        #     f"--dependency=afternotok:{main_job_id}",
+        #     notify_not_ok_script_path.absolute(),
+        #     "-o",
+        #     job_out_path.absolute(),
+        # ]
+        # call_cli(notify_not_ok_job_cmd_args_list)
         return main_job_id
 
     def get_job_status(self: "SlurmCluster", job_id: str) -> List[str]:
