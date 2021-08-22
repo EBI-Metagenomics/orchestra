@@ -25,7 +25,7 @@ def chatter(topic: str) -> None:
         msg = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
             data={"msg": msg},
-            timestamp=datetime.now(),
+            timestamp=str(datetime.now()),
         )
         publish_messenger.delay(msg.dict(), topic)
         logger.info(f"\nSuccess!\n\nMsg: {msg}")
@@ -45,7 +45,7 @@ def custom(topic: str, data: str) -> None:
         msg = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
             data={"msg": data},
-            timestamp=datetime.now(),
+            timestamp=str(datetime.now()),
         )
         publish_messenger.delay(msg.dict(), topic)
         logger.info(f"\nSuccess!\n\nMsg: {data}")

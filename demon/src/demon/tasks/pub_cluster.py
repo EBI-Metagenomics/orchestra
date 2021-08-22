@@ -48,7 +48,7 @@ def publish_slurm_job_from_db() -> None:
                             schedule_id=pending_schedules[0].id,
                             **pending_schedules[0].to_dict(),
                         ),
-                        timestamp=datetime.now(),
+                        timestamp=str(datetime.now()),
                     ).dict(),
                     topic_id=global_config.GCP_PUBSUB_TOPIC,
                 )
