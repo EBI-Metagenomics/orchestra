@@ -21,7 +21,7 @@ class SlurmCluster(BaseCluster):
             job (Job): Job object
         """
         job_data_path: Path = (
-            xdg_data_home() / "orchestra" / "demon" / "jobs" / job.job_id
+            xdg_data_home() / "orchestra" / "demon" / "jobs" / str(job.job_id)
         )  # noqa: E501
         makedirs(job_data_path, exist_ok=True)
         with open(job_data_path.joinpath("start.sh"), "w+") as f:
@@ -42,7 +42,7 @@ class SlurmCluster(BaseCluster):
             / "orchestra"
             / "demon"
             / "jobs"
-            / job.job_id
+            / str(job.job_id)
             / "start.sh"  # noqa: E501
         )
         cmd_args_list = ["sbatch", job_script_path.absolute()]
