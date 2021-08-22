@@ -11,6 +11,7 @@ from conductor.cli.db import db
 from conductor.cli.get import get
 from conductor.cli.publish import pub
 from conductor.cli.schedule import sched
+from conductor.cli.subscribe import sub
 from conductor.extentions import auther
 from conductor.schemas.api.auth.post import AuthUserCreds
 
@@ -44,3 +45,4 @@ main.add_command(db)
 main.add_command(pub)
 main.add_command(sched)
 main.add_command(login)
+main.add_command(sub)
