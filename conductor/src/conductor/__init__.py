@@ -30,4 +30,4 @@ celery_app = Celery(
     include=["conductor.tasks"],
 )
 
-celery_app.conf.task_routes = {"conductor.tasks.*": {"queue": "demon"}}
+celery_app.conf.task_routes = {"conductor.tasks.*": {"queue": "conductor"}}
