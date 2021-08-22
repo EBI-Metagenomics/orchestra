@@ -1,9 +1,6 @@
 """subscribe commands."""
 # flake8: noqa: DAR101
 
-import random
-from pathlib import Path
-
 import click
 
 from conductor import global_config
@@ -29,7 +26,7 @@ def echo(sub_id: str) -> None:
 @click.option(
     "--sub_id", default=global_config.GCP_PUBSUB_SUB_ID, help="Subscription Id"
 )
-def job(sub_id: str) -> None:
+def schedule(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")
     try:
@@ -45,4 +42,4 @@ def sub() -> None:
 
 
 sub.add_command(echo)
-sub.add_command(job)
+sub.add_command(schedule)

@@ -3,14 +3,21 @@
 import json
 from typing import Callable, Dict, Optional
 
+from conductor import DBSession
 from conductor.configs.base import BaseConfig
 from conductor.messenger.base import BaseMessenger
+from conductor.models.schedule import ScheduleDB
+from conductor.schemas.message import Message, MessageType
+from conductor.schemas.schedule import Schedule
 from conductor.utils.json_encoders import UUIDEncoder
 
 from google.auth import jwt
 from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
 
 from logzero import logger
+
+from sqlalchemy import select
 
 
 class GCPMessenger(BaseMessenger):
@@ -99,3 +106,40 @@ class GCPMessenger(BaseMessenger):
                     f"GCPMessenger timeout error while pulling messages. Error: {e}"  # noqa: E501
                 )  # noqa: E501
                 streaming_pull_future.cancel()
+
+    def process_schedule_msg(self: "GCPMessenger", msg: GCPMessage) -> None:
+        """Process Schedule Pub/Sub msgs.
+
+        Args:
+            msg (GCPMessage): Pub/Sub Msg
+        """
+        parsed_msg = Message.parse_raw(msg.data)
+        if parsed_msg.msg_type == MessageType.TO_CONDUCTOR_JOB_STATUS_UPDATE:
+            schedule = Schedule(**parsed_msg.data)
+            # Check if job already exists
+            stmt = select(ScheduleDB).where(
+                ScheduleDB.id == schedule.schedule_id
+            )  # noqa: E501
+            with DBSession() as session:
+                fetched_schedules = session.execute(stmt).scalars().all()
+                if len(fetched_schedules) == 0:
+                    logger.error(
+                        f"""
+                    Unable to find job from schedule!!!
+                    Schedule ID: {schedule.id},
+                    Job ID: {schedule.job_id}
+                    """
+                    )
+                else:
+                    # Update schedule status
+                    fetched_schedules[0].update(sttaus=schedule.status)
+            msg.ack()
+
+    def echo_msg(self: "GCPMessenger", msg: Message) -> None:
+        """Echo msgs to stdout.
+
+        Args:
+            msg (Message): Message to echo
+        """
+        print(msg)
+        msg.ack()
