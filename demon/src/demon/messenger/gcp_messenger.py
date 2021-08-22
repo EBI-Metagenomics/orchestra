@@ -112,7 +112,7 @@ class GCPMessenger(BaseMessenger):
             msg (GCPMessage): Pub/Sub Msg
         """
         parsed_msg = Message.parse_raw(msg.data)
-        if parsed_msg.msg_type == MessageType.TO_DEMON_SCHEDULE_MSG:
+        if parsed_msg.msg_type == MessageType.TO_DEMON_SCHEDULE_MSG.value:
             logger.info(f"Recieved msg: {parsed_msg.dict()}")
             schedule = Schedule(**parsed_msg.data)
             # Check if job already exists
