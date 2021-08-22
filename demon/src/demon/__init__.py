@@ -27,3 +27,5 @@ celery_app = Celery(
     backend=global_config.CELERY_RESULT_BACKEND,
     include=["demon.tasks"],
 )
+
+celery_app.conf.task_routes = {"demon.tasks.*": {"queue": "demon"}}
