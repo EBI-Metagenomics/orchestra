@@ -30,7 +30,7 @@ def schedule(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")
     try:
-        messenger.subscribe(callback=messenger.save_job_msg, sub_id=sub_id)
+        messenger.subscribe(callback=messenger.process_schedule_msg, sub_id=sub_id)
     except Exception as e:
         logger.error(f"failed to subscribe: {e}")
 
