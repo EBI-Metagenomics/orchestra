@@ -136,7 +136,9 @@ class GCPMessenger(BaseMessenger):
                     )
                 else:
                     # Update schedule status
-                    fetched_schedules[0].update(session, staus=schedule.status)
+                    fetched_schedules[0].update(
+                        session, status=schedule.status
+                    )  # noqa: E501
             msg.ack()
 
     def echo_msg(self: "GCPMessenger", msg: Message) -> None:
