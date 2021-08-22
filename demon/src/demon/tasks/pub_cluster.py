@@ -38,7 +38,7 @@ def publish_slurm_job_from_db() -> None:
                         **fetched_jobs[0].to_dict(),
                     )
                 )
-                pending_schedules[0].update(session, status="SUBMTTED")
+                pending_schedules[0].update(session, status="SUBMITTED")
 
                 # Notify conductor that job is submitted
                 publish_messenger(
