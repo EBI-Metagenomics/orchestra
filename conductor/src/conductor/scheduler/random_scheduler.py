@@ -68,6 +68,7 @@ class RandomScheduler(BaseScheduler):
                 user_id=user_id,
                 messenger=selected_cluster.messenger,
                 messenger_queue=selected_cluster.messenger_queue,
+                job=schedule_create.schedule.job,
                 **schedule.to_dict(),
             )
         except Exception as e:
