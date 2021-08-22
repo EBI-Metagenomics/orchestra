@@ -8,7 +8,7 @@ from demon.configs.base import BaseConfig
 from demon.messenger.base import BaseMessenger
 from demon.models.job import JobDB
 from demon.models.schedule import ScheduleDB
-from demon.schemas.message import Message
+from demon.schemas.message import Message, MessageType
 from demon.schemas.schedule import Schedule
 
 
@@ -109,25 +109,27 @@ class GCPMessenger(BaseMessenger):
             msg (GCPMessage): Pub/Sub Msg
         """
         parsed_msg = Message.parse_raw(msg.data)
-        schedule = Schedule(**parsed_msg.data)
-        # Check if job already exists
-        stmt = select(JobDB).where(JobDB.id == schedule.job_id)
-        with DBSession() as session:
-            fetched_jobs = session.execute(stmt).scalars().all()
-            if len(fetched_jobs) == 0:
-                # Create the job
-                jobdb = JobDB(
-                    id=schedule.job_id, **schedule.job.dict(exclude={"job_id"})
+        if parsed_msg.msg_type == MessageType.TO_DEMON_SCHEDULE_MSG:
+            schedule = Schedule(**parsed_msg.data)
+            # Check if job already exists
+            stmt = select(JobDB).where(JobDB.id == schedule.job_id)
+            with DBSession() as session:
+                fetched_jobs = session.execute(stmt).scalars().all()
+                if len(fetched_jobs) == 0:
+                    # Create the job
+                    jobdb = JobDB(
+                        id=schedule.job_id,
+                        **schedule.job.dict(exclude={"job_id"})  # noqa: E501
+                    )
+                    jobdb.save(session)
+                # Create schedule
+                scheduledb = ScheduleDB(
+                    id=schedule.schedule_id,
+                    job_id=schedule.job_id,
+                    protagonist_id=schedule.user_id,
                 )
-                jobdb.save(session)
-            # Create schedule
-            scheduledb = ScheduleDB(
-                id=schedule.schedule_id,
-                job_id=schedule.job_id,
-                protagonist_id=schedule.user_id,
-            )
-            scheduledb.save(session)
-        msg.ack()
+                scheduledb.save(session)
+            msg.ack()
 
     def echo_msg(self: "GCPMessenger", msg: Message) -> None:
         """Echo msgs to stdout.
