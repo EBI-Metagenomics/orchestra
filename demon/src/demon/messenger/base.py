@@ -38,7 +38,7 @@ class BaseMessenger(ABC):
         pass
 
     @abstractmethod
-    def save_job_msg(self: "BaseMessenger", msg: Any) -> None:
+    def process_schedule_msg(self: "BaseMessenger", msg: Any) -> None:
         """Save jobs to DB from Pub/Sub msgs.
 
         Args:
