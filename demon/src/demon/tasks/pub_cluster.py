@@ -34,7 +34,7 @@ def publish_slurm_job_from_db() -> None:
             if len(fetched_jobs) != 0:
                 cluster.submit_job(
                     Job(
-                        job_id=pending_schedules[0].id,
+                        job_id=pending_schedules[0].job_id,
                         **fetched_jobs[0].to_dict(),
                     )
                 )
