@@ -20,3 +20,4 @@ class ProtagonistDB(DBModel, TimestampMixin, SurrogatePKUUID):
     # Hash password before storing it here
     password = Column(LargeBinary(128), nullable=True)
     active = Column(Boolean(), default=False)
+    roles = Column(String(), nullable=True, default="USER")
