@@ -14,7 +14,7 @@ class Schedule(BaseModel):
     schedule_id: Optional[UUID4]
     user_id: Optional[UUID4]
     job_id: UUID4
-    job: Job
+    job: Optional[Job]
     assigned_cluster_id: Optional[UUID4]
     messenger: Optional[str]
     messenger_queue: Optional[str]
