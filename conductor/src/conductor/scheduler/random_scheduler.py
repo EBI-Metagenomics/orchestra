@@ -54,7 +54,7 @@ class RandomScheduler(BaseScheduler):
 
         # Add schedule to DB
         schedule_dict = schedule_create.schedule.dict(
-            exclude={"schedule_id", "messenger", "messenger_queue"}
+            exclude={"schedule_id", "messenger", "messenger_queue", "job"}
         )
         user_id = schedule_dict.pop("user_id")
         try:
