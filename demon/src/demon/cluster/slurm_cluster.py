@@ -42,8 +42,7 @@ class SlurmCluster(BaseCluster):
             / "orchestra"
             / "demon"
             / "jobs"
-            / str(job.job_id)
-            / "start.sh"  # noqa: E501
+            / str(job.job_id)  # noqa: E501
         )
         job_script_path: Path = job_data_path / "start.sh"
         job_out_path: Path = job_data_path / "out"
