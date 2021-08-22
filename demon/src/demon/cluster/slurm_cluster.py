@@ -29,8 +29,7 @@ class SlurmCluster(BaseCluster):
             f.write(job.script)
         with open(job_data_path.joinpath("notify_start.sh"), "w+") as f:
             f.write(
-                f"""
-                #! /bin/bash
+                f"""#! /bin/bash
                 conda activate orchestra
 
                 demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=RUNNING  # noqa: E501
@@ -38,8 +37,7 @@ class SlurmCluster(BaseCluster):
             )
         with open(job_data_path.joinpath("notify_ok.sh"), "w+") as f:
             f.write(
-                f"""
-                #! /bin/bash
+                f"""#! /bin/bash
                 conda activate orchestra
 
                 demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=COMPLETED  # noqa: E501
@@ -47,8 +45,7 @@ class SlurmCluster(BaseCluster):
             )
         with open(job_data_path.joinpath("notify_not_ok.sh"), "w+") as f:
             f.write(
-                f"""
-                #! /bin/bash
+                f"""#! /bin/bash
                 conda activate orchestra
 
                 demon pub schedup --sched_id={schedule.schedule_id} --job_id={job.job_id} --status=FAILED  # noqa: E501
