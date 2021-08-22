@@ -7,13 +7,16 @@ from demon import DBSession
 from demon.configs.base import BaseConfig
 from demon.messenger.base import BaseMessenger
 from demon.models.job import JobDB
-from demon.schemas.job import Job
+from demon.models.schedule import ScheduleDB
 from demon.schemas.message import Message
+from demon.schemas.schedule import Schedule
 
 
 from google.auth import jwt
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
+
+from sqlalchemy.sql.expression import select
 
 
 class GCPMessenger(BaseMessenger):
@@ -99,17 +102,31 @@ class GCPMessenger(BaseMessenger):
             except TimeoutError:
                 streaming_pull_future.cancel()
 
-    def save_job_msg(self: "GCPMessenger", msg: GCPMessage) -> None:
-        """Save jobs to DB from Pub/Sub msgs.
+    def process_schedule_msg(self: "GCPMessenger", msg: GCPMessage) -> None:
+        """Process Schedule Pub/Sub msgs.
 
         Args:
             msg (GCPMessage): Pub/Sub Msg
         """
         parsed_msg = Message.parse_raw(msg.data)
-        job = Job(**parsed_msg.data)
-        jobdb = JobDB(id=job.job_id, **job.dict(exclude={"job_id"}))
+        schedule = Schedule(**parsed_msg.data)
+        # Check if job already exists
+        stmt = select(JobDB).where(JobDB.id == schedule.job_id)
         with DBSession() as session:
-            jobdb.save(session)
+            fetched_jobs = session.execute(stmt).scalars().all()
+            if len(fetched_jobs) == 0:
+                # Create the job
+                jobdb = JobDB(
+                    id=schedule.job_id, **schedule.job.dict(exclude={"job_id"})
+                )
+                jobdb.save(session)
+            # Create schedule
+            scheduledb = ScheduleDB(
+                id=schedule.schedule_id,
+                job_id=schedule.job_id,
+                protagonist_id=schedule.user_id,
+            )
+            scheduledb.save(session)
         msg.ack()
 
     def echo_msg(self: "GCPMessenger", msg: Message) -> None:
