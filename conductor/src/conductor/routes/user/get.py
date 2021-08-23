@@ -22,7 +22,7 @@ def get_user() -> Response:
     """
     # Parse query params from request
     try:
-        query_params = UserGetQueryParams.parse_raw(request.query_string)
+        query_params = UserGetQueryParams.parse_obj(request.args)
     except ValidationError as e:
         response_body = UserGetResponse(
             msg="query validation error", errors=e.errors()

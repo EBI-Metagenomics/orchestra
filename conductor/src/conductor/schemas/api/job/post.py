@@ -11,7 +11,7 @@ from pydantic import BaseModel
 class JobPOSTResponse(BaseModel):
     """Job POST response schema."""
 
-    items: List[Job]
+    items: List[Job] = []
 
 
 class JobCreate(BaseModel):

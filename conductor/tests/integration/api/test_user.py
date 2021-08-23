@@ -26,4 +26,5 @@ def test_user_post(app: Flask) -> None:
             ]
         ).json()
         response = test_client.post("/v1/user/", json=user_create_json)
+        print(response.data)
         assert response.status_code == 200

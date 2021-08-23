@@ -1,5 +1,6 @@
 """Conductor job POST route."""
 
+import json
 from http import HTTPStatus
 
 from conductor.blocs.job import create_job
@@ -22,7 +23,7 @@ def post_job() -> Response:
     """
     # Parse json from request
     try:
-        job_create = JobCreate.parse_obj(request.json)
+        job_create = JobCreate.parse_obj(json.loads(request.json))
     except ValidationError as e:
         response_body = JobPOSTResponse(
             msg="json validation failed", errors=e.errors()

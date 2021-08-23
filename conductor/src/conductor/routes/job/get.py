@@ -22,7 +22,7 @@ def get_job() -> Response:
     """
     # Parse query params from request
     try:
-        query_params = JobGetQueryParams.parse_raw(request.query_string)
+        query_params = JobGetQueryParams.parse_obj(request.args)
     except ValidationError as e:
         response_body = JobGetResponse(
             msg="query validation error", errors=e.errors()

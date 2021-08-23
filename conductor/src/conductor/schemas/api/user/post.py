@@ -24,4 +24,4 @@ class UserPOSTRequest(BaseModel):
 class UserPOSTResponse(ResponseSchema):
     """User POST response schema."""
 
-    items: List[User]
+    items: List[User] = []

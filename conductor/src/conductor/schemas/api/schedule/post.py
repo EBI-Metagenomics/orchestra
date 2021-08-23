@@ -11,7 +11,7 @@ from pydantic import BaseModel
 class SchedulePOSTResponse(BaseModel):
     """Schedule POST response schema."""
 
-    items: List[Schedule]
+    items: List[Schedule] = []
 
 
 class ScheduleCreate(BaseModel):

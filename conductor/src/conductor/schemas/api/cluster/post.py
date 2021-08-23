@@ -25,4 +25,4 @@ class ClusterPOSTRequest(BaseModel):
 class ClusterPOSTResponse(ResponseSchema):
     """Cluster POST response schema."""
 
-    items: List[Cluster]
+    items: List[Cluster] = []

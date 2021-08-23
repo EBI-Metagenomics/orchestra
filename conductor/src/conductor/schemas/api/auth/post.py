@@ -18,4 +18,4 @@ class AuthUserCreds(BaseModel):
 class AuthPOSTResponse(ResponseSchema):
     """User POST response schema."""
 
-    items: List[User]
+    items: List[User] = []

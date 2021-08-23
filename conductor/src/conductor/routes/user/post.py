@@ -1,5 +1,6 @@
 """Conductor user POST route."""
 
+import json
 from http import HTTPStatus
 from typing import List
 
@@ -27,7 +28,7 @@ def post_user() -> Response:
     """
     # Parse json from request
     try:
-        user_post_request = UserPOSTRequest.parse_obj(request.json)
+        user_post_request = UserPOSTRequest.parse_obj(json.loads(request.json))
         user_create_list = parse_obj_as(
             List[UserCreate], user_post_request.users
         )  # noqa: E501
