@@ -1,9 +1,10 @@
 """Server factory."""
 
+from conductor import celery_app
 from conductor.configs.base import BaseConfig
-from conductor.extentions import celery_app
 from conductor.routes.job import job_bp
 from conductor.routes.schedule import schedule_bp
+from conductor.routes.status import status_bp
 from conductor.routes.user import user_bp
 from conductor.tasks import init_celery
 
@@ -45,6 +46,7 @@ def register_extensions(app: Flask) -> None:
         app (Flask): Flask app
     """
     init_celery(app, celery_app)
+    logger.info("Registered extensions")
 
 
 def register_blueprints(app: Flask) -> None:
@@ -53,6 +55,8 @@ def register_blueprints(app: Flask) -> None:
     Args:
         app (Flask): Flask app
     """
+    app.register_blueprint(status_bp)
     app.register_blueprint(job_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(schedule_bp)
+    logger.info("Registered blueprints")
