@@ -1,6 +1,7 @@
 """Conductor conftest."""
 
 from typing import Dict, Generator
+from random import randint
 
 from bcrypt import gensalt, hashpw
 
@@ -62,7 +63,7 @@ def db() -> Generator[Session, None, None]:
         raise Exception("Unable to clean up Database")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def user_dict(db: Session) -> ProtagonistDB:
     """User from the DB.
 
@@ -75,7 +76,7 @@ def user_dict(db: Session) -> ProtagonistDB:
     passwd = hashpw("random_key".encode(), gensalt())
     user = ProtagonistDB(
         name="Bruce Wayne",
-        email="bruce@wayne.com",
+        email=f"bruce{randint(1,999999)}@wayne.com",
         password=passwd,
         organisation="Justice League",
     )
@@ -84,7 +85,7 @@ def user_dict(db: Session) -> ProtagonistDB:
         return user.to_dict()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def cluster_dict(db: Session) -> ClusterDB:
     """Cluster from the DB.
 
@@ -107,7 +108,7 @@ def cluster_dict(db: Session) -> ClusterDB:
         return cluster.to_dict()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def job_dict(user_dict: Dict, db: Session) -> JobDB:
     """Job from the DB.
 
