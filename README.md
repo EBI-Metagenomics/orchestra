@@ -1,5 +1,10 @@
 # Orchestra
 
+Orchestra is an orchestration system that can coordinate the execution of jobs within a set of distributed heterogeneous compute clusters. It acts as an abstraction layer to hide the complexities of distributed clusters and provide a unified interface to interact with and monitor the service.
+
+It is built from scratch as a GSoC project during the summer of 2021.
+Find out more about orchestra [here](https://ebi-orchestra.readthedocs.io/en/latest/)
+
 ## Developing
 
 ### Requirements
@@ -44,3 +49,7 @@ pre-commit install
 ```
 
 Now, refer to the `README` of the specific project you want to work on.
+
+## Roadmap
+
+Check out the roadmap [here](https://github.com/EBI-Metagenomics/orchestra/projects/1)
