@@ -1,7 +1,9 @@
 """WSGI module."""
 
-from conductor.configs import Config, get_config
+from conductor import global_config
 from conductor.server import create_app
 
-default_config = get_config(Config.DEFAULT)
-app = create_app(default_config)
+app = create_app(global_config)
+
+if __name__ == "__main__":
+    app.run()
