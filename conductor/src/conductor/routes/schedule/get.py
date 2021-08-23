@@ -30,7 +30,7 @@ def get_schedule() -> Response:
         response_body = ScheduleGetResponse(
             msg="query validation error", errors=e.errors()
         )  # noqa: E501
-        return make_response(response_body, HTTPStatus.BAD_REQUEST)
+        return make_response(response_body.json(), HTTPStatus.BAD_REQUEST)
     except Exception:
         response_body = ScheduleGetResponse(
             msg="unknown error", errors=["unknown internal error"]

@@ -27,7 +27,7 @@ def get_user() -> Response:
         response_body = UserGetResponse(
             msg="query validation error", errors=e.errors()
         )  # noqa: E501
-        return make_response(response_body, HTTPStatus.BAD_REQUEST)
+        return make_response(response_body.json(), HTTPStatus.BAD_REQUEST)
     except Exception:
         response_body = UserGetResponse(
             msg="unknown error", errors=["unknown internal error"]

@@ -27,7 +27,7 @@ def get_job() -> Response:
         response_body = JobGetResponse(
             msg="query validation error", errors=e.errors()
         )  # noqa: E501
-        return make_response(response_body, HTTPStatus.BAD_REQUEST)
+        return make_response(response_body.json(), HTTPStatus.BAD_REQUEST)
     except Exception:
         response_body = JobGetResponse(
             msg="unknown error", errors=["unknown internal error"]
