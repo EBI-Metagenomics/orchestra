@@ -7,6 +7,12 @@ from typing import Callable, Dict, Optional
 class BaseMessenger(ABC):
     """Base messenger class."""
 
+    CONFIG_KEY = "MESSENGER"
+    CONFIG_KEY_DEF_VAL = "GCP"
+
+    # Change this value in custom auther implementations.
+    CONFIG_KEY_VAL = "GCP"
+
     @abstractclassmethod
     def publish(self: "BaseMessenger", msg: Dict, topic_id: str) -> str:  # noqa: E501
         """Publish a msg.

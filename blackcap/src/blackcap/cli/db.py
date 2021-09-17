@@ -2,7 +2,7 @@
 
 import click
 
-from blackcap import db_engine
+from blackcap.db import db_engine
 from blackcap.models.meta.mixins import DBModel
 
 

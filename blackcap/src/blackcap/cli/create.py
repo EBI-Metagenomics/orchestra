@@ -4,12 +4,12 @@
 from pathlib import Path
 import click
 
-from blackcap import global_config
+from blackcap.auther import auther_registry
 from blackcap.blocs.cluster import create_cluster
 from blackcap.blocs.job import create_job, get_jobs, JobGetQueryParams, JobQueryType
 from blackcap.blocs.schedule import create_schedule
 from blackcap.blocs.user import create_user
-from blackcap.auther import auther_registry
+from blackcap.configs import config_registry
 from blackcap.schemas.api.cluster.post import ClusterCreate
 from blackcap.schemas.api.job.post import JobCreate
 from blackcap.schemas.api.schedule.post import ScheduleCreate
@@ -18,6 +18,8 @@ from blackcap.schemas.cluster import Cluster
 from blackcap.schemas.job import Job
 from blackcap.schemas.schedule import Schedule
 from blackcap.schemas.user import User
+
+config = config_registry.get_config()
 
 
 @click.command()
@@ -43,8 +45,8 @@ def user(email, password, name, org) -> None:
 def cluster(name, cluster_type, cluster_caps, messenger, queue) -> None:
     """Create cluster."""
     # fetch a user first
-    user_access_token = global_config.USER_ACCESS_TOKEN
-    auther = auther_registry.get_auther(global_config.AUTHER)
+    user_access_token = config.USER_ACCESS_TOKEN
+    auther = auther_registry.get_auther(config.AUTHER)
     user = auther.extract_user_from_token(user_access_token)
 
     cluster_create_request = ClusterCreate(
@@ -70,8 +72,8 @@ def cluster(name, cluster_type, cluster_caps, messenger, queue) -> None:
 def job(name, script) -> None:
     """Create cluster."""
     # fetch a user first
-    user_access_token = global_config.USER_ACCESS_TOKEN
-    auther = auther_registry.get_auther(global_config.AUTHER)
+    user_access_token = config.USER_ACCESS_TOKEN
+    auther = auther_registry.get_auther(config.AUTHER)
     user = auther.extract_user_from_token(user_access_token)
     script_path = Path(script)
     with open(script_path) as script_file:
@@ -89,8 +91,8 @@ def job(name, script) -> None:
 def schedule(job_id) -> None:
     """Create cluster."""
     # fetch a user first
-    user_access_token = global_config.USER_ACCESS_TOKEN
-    auther = auther_registry.get_auther(global_config.AUTHER)
+    user_access_token = config.USER_ACCESS_TOKEN
+    auther = auther_registry.get_auther(config.AUTHER)
     user = auther.extract_user_from_token(user_access_token)
 
     fetched_jobs = get_jobs(

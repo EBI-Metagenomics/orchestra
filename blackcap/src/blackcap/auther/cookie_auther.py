@@ -5,8 +5,9 @@ from typing import List, Optional, Tuple
 
 from bcrypt import checkpw, gensalt, hashpw
 
-from blackcap import DBSession, global_config
+from blackcap.db import DBSession
 from blackcap.auther.base import BaseAuther
+from blackcap.configs import config_registry
 from blackcap.models.protagonist import ProtagonistDB
 from blackcap.schemas.api.auth.post import AuthUserCreds
 from blackcap.schemas.api.user.post import UserCreate
@@ -19,6 +20,8 @@ import jwt
 from logzero import logger
 
 from sqlalchemy import select
+
+config = config_registry.get_config()
 
 
 class CookieAuther(BaseAuther):
@@ -97,14 +100,14 @@ class CookieAuther(BaseAuther):
                         {
                             "exp": datetime.utcnow()
                             + timedelta(
-                                minutes=global_config.ACCESS_TOKEN_EXPIRE_MINUTES  # noqa: E501
+                                minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES  # noqa: E501
                             ),
                             "sub": user_list[0].email,
                             "email": user_list[0].email,
                             "name": user_list[0].name,
                             "organisation": user_list[0].organisation,
                         },
-                        global_config.SECRET_KEY,
+                        config.SECRET_KEY,
                     )
                     return (
                         User(
@@ -146,7 +149,7 @@ class CookieAuther(BaseAuther):
             try:
                 user_cookie_decoded = jwt.decode(
                     user_cookie_encoded,
-                    global_config.SECRET_KEY,
+                    config.SECRET_KEY,
                     algorithms=["HS256"],  # noqa: E501
                 )
             except jwt.DecodeError as e:

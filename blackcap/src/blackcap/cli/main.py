@@ -6,18 +6,20 @@ import os
 
 import click
 
-from blackcap import global_config
 from blackcap.cli.create import create
 from blackcap.cli.db import db
 from blackcap.cli.get import get
 from blackcap.cli.publish import pub
 from blackcap.cli.schedule import sched
 from blackcap.cli.subscribe import sub
+from blackcap.configs import config_registry
 from blackcap.auther import auther_registry
 from blackcap.schemas.api.auth.post import AuthUserCreds
 
 
 from .. import __version__
+
+config = config_registry.get_config()
 
 
 @click.command()
@@ -25,7 +27,7 @@ from .. import __version__
 @click.option("--password", required=True, help="password of user")
 def login(email, password) -> None:
     auth_creds = AuthUserCreds(email=email, password=password)
-    auther = auther_registry.get_auther(global_config.AUTHER)
+    auther = auther_registry.get_auther(config.AUTHER)
     login_tuple = auther.login_user(auth_creds)
     if login_tuple is None:
         click.secho("Login failed!", fg="red")

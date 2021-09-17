@@ -9,6 +9,12 @@ from blackcap.schemas.schedule import Schedule
 class BaseScheduler(ABC):
     """Base Scheduler class."""
 
+    CONFIG_KEY = "SCHEDULER"
+    CONFIG_KEY_DEF_VAL = "RANDOM"
+
+    # Change this value in custom auther implementations.
+    CONFIG_KEY_VAL = "RANDOM"
+
     @abstractclassmethod
     def schedule(
         self: "BaseScheduler", schedule_create: ScheduleCreate

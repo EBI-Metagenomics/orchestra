@@ -6,6 +6,14 @@ from blackcap.configs.base import BaseConfig
 class DefaultConfig(BaseConfig):
     """Default blackcap config."""
 
+    def get_config_name(self: "DefaultConfig") -> str:
+        """Return Config name.
+
+        Returns:
+            str: Name of the config
+        """
+        return "DEFAULT"
+
     def get_sql_db_uri(self: "DefaultConfig") -> str:
         """Get uri of the sql database.
 

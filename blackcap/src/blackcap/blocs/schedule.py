@@ -3,8 +3,9 @@
 from datetime import datetime
 from typing import List
 
-from blackcap import DBSession
-from blackcap.extensions import scheduler
+from blackcap.configs import config_registry
+from blackcap.db import DBSession
+from blackcap.scheduler import scheduler_registry
 from blackcap.models.schedule import ScheduleDB
 from blackcap.schemas.api.schedule.delete import ScheduleDelete
 from blackcap.schemas.api.schedule.get import (
@@ -20,6 +21,10 @@ from blackcap.tasks.pub_messenger import publish_messenger
 from logzero import logger
 
 from sqlalchemy import select
+
+
+config = config_registry.get_config()
+scheduler = scheduler_registry.get_scheduler(config.SCHEDULER)
 
 
 def create_schedule(

@@ -3,7 +3,7 @@
 import json
 from typing import Callable, Dict, Optional
 
-from blackcap import DBSession
+from blackcap.db import DBSession
 from blackcap.configs.base import BaseConfig
 from blackcap.messenger.base import BaseMessenger
 from blackcap.models.schedule import ScheduleDB
@@ -22,6 +22,8 @@ from sqlalchemy import select
 
 class GCPMessenger(BaseMessenger):
     """GCP(Pub/Sub) implementation of Messenger."""
+
+    CONFIG_KEY_VAL = "GCP"
 
     def __init__(self: "GCPMessenger", config: BaseConfig) -> None:
         """Initialize Messenger with app config.

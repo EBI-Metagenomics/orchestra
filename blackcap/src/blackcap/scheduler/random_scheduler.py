@@ -3,7 +3,7 @@
 import random
 from typing import List
 
-from blackcap import DBSession
+from blackcap.db import DBSession
 from blackcap.models.cluster import ClusterDB
 from blackcap.models.schedule import ScheduleDB
 from blackcap.scheduler.base import BaseScheduler
@@ -17,6 +17,8 @@ from sqlalchemy.sql.expression import select
 
 class RandomScheduler(BaseScheduler):
     """Random scheduler schedule jobs randomly."""
+
+    CONFIG_KEY_VAL = "RANDOM"
 
     def schedule(
         self: "BaseScheduler", schedule_create: ScheduleCreate

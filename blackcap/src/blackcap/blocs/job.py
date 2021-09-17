@@ -2,7 +2,7 @@
 
 from typing import List
 
-from blackcap import DBSession
+from blackcap.db import DBSession
 from blackcap.models.job import JobDB
 from blackcap.schemas.api.job.delete import JobDelete
 from blackcap.schemas.api.job.get import JobGetQueryParams, JobQueryType

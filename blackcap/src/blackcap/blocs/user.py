@@ -2,7 +2,8 @@
 
 from typing import List
 
-from blackcap import DBSession, global_config
+from blackcap.configs import config_registry
+from blackcap.db import DBSession
 from blackcap.auther import auther_registry
 from blackcap.models.protagonist import ProtagonistDB
 from blackcap.schemas.api.user.delete import UserDelete
@@ -14,6 +15,10 @@ from blackcap.schemas.user import User
 from logzero import logger
 
 from sqlalchemy import select
+
+
+config = config_registry.get_config()
+auther = auther_registry.get_auther(config.AUTHER)
 
 
 def create_user(user_create_list: List[UserCreate]) -> List[User]:
@@ -29,7 +34,6 @@ def create_user(user_create_list: List[UserCreate]) -> List[User]:
         List[User]: Created user
     """
     try:
-        auther = auther_registry.get_auther(global_config.AUTHER)
         user_list = auther.register_user(user_create_list)
         return user_list
     except Exception as e:

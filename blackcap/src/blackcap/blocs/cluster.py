@@ -2,7 +2,7 @@
 
 from typing import List
 
-from blackcap import DBSession
+from blackcap.db import DBSession
 from blackcap.models.cluster import ClusterDB
 from blackcap.schemas.api.cluster.get import (
     ClusterGetQueryParams,
