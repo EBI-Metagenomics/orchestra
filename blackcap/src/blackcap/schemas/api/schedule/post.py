@@ -1,9 +1,9 @@
-"""Conductor Schedule POST route schemas."""
+"""Blackcap Schedule POST route schemas."""
 
 from typing import List, Optional
 
-from conductor.schemas.schedule import Schedule
-from conductor.schemas.user import User
+from blackcap.schemas.schedule import Schedule
+from blackcap.schemas.user import User
 
 from pydantic import BaseModel
 

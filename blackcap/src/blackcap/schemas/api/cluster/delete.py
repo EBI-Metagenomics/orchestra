@@ -1,4 +1,4 @@
-"""Conductor Cluster DELETE route schemas."""
+"""Blackcap Cluster DELETE route schemas."""
 
 from pydantic import BaseModel
 from pydantic.types import UUID4

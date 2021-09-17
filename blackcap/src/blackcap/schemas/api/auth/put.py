@@ -1,8 +1,8 @@
-"""Conductor Auth PUT route schemas."""
+"""Blackcap Auth PUT route schemas."""
 from typing import List
 
-from conductor.schemas.api.common import ResponseSchema
-from conductor.schemas.user import User
+from blackcap.schemas.api.common import ResponseSchema
+from blackcap.schemas.user import User
 
 from pydantic import BaseModel
 

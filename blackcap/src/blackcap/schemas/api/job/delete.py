@@ -1,4 +1,4 @@
-"""Conductor Job DELETE route schemas."""
+"""Blackcap Job DELETE route schemas."""
 
 from pydantic import BaseModel
 

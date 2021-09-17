@@ -1,4 +1,4 @@
-"""Conductor Job PUT route schemas."""
+"""Blackcap Job PUT route schemas."""
 
 from pydantic import BaseModel
 from pydantic.types import UUID4

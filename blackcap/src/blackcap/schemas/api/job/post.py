@@ -1,9 +1,9 @@
-"""Conductor Job POST route schemas."""
+"""Blackcap Job POST route schemas."""
 
 from typing import List, Optional
 
-from conductor.schemas.job import Job
-from conductor.schemas.user import User
+from blackcap.schemas.job import Job
+from blackcap.schemas.user import User
 
 from pydantic import BaseModel
 

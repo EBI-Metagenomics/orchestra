@@ -1,4 +1,4 @@
-"""Conductor Cluster PUT route schemas."""
+"""Blackcap Cluster PUT route schemas."""
 
 from typing import Optional
 

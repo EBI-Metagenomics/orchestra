@@ -1,4 +1,4 @@
-"""Conductor common schemas."""
+"""Blackcap common schemas."""
 
 from typing import Any, List
 

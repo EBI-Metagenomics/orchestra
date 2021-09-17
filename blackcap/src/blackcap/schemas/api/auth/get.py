@@ -1,4 +1,4 @@
-"""Conductor Auth GET route schemas."""
+"""Blackcap Auth GET route schemas."""
 
 from pydantic import BaseModel
 

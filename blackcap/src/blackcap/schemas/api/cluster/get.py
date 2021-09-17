@@ -1,10 +1,10 @@
-"""Conductor Cluster GET route schemas."""
+"""Blackcap Cluster GET route schemas."""
 
 from enum import Enum, unique
 from typing import List
 
-from conductor.schemas.api.common import ResponseSchema
-from conductor.schemas.cluster import Cluster
+from blackcap.schemas.api.common import ResponseSchema
+from blackcap.schemas.cluster import Cluster
 
 from pydantic import BaseModel
 

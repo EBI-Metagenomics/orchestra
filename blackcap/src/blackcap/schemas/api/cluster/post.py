@@ -1,10 +1,10 @@
-"""Conductor Cluster POST route schemas."""
+"""Blackcap Cluster POST route schemas."""
 
 from typing import List, Optional
 
-from conductor.schemas.api.common import ResponseSchema
-from conductor.schemas.cluster import Cluster
-from conductor.schemas.user import User
+from blackcap.schemas.api.common import ResponseSchema
+from blackcap.schemas.cluster import Cluster
+from blackcap.schemas.user import User
 
 from pydantic import BaseModel
 

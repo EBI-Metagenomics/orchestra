@@ -1,4 +1,4 @@
-"""Conductor Auth DELETE route schemas."""
+"""Blackcap Auth DELETE route schemas."""
 
 from pydantic import BaseModel
 from pydantic.types import UUID4

@@ -1,4 +1,4 @@
-"""Conductor User PUT route schemas."""
+"""Blackcap User PUT route schemas."""
 
 from typing import Optional
 
