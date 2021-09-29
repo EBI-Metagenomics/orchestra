@@ -48,14 +48,17 @@ class GCPMessenger(BaseMessenger):
             self.service_account_info, audience=self.sub_audience
         )
 
-        self.publisher = pubsub_v1.PublisherClient(
-            credentials=self.pub_credentials
-        )  # noqa: E501
-
-        self.subscriber = pubsub_v1.SubscriberClient(
-            credentials=self.sub_credentials
-        )  # noqa: E501
         self.project_id = config.GCP_PROJECT_ID
+
+    @property
+    def publisher(self) -> pubsub_v1.PublisherClient:
+        """Publisher Client."""
+        return pubsub_v1.PublisherClient(credentials=self.pub_credentials)
+
+    @property
+    def subscriber(self) -> pubsub_v1.SubscriberClient:
+        """Subscriber Client."""
+        return pubsub_v1.SubscriberClient(credentials=self.sub_credentials)
 
     def publish(self: "GCPMessenger", msg: Dict, topic_id: str) -> str:
         """Publish msg on the GCP Pub/Sub queue.
