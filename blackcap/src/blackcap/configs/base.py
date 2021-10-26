@@ -18,6 +18,7 @@ class BaseConfig(ABC, BaseSettings):
     FLASK_ENV: str = "development"
     DB_TYPE: str = "postgresql"
     DB_NAME: str = "conductor"
+    DB_PATH: str = ""
     DB_URI: str = None
     DB_USER: str = "postgres"
     DB_PASS: str = "postgres"
