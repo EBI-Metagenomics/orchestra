@@ -37,27 +37,30 @@ class GCPMessenger(BaseMessenger):
         self.sub_audience = (
             "https://pubsub.googleapis.com/google.pubsub.v1.Subscriber"  # noqa: E501
         )
-        self.service_account_info = json.load(
-            open(config.GOOGLE_APPLICATION_CREDENTIALS)
-        )  # noqa: E501
-        self.pub_credentials = jwt.Credentials.from_service_account_info(
-            self.service_account_info, audience=self.pub_audience
-        )
 
-        self.sub_credentials = jwt.Credentials.from_service_account_info(
-            self.service_account_info, audience=self.sub_audience
-        )
+        self.config = config
 
         self.project_id = config.GCP_PROJECT_ID
 
     @property
+    def service_account_info(self) -> Dict:
+        """Service account info."""
+        return json.load(open(self.config.GOOGLE_APPLICATION_CREDENTIALS))  # noqa: E501
+
+    @property
     def publisher(self) -> pubsub_v1.PublisherClient:
         """Publisher Client."""
+        self.pub_credentials = jwt.Credentials.from_service_account_info(
+            self.service_account_info, audience=self.pub_audience
+        )
         return pubsub_v1.PublisherClient(credentials=self.pub_credentials)
 
     @property
     def subscriber(self) -> pubsub_v1.SubscriberClient:
         """Subscriber Client."""
+        self.sub_credentials = jwt.Credentials.from_service_account_info(
+            self.service_account_info, audience=self.sub_audience
+        )
         return pubsub_v1.SubscriberClient(credentials=self.sub_credentials)
 
     def publish(self: "GCPMessenger", msg: Dict, topic_id: str) -> str:
