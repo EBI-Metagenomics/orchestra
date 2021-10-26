@@ -10,6 +10,7 @@ class ConfigRegistry:
     """Config registry."""
 
     configs = {}
+    config_of_config = ConfigOfConfig()
 
     def add_config(self: "ConfigRegistry", config: BaseConfig) -> None:
         """Add custom configs to registry.
@@ -18,8 +19,6 @@ class ConfigRegistry:
             config (BaseConfig): Custom config implementation
         """
         self.configs[config.get_config_name()] = config
-
-    config_of_config = ConfigOfConfig()
 
     def get_config(
         self: "ConfigRegistry", config: str = config_of_config.BLACKCAP_CONFIG

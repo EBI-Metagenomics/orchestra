@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from pydantic.env_settings import BaseSettings
+from pydantic import BaseSettings
 
 from xdg import xdg_config_home
 
@@ -59,7 +59,7 @@ class BaseConfig(ABC, BaseSettings):
     class Config:
         """Config for the BaseConfig class."""
 
-        env_file = xdg_config_home() / ("orchestra") / ("conductor.env")
+        env_file = xdg_config_home() / ("orchestra") / ("blackcap.env")
 
 
 class ConfigOfConfig(BaseSettings):
@@ -70,4 +70,4 @@ class ConfigOfConfig(BaseSettings):
     class Config:
         """Config for ConfigofConfig class."""
 
-        env_file = xdg_config_home() / ("orchestra") / ("conductor.env")
+        env_file = xdg_config_home() / ("orchestra") / ("blackcap.env")
