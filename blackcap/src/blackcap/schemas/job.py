@@ -1,6 +1,6 @@
 """Job schema."""
 
-from typing import Optional
+from typing import Dict, Optional
 
 from pydantic import BaseModel
 from pydantic.types import UUID4
@@ -11,4 +11,8 @@ class Job(BaseModel):
 
     job_id: Optional[UUID4]
     name: str
+    description: str
+    job_type: str = ""
+    specification: Dict = {}
+    metadata: Dict = {}
     script: str

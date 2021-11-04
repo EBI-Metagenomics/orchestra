@@ -8,7 +8,7 @@ from blackcap.models.meta.mixins import (
 )  # noqa: E501
 from blackcap.models.meta.orm import reference_col
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, JSON
 
 # from sqlalchemy.orm import relationship
 
@@ -18,13 +18,15 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
 
     __tablename__ = "job"
     serialize_rules = ("-protagonist.jobs",)
-    name = Column(String(), nullable=False)
-    script = Column(String(), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    job_type = Column(String)
+    specification = Column(JSON, nullable=False)
+    metadata = Column(JSON)
+    script = Column(String, nullable=False)
 
-    cluster_caps_req = Column(String(), nullable=True)
-
+    cluster_caps_req = Column(String, nullable=True)
     protagonist_id = reference_col("protagonist")
-    # protagonist = relationship("ProtagonistDB", backref="jobs")
 
     # it's going ot be more performance to keep a counter
     # on this table than queries the schedules count each time
