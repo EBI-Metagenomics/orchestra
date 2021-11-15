@@ -11,8 +11,8 @@ class Job(BaseModel):
 
     job_id: Optional[UUID4]
     name: str
-    description: str
+    description: Optional[str]
     job_type: str = ""
     specification: Dict = {}
     metadata: Dict = {}
-    script: str
+    script: Optional[str]
