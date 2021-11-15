@@ -54,7 +54,7 @@ def create_app(
         Flask: Flask app
     """
     logger.info("Creating a flask app...")
-    app = Flask(__name__)
+    app = Flask(config.FLASK_APP)
     logger.info(f"Flask app created: {app.import_name}")
 
     # Load config

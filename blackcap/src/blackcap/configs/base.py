@@ -12,7 +12,7 @@ class BaseConfig(ABC, BaseSettings):
     """Base config class."""
 
     HOME: str
-    FLASK_APP: str = "conductor"
+    FLASK_APP: str = "blackcap"
     FLASK_HOST: str = "localhost"
     FLASK_PORT: int = 9991
     FLASK_ENV: str = "development"
