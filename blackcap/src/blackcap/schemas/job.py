@@ -14,5 +14,5 @@ class Job(BaseModel):
     description: Optional[str]
     job_type: str = ""
     specification: Dict = {}
-    metadata: Dict = {}
+    job_metadata: Dict = {}
     script: Optional[str]

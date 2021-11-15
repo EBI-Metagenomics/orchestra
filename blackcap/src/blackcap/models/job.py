@@ -22,7 +22,7 @@ class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):
     description = Column(String)
     job_type = Column(String)
     specification = Column(JSON, nullable=False)
-    metadata = Column(JSON)
+    job_metadata = Column(JSON)
     script = Column(String, nullable=False)
 
     cluster_caps_req = Column(String, nullable=True)
