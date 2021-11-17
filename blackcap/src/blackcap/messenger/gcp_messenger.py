@@ -43,12 +43,12 @@ class GCPMessenger(BaseMessenger):
         self.project_id = config.GCP_PROJECT_ID
 
     @property
-    def service_account_info(self) -> Dict:
+    def service_account_info(self: "GCPMessenger") -> Dict:
         """Service account info."""
         return json.load(open(self.config.GOOGLE_APPLICATION_CREDENTIALS))  # noqa: E501
 
     @property
-    def publisher(self) -> pubsub_v1.PublisherClient:
+    def publisher(self: "GCPMessenger") -> pubsub_v1.PublisherClient:
         """Publisher Client."""
         self.pub_credentials = jwt.Credentials.from_service_account_info(
             self.service_account_info, audience=self.pub_audience
@@ -56,7 +56,7 @@ class GCPMessenger(BaseMessenger):
         return pubsub_v1.PublisherClient(credentials=self.pub_credentials)
 
     @property
-    def subscriber(self) -> pubsub_v1.SubscriberClient:
+    def subscriber(self: "GCPMessenger") -> pubsub_v1.SubscriberClient:
         """Subscriber Client."""
         self.sub_credentials = jwt.Credentials.from_service_account_info(
             self.service_account_info, audience=self.sub_audience

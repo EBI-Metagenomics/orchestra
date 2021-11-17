@@ -7,10 +7,14 @@ from pathlib import Path
 
 import click
 
+from blackcap.configs import config_registry
 from blackcap.schemas.message import Message, MessageType
-from blackcap.tasks.pub_messenger import publish_messenger
+from blackcap.messenger import messenger_registry
 
 from logzero import logger
+
+config = config_registry.get_config()
+messenger = messenger_registry.get_messenger(config.MESSENGER)
 
 
 @click.command()
@@ -27,7 +31,7 @@ def chatter(topic: str) -> None:
             data={"msg": msg},
             timestamp=str(datetime.now()),
         )
-        publish_messenger.delay(msg.dict(), topic)
+        messenger.publish(msg.dict(), topic)
         logger.info(f"\nSuccess!\n\nMsg: {msg}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")

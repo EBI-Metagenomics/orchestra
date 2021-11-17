@@ -34,9 +34,10 @@ class BaseConfig(ABC, BaseSettings):
     OBSERVER: str = "ELASTIC"
     GOOGLE_APPLICATION_CREDENTIALS: str = "./keys.json"
     GCP_PROJECT_ID: str = "YOUR_GCP_PROJECT_ID"
-    GCP_PUBSUB_TOPIC: str = "test-topic"
-    GCP_PUBSUB_SUB_ID: str = "test-sub"
+    MESSENGER_TOPIC_ID: str = "test-topic"
+    MESSENGER_SUB_ID: str = "test-topic"
     CELERY_BROKER_URL: str = "redis://localhost:6379/0"
+    NATS_ENDPOINT: str = "nats://localhost:1401"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
 
     @abstractmethod

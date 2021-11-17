@@ -13,7 +13,7 @@ messenger = messenger_registry.get_messenger(config.MESSENGER)
 
 
 @click.command()
-@click.option("--sub_id", default=config.GCP_PUBSUB_SUB_ID, help="Subscription Id")
+@click.option("--sub_id", default=config.MESSENGER_SUB_ID, help="Subscription Id")
 def echo(sub_id: str) -> None:
     """subscribe and echo msgs"""
     logger.info("Trying to subscribe and read messages...")
@@ -24,7 +24,7 @@ def echo(sub_id: str) -> None:
 
 
 @click.command()
-@click.option("--sub_id", default=config.GCP_PUBSUB_SUB_ID, help="Subscription Id")
+@click.option("--sub_id", default=config.MESSENGER_SUB_ID, help="Subscription Id")
 def schedule(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")

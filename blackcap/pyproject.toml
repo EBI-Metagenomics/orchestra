@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blackcap"
-version = "0.14.0"
+version = "0.15.0"
 description = "Shared library for Orchestra"
 authors = ["Ankur Kumar <ank@leoank.me>"]
 license = "Apache License 2.0"
@@ -23,6 +23,7 @@ PyJWT = "^2.1.0"
 SQLAlchemy = "^1.4.22"
 SQLAlchemy-serializer = "^1.4.1"
 alembic = "^1.6.5"
+nats-python = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
