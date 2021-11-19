@@ -2,10 +2,10 @@
 
 from typing import List
 
+from pydantic import BaseModel
+
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
-
-from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):

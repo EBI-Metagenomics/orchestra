@@ -3,10 +3,10 @@
 from enum import Enum, unique
 from typing import List, Optional
 
+from pydantic import BaseModel
+
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
-
-from pydantic import BaseModel
 
 
 @unique
