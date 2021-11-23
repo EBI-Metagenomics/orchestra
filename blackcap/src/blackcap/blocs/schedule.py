@@ -126,10 +126,10 @@ def update_schedule(schedule_update: ScheduleUpdate) -> ScheduleDB:
             # if schedule_list is None:
             # raise NotFound exception - 404
             if len(schedule_list) == 1:
-                schedule_update_dict = schedule_update.dict()
+                schedule_update_dict = schedule_update.dict(exclude_defaults=True)
                 schedule_update_dict.pop("schedule_id")
                 updated_schedule = schedule_list[0].update(
-                    session, **schedule_update.dict()
+                    session, **schedule_update_dict
                 )  # noqa: E501
                 return updated_schedule
         except Exception as e:

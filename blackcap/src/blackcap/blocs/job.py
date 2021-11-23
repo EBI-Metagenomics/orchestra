@@ -103,10 +103,10 @@ def update_job(job_update: JobUpdate) -> Job:
         try:
             job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
             if len(job_list) == 1:
-                job_update_dict = job_update.dict()
+                job_update_dict = job_update.dict(exclude_defaults=True)
                 job_update_dict.pop("job_id")
                 updated_job = job_list[0].update(
-                    session, **job_update.dict()
+                    session, **job_update_dict
                 )  # noqa: E501
                 return Job(job_id=updated_job.id, **updated_job.to_dict())
             if len(job_list) == 0:

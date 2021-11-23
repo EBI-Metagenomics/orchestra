@@ -104,10 +104,10 @@ def update_user(user_update: UserUpdate) -> User:
                 # TODO: raise not found error
                 pass
             if len(user_list) == 1:
-                user_update_dict = user_update.dict()
+                user_update_dict = user_update.dict(exclude_defaults=True)
                 user_update_dict.pop("user_id")
                 updated_user = user_list[0].update(
-                    session, **user_update.dict()
+                    session, **user_update_dict
                 )  # noqa: E501
                 return User(user_id=updated_user.id, **updated_user.to_dict())
         except Exception as e:
