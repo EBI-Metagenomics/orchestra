@@ -40,3 +40,12 @@ class BaseCluster(ABC):
             List[str]: List of  status of the jobs
         """
         pass
+
+    def process_schedule_msg(self: "BaseCluster", schedule: Schedule) -> None:
+        """Submit job to the cluster.
+
+        Args:
+            schedule (Schedule): Schedule Object
+        """
+        self.prepare_job(schedule)
+        self.submit_job(schedule)
