@@ -3,7 +3,6 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from blackcap.schemas.job import Job
 from blackcap.schemas.schedule import Schedule
 
 
@@ -11,11 +10,11 @@ class BaseCluster(ABC):
     """Base cluster interface."""
 
     @abstractmethod
-    def prepare_job(self: "BaseCluster", job: Job) -> None:
+    def prepare_job(self: "BaseCluster", schedule: Schedule) -> None:
         """Prepare job for submission.
 
         Args:
-            job (Job): Job object
+            schedule (Schedule): Schedule Object
         """
 
     @abstractmethod
@@ -32,12 +31,12 @@ class BaseCluster(ABC):
 
     @abstractmethod
     def get_job_status(self: "BaseCluster", job_id: str) -> List[str]:
-        """Get status of a job by Job.
+        """Get status of a job.
 
         Args:
             job_id (str): ID of the job
 
         Returns:
-            List[str]: List of  status of the jobs # noqa DAR202
+            List[str]: List of  status of the jobs
         """
         pass

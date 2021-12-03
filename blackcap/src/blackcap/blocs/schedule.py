@@ -27,6 +27,11 @@ config = config_registry.get_config()
 scheduler = scheduler_registry.get_scheduler(config.SCHEDULER)
 
 
+##################
+# CRUD
+##################
+
+
 def create_schedule(
     schedule_create_list: List[ScheduleCreate],
 ) -> List[Schedule]:  # noqa: E501
@@ -172,3 +177,8 @@ def delete_schedule(schedule_delete: ScheduleDelete) -> ScheduleDB:
                 f"Unable to delete schedule: {schedule_delete.dict()} due to {e}"  # noqa: E501
             )
             raise e
+
+
+##################
+# Flows
+##################
