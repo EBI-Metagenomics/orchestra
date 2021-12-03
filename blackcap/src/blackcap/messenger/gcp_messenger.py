@@ -3,12 +3,9 @@
 import json
 from typing import Callable, Dict, Optional
 
-from blackcap.db import DBSession
 from blackcap.configs.base import BaseConfig
 from blackcap.messenger.base import BaseMessenger
-from blackcap.models.schedule import ScheduleDB
-from blackcap.schemas.message import Message, MessageType
-from blackcap.schemas.schedule import Schedule
+from blackcap.schemas.message import Message
 from blackcap.utils.json_encoders import UUIDEncoder
 
 from google.auth import jwt
@@ -31,12 +28,8 @@ class GCPMessenger(BaseMessenger):
         Args:
             config (BaseConfig): Config to initialize messenger
         """
-        self.pub_audience = (
-            "https://pubsub.googleapis.com/google.pubsub.v1.Publisher"  # noqa: E501
-        )
-        self.sub_audience = (
-            "https://pubsub.googleapis.com/google.pubsub.v1.Subscriber"  # noqa: E501
-        )
+        self.pub_audience = "https://pubsub.googleapis.com/google.pubsub.v1.Publisher"
+        self.sub_audience = "https://pubsub.googleapis.com/google.pubsub.v1.Subscriber"
 
         self.config = config
 
@@ -45,7 +38,7 @@ class GCPMessenger(BaseMessenger):
     @property
     def service_account_info(self: "GCPMessenger") -> Dict:
         """Service account info."""
-        return json.load(open(self.config.GOOGLE_APPLICATION_CREDENTIALS))  # noqa: E501
+        return json.load(open(self.config.GOOGLE_APPLICATION_CREDENTIALS))
 
     @property
     def publisher(self: "GCPMessenger") -> pubsub_v1.PublisherClient:
@@ -87,7 +80,7 @@ class GCPMessenger(BaseMessenger):
         self: "GCPMessenger",
         callback: Callable,
         sub_id: str,
-        timeout: Optional[float] = None,  # noqa: E501
+        timeout: Optional[float] = None,
     ) -> None:
         """Subscribe to a topic.
 
@@ -96,14 +89,12 @@ class GCPMessenger(BaseMessenger):
             sub_id (str): Id of the topic.
             timeout (Union[float, None]): Time to wait for msgs. Defaults to None. # noqa: E501
         """
-        subscription_path = self.subscriber.subscription_path(
-            self.project_id, sub_id
-        )  # noqa: E501
+        subscription_path = self.subscriber.subscription_path(self.project_id, sub_id)
 
         streaming_pull_future = self.subscriber.subscribe(
             subscription_path,
             callback=callback,
-            await_callbacks_on_shutdown=True,  # noqa: E501
+            await_callbacks_on_shutdown=True,
         )
 
         with self.subscriber:
@@ -111,43 +102,12 @@ class GCPMessenger(BaseMessenger):
                 streaming_pull_future.result(timeout=timeout)
             except TimeoutError as e:
                 logger.error(
-                    f"GCPMessenger timeout error while pulling messages. Error: {e}"  # noqa: E501
-                )  # noqa: E501
+                    f"GCPMessenger timeout error while pulling messages. Error: {e}"
+                )
                 streaming_pull_future.cancel()
 
-    def process_schedule_msg(self: "GCPMessenger", msg: GCPMessage) -> None:
-        """Process Schedule Pub/Sub msgs.
-
-        Args:
-            msg (GCPMessage): Pub/Sub Msg
-        """
-        parsed_msg = Message.parse_raw(msg.data)
-        if (
-            parsed_msg.msg_type
-            == MessageType.TO_CONDUCTOR_JOB_STATUS_UPDATE.value  # noqa: E501
-        ):
-            logger.info(f"Recieved msg: {parsed_msg.dict()}")
-            schedule = Schedule(**parsed_msg.data)
-            # Check if job already exists
-            stmt = select(ScheduleDB).where(
-                ScheduleDB.id == schedule.schedule_id
-            )  # noqa: E501
-            with DBSession() as session:
-                fetched_schedules = session.execute(stmt).scalars().all()
-                if len(fetched_schedules) == 0:
-                    logger.error(
-                        f"""
-                    Unable to find job from schedule!!!
-                    Schedule ID: {schedule.id},
-                    Job ID: {schedule.job_id}
-                    """
-                    )
-                else:
-                    # Update schedule status
-                    fetched_schedules[0].update(
-                        session, status=schedule.status
-                    )  # noqa: E501
-            msg.ack()
+    def parse_messenger_msg(self: "GCPMessenger", messenger_msg: GCPMessage) -> Message:
+        return Message.parse_raw(messenger_msg.data)
 
     def echo_msg(self: "GCPMessenger", msg: Message) -> None:
         """Echo msgs to stdout.

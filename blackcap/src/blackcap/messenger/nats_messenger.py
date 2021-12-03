@@ -2,21 +2,16 @@
 
 from dataclasses import asdict
 import json
-from typing import Callable, Dict, Generator, Optional
+from typing import Callable, Dict, Optional
 
-from blackcap.db import DBSession
 from blackcap.configs.base import BaseConfig
 from blackcap.messenger.base import BaseMessenger
-from blackcap.models.schedule import ScheduleDB
-from blackcap.schemas.message import Message, MessageType
-from blackcap.schemas.schedule import Schedule
+from blackcap.schemas.message import Message
 from blackcap.utils.json_encoders import UUIDEncoder
 
 from logzero import logger
 
 from pynats import NATSClient, NATSMessage
-
-from sqlalchemy import select
 
 
 class NATSMessenger(BaseMessenger):
@@ -81,31 +76,10 @@ class NATSMessenger(BaseMessenger):
             )
             client.close()
 
-    def process_schedule_msg(self: "NATSMessenger", msg: NATSMessage) -> None:
-        """Process Schedule Pub/Sub msgs.
-
-        Args:
-            msg (NATSMessage): Pub/Sub Msg
-        """
-        parsed_msg = Message.parse_obj(asdict(msg)["payload"])
-        if parsed_msg.msg_type == MessageType.TO_CONDUCTOR_JOB_STATUS_UPDATE.value:
-            logger.info(f"Recieved msg: {parsed_msg.dict()}")
-            schedule = Schedule(**parsed_msg.data)
-            # Check if job already exists
-            stmt = select(ScheduleDB).where(ScheduleDB.id == schedule.schedule_id)
-            with DBSession() as session:
-                fetched_schedules = session.execute(stmt).scalars().all()
-                if len(fetched_schedules) == 0:
-                    logger.error(
-                        f"""
-                    Unable to find job from schedule!!!
-                    Schedule ID: {schedule.id},
-                    Job ID: {schedule.job_id}
-                    """
-                    )
-                else:
-                    # Update schedule status
-                    fetched_schedules[0].update(session, status=schedule.status)
+    def parse_messenger_msg(
+        self: "NATSMessenger", messenger_msg: NATSMessage
+    ) -> Message:
+        return Message.parse_obj(asdict(messenger_msg))
 
     def echo_msg(self: "NATSMessenger", msg: NATSMessage) -> None:
         """Echo msgs to stdout.
