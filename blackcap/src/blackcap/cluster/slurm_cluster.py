@@ -14,6 +14,8 @@ from xdg import xdg_data_home
 class SlurmCluster(BaseCluster):
     """Slurm interface."""
 
+    CONFIG_KEY_VAL = "SLURM"
+
     def prepare_job(self: "SlurmCluster", schedule: Schedule) -> None:
         """Prepare job for submission.
 

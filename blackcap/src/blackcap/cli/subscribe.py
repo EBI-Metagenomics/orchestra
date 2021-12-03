@@ -5,11 +5,13 @@ import click
 
 from blackcap.configs import config_registry
 from blackcap.messenger import messenger_registry
+from blackcap.cluster import cluster_registry
 
 from logzero import logger
 
 config = config_registry.get_config()
 messenger = messenger_registry.get_messenger(config.MESSENGER)
+cluster = cluster_registry.get_cluster(config.CLUSTER)
 
 
 @click.command()
@@ -29,7 +31,7 @@ def schedule(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")
     try:
-        messenger.subscribe(callback=messenger.process_schedule_msg, sub_id=sub_id)
+        messenger.subscribe(callback=cluster.process_schedule_msg, sub_id=sub_id)
     except Exception as e:
         logger.error(f"failed to subscribe: {e}")
 
