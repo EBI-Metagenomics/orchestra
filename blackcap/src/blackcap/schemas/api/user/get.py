@@ -14,7 +14,7 @@ class UserQueryType(Enum):
     """User Query type enum."""
 
     GET_ALL_USERS = "get_all_users"
-    GET_USERS_BY_ID = "get_user_by_id"
+    GET_USER_BY_ID = "get_user_by_id"
     GET_USERS_BY_EMAIL = "get_users_by_email"
     GET_USERS_BY_ORGANISATION = "get_users_by_organisation"
 

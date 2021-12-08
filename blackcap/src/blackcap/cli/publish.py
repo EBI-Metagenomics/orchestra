@@ -51,31 +51,8 @@ def custom(topic: str, data: str) -> None:
             data={"msg": data},
             timestamp=str(datetime.now()),
         )
-        publish_messenger.delay(msg.dict(), topic)
+        messenger.publish(msg.dict(), topic)
         logger.info(f"\nSuccess!\n\nMsg: {data}")
-    except Exception as e:
-        logger.error(f"failed to publish msg: {e}")
-
-
-@click.command()
-@click.option(
-    "--topic", default="test-topic", help="Id of the topic to publish msgs on"
-)
-@click.option("--file", help="file path of job's JSON file", required=True)
-def job(topic: str, file: str) -> None:
-    """Publish a job."""
-    logger.info("Trying to publish a job...")
-    try:
-        job_file_path = Path(file)
-        with open(job_file_path) as job_file:
-            data = job_file.read()
-            msg = Message(
-                msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-                data={"msg": data},
-                timestamp=datetime.now(),
-            )
-            publish_messenger.delay(msg.dict(), topic)
-            logger.info(f"\nSuccess!\n\nMsg: {data}")
     except Exception as e:
         logger.error(f"failed to publish msg: {e}")
 
@@ -88,4 +65,3 @@ def pub() -> None:
 
 pub.add_command(chatter)
 pub.add_command(custom)
-pub.add_command(job)

@@ -57,7 +57,7 @@ def get_users(query_params: UserGetQueryParams) -> List[User]:
 
     if query_params.query_type == UserQueryType.GET_ALL_USERS:
         stmt = select(ProtagonistDB)
-    if query_params.query_type == UserQueryType.GET_USERS_BY_ID:
+    if query_params.query_type == UserQueryType.GET_USER_BY_ID:
         stmt = select(ProtagonistDB).where(
             ProtagonistDB.id == query_params.user_id
         )  # noqa: E501
