@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blackcap"
-version = "0.23.0"
+version = "0.24.0"
 description = "Shared library for Orchestra"
 authors = ["Ankur Kumar <ank@leoank.me>"]
 license = "Apache License 2.0"
