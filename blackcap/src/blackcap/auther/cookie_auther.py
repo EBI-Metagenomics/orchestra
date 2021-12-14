@@ -89,7 +89,7 @@ class CookieAuther(BaseAuther):
                 )  # noqa: E501
                 # return early if user not found
                 if len(user_list) == 0:
-                    return None
+                    return (None, "")
 
                 # Check password hash
                 if checkpw(
@@ -116,7 +116,7 @@ class CookieAuther(BaseAuther):
                         user_cookie,
                     )
                 else:
-                    return None
+                    return (None, "")
             except Exception as e:
                 session.rollback()
                 logger.error(f"Unable to login user due to: {e}")
