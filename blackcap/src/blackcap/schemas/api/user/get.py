@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
+from pydantic.types import UUID4
 
 
 @unique
@@ -23,7 +24,7 @@ class UserGetQueryParams(BaseModel):
     """User GET request query params schema."""
 
     query_type: UserQueryType
-    user_id: Optional[str]
+    user_id: Optional[UUID4]
     email: Optional[str]
     organisation: Optional[str]
 
