@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from blackcap.flow.flow import Flow, FlowStatus
+from blackcap.flow.flow import Flow, FlowExecError, FlowStatus
 
 
 @dataclass
@@ -22,10 +22,12 @@ class Executor:
             try:
                 forward_out = step.forward_call(self.flow.inputs[index])
                 self.flow.forward_outputs.append(forward_out)
-            except:
+            except FlowExecError as e:
                 # TODO: Add logging for failed forward calls
-                # Set flow status to failed
+                # Set flow status to failed and append error
                 self.flow.status = FlowStatus.FAILED
+                e.step_index = index
+                self.flow.errors.append(e)
                 for back_index in reversed(range(0, index)):
                     try:
                         backward_out = self.flow.steps[back_index].backward_call(
@@ -33,9 +35,10 @@ class Executor:
                             self.flow.forward_outputs[back_index],
                         )
                         self.flow.backward_outputs.append(backward_out)
-                    except:
+                    except FlowExecError as e:
                         # TODO: Add central logging here
-                        pass
+                        e.step_index = index
+                        self.flow.errors.append(e)
                 return self.flow
         self.flow.status = FlowStatus.PASSED
         return self.flow
