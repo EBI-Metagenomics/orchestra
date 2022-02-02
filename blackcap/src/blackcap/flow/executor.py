@@ -20,18 +20,22 @@ class Executor:
         self.flow.status = FlowStatus.EXECUTING
         for index, step in enumerate(self.flow.steps):
             try:
-                step.forward_call(self.flow.inputs[index])
+                forward_out = step.forward_call(self.flow.inputs[index])
+                self.flow.forward_outputs.append(forward_out)
             except:
                 # TODO: Add logging for failed forward calls
                 # Set flow status to failed
                 self.flow.status = FlowStatus.FAILED
                 for back_index in reversed(range(0, index)):
                     try:
-                        self.flow.steps[back_index].backward_call(
+                        backward_out = self.flow.steps[back_index].backward_call(
                             self.flow.inputs[back_index],
                             self.flow.forward_outputs[back_index],
                         )
+                        self.flow.backward_outputs.append(backward_out)
                     except:
                         # TODO: Add central logging here
                         pass
+                return self.flow
+        self.flow.status = FlowStatus.PASSED
         return self.flow

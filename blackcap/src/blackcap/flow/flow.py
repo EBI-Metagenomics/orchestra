@@ -1,6 +1,6 @@
 """Flow Object."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 from typing import List
 
@@ -26,10 +26,10 @@ class FlowStatus(AutoName):
 class Flow:
     """Flow Object."""
 
-    steps: List[Step] = []
-    inputs: List[List[Prop]] = []
-    forward_outputs: List[List[Prop]] = []
-    backward_outputs: List[List[Prop]] = []
+    steps: List[Step] = field(default_factory=list)
+    inputs: List[List[Prop]] = field(default_factory=list)
+    forward_outputs: List[List[Prop]] = field(default_factory=list)
+    backward_outputs: List[List[Prop]] = field(default_factory=list)
     status: FlowStatus = FlowStatus.CREATED
 
     def add_step(self: "Flow", step: Step, inputs: List[Prop]) -> None:
