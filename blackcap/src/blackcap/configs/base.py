@@ -32,6 +32,7 @@ class BaseConfig(ABC, BaseSettings):
     MESSENGER: str = "GCP"
     SCHEDULER: str = "RANDOM"
     OBSERVER: str = "ELASTIC"
+    CLUSTER: str = "ARGO"
     GOOGLE_APPLICATION_CREDENTIALS: str = "./keys.json"
     GCP_PROJECT_ID: str = "YOUR_GCP_PROJECT_ID"
     MESSENGER_TOPIC_ID: str = "test-topic"
