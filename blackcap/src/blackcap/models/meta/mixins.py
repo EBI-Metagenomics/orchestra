@@ -6,7 +6,7 @@ from typing import Any, List, Optional, Union
 
 from blackcap.models.meta.helpers import GUID
 
-from sqlalchemy import Column, DateTime, Integer
+from sqlalchemy import delete, Column, DateTime, Integer
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.session import Session
 
@@ -30,44 +30,56 @@ class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD operations."""
 
     @classmethod
-    def create(cls: Any, DBSession: Session, **kwargs: Any) -> Any:
+    def create(cls: Any, session: Session, **kwargs: Any) -> Any:
         """Create a new record and save it to the database.
 
         Args:
-            DBSession: (Session): database session to use
+            session: (Session): database session to use
             **kwargs (Any): kwargs to pass to cls for init
 
         Returns:
             Any: Instance of self
         """
         instance = cls(**kwargs)
-        return instance.save()
+        return instance.save(session)
+
+    def save(self: "CRUDMixin", session: Session, commit: bool = True) -> Any:
+        """Save the record.
+
+        Args:
+            session: (Session): database session to use
+            commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
+
+        Returns:
+            Any: Instance of self
+        """
+        session.add(self)
+        if commit:
+            session.commit()
+        return self
 
     @classmethod
-    def bulk_create(cls: Any, obj_list: List[Any], DBSession: Session) -> Any:
-        """Create a new records and save them to the database.
+    def bulk_create(cls: Any, obj_list: List[Any], session: Session) -> Any:
+        """Bulk create new records and save them to the database.
 
         Args:
             list (List[Any]): List of self
-            DBSession: (Session): database session to use
+            session: (Session): database session to use
 
         Returns:
             Any: True if scuccess
         """
-        DBSession.bulk_save_objects(obj_list, return_defaults=True)
-        DBSession.commit()
+        session.add_all(obj_list)
+        session.commit()
         return True
 
     def update(
-        self: "CRUDMixin",
-        DBSession: Session,
-        commit: bool = True,
-        **kwargs: Any  # noqa: E501
+        self: "CRUDMixin", session: Session, commit: bool = True, **kwargs: Any
     ) -> Any:
         """Update specific fields of a record.
 
         Args:
-            DBSession: (Session): database session to use
+            session: (Session): database session to use
             commit (bool): Flag to control commit behaviour. Defaults to True.
             **kwargs (Any): kwargs to update cls params
 
@@ -76,58 +88,55 @@ class CRUDMixin(object):
         """
         for attr, value in kwargs.items():
             setattr(self, attr, value)
-        return commit and self.save(DBSession) or self
+        return commit and self.save(session) or self
 
     @classmethod
-    def bulk_update(cls: Any, list: List[Any], DBSession: Session) -> Any:
-        """Create a new records and save them to the database.
+    def bulk_update(cls: Any, obj_list: List[Any], session: Session) -> Any:
+        """Bulk update records and save them to the database.
 
         Args:
-            list (List[Any]): List of instances of self
-            DBSession: (Session): database session to use
+            obj_list (List[Any]): List of instances of self
+            session: (Session): database session to use
 
         Returns:
             Any: List of updated instances self
         """
         instance_list: List[Any] = []
-        for item in list:
+        for item in obj_list:
             instance_list.append(cls(**item))
 
-        DBSession.bulk_update_mappings(list)
-        DBSession.commit()
+        session.add_all(instance_list)
+        session.commit()
         return instance_list
 
-    def save(
-        self: "CRUDMixin", DBSession: Session, commit: bool = True
-    ) -> Any:  # noqa: E501
-        """Save the record.
-
-        Args:
-            DBSession: (Session): database session to use
-            commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
-
-        Returns:
-            Any: Instance of self
-        """
-        DBSession.add(self)
-        if commit:
-            DBSession.commit()
-        return self
-
     def delete(
-        self: "CRUDMixin", DBSession: Session, commit: bool = True
+        self: "CRUDMixin", session: Session, commit: bool = True
     ) -> Union[bool, Any]:
         """Remove the record from the database.
 
         Args:
-            DBSession: (Session): database session to use
+            session: (Session): database session to use
             commit (bool): Flag to control commit behaviour. Defaults to True. # noqa: E501
 
         Returns:
             Union[bool, Any]: True if commit is successful
         """
-        DBSession.delete(self)
-        return commit and DBSession.commit()
+        session.delete(self)
+        return commit and session.commit()
+
+    def bulk_delete(cls: Any, obj_list: List[Any], session: Session) -> Any:
+        """Bulk delete records from the database.
+
+        Args:
+            obj_list (List[Any]): List of self
+            session: (Session): database session to use
+
+        Returns:
+            Any: True if scuccess
+        """
+        session.execute(delete(cls).where(cls.id._in([obj.id for obj in obj_list])))
+        session.commit()
+        return True
 
 
 class DBModel(CRUDMixin, SerializerMixin, Base):
