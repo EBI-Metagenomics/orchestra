@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Dict
 
-from blackcap.flow.flow import Flow, FlowExecError, FlowStatus
+from blackcap.flow.flow import Flow, FlowExecError, FlowStatus, get_outer_function
 from blackcap.flow.step import FuncProp, Prop
 
 
@@ -46,6 +46,7 @@ class Executor:
                             error=f"Input type: {type(self.flow.inputs[index])} is not recognised",
                             error_type="Unkown input error",
                             is_user_facing=False,
+                            error_in_function=get_outer_function(),
                         )
                 # Replace current function input with the prepared inputs
                 self.flow.inputs[index] = functions_inputs
@@ -53,12 +54,19 @@ class Executor:
                 # Invoke function with prepared inputs
                 forward_out = step.forward_call(self.flow.inputs[index])
                 self.flow.forward_outputs.append(forward_out)
-            except FlowExecError as e:
+            except Exception as e:
                 # TODO: Add logging for failed forward calls
                 # Set flow status to failed and append error
                 self.flow.status = FlowStatus.FAILED
-                e.step_index = index
-                self.flow.errors.append(e)
+                flow_error = FlowExecError(
+                    human_description="A forward step function failed",
+                    error=e,
+                    error_type=type(e),
+                    is_user_facing=False,
+                    error_in_function=get_outer_function(),
+                )
+                flow_error.step_index = index
+                self.flow.errors.append(flow_error)
                 for back_index in reversed(range(0, index)):
                     try:
                         backward_out = self.flow.steps[back_index].backward_call(
@@ -66,10 +74,17 @@ class Executor:
                             + self.flow.forward_outputs[back_index],
                         )
                         self.flow.backward_outputs.append(backward_out)
-                    except FlowExecError as e:
+                    except Exception as e:
                         # TODO: Add central logging here
-                        e.step_index = index
-                        self.flow.errors.append(e)
+                        flow_error = FlowExecError(
+                            human_description="A backward step function failed",
+                            error=e,
+                            error_type=type(e),
+                            is_user_facing=False,
+                            error_in_function=get_outer_function(),
+                        )
+                        flow_error.step_index = index
+                        self.flow.errors.append(flow_error)
                 return self.flow
         self.flow.status = FlowStatus.PASSED
         return self.flow
