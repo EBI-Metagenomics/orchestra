@@ -3,8 +3,7 @@
 from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 import inspect
-from typing import Any, List, Optional
-import sys
+from typing import Any, List, Optional, Union
 
 from blackcap.flow.step import FuncProp, Prop, Step
 
@@ -58,7 +57,7 @@ class Flow:
     """Flow Object."""
 
     steps: List[Step] = field(default_factory=list)
-    inputs: List[List[Prop | FuncProp]] = field(default_factory=list)
+    inputs: List[List[Union[Prop, FuncProp]]] = field(default_factory=list)
     forward_outputs: List[List[Prop]] = field(default_factory=list)
     backward_outputs: List[List[Prop]] = field(default_factory=list)
     status: FlowStatus = FlowStatus.CREATED

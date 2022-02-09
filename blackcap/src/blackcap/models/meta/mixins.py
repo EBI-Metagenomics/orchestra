@@ -23,7 +23,9 @@ class TimestampMixin(object):
     created_at = Column(
         DateTime(timezone=True), nullable=False, default=datetime.utcnow
     )
-    updated_at = Column(DateTime(timezone=True), onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
 
 class CRUDMixin(object):

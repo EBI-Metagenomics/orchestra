@@ -62,8 +62,8 @@ class Executor:
                 for back_index in reversed(range(0, index)):
                     try:
                         backward_out = self.flow.steps[back_index].backward_call(
-                            self.flow.inputs[back_index],
-                            self.flow.forward_outputs[back_index],
+                            self.flow.inputs[back_index]
+                            + self.flow.forward_outputs[back_index],
                         )
                         self.flow.backward_outputs.append(backward_out)
                     except FlowExecError as e:
