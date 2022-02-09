@@ -13,6 +13,15 @@ class Prop:
 
 
 @dataclass
+class FuncProp:
+    """Function parameter for a step."""
+
+    func: Callable
+    params: Dict
+    description: str
+
+
+@dataclass
 class Step:
     """A Step of the flow."""
 

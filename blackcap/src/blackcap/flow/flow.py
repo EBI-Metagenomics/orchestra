@@ -6,7 +6,7 @@ import inspect
 from typing import Any, List, Optional
 import sys
 
-from blackcap.flow.step import Prop, Step
+from blackcap.flow.step import FuncProp, Prop, Step
 
 
 class AutoName(Enum):
@@ -38,6 +38,16 @@ class FlowExecError(Exception):
     user_facing_msg: Optional[str] = None
 
 
+class FlowBuildError(Exception):
+    """Errors while building flow."""
+
+    human_description: str
+    error: Any
+    # TODO: Change it to enum?
+    error_type: type
+    error_in_function: str
+
+
 def get_outer_function() -> str:
     """Return name of the outer function."""
     return inspect.getframeinfo(inspect.currentframe().f_back).function
@@ -48,7 +58,7 @@ class Flow:
     """Flow Object."""
 
     steps: List[Step] = field(default_factory=list)
-    inputs: List[List[Prop]] = field(default_factory=list)
+    inputs: List[List[Prop | FuncProp]] = field(default_factory=list)
     forward_outputs: List[List[Prop]] = field(default_factory=list)
     backward_outputs: List[List[Prop]] = field(default_factory=list)
     status: FlowStatus = FlowStatus.CREATED
@@ -59,3 +69,11 @@ class Flow:
         # TODO: Add checks in future
         self.steps.append(step)
         self.inputs.append(inputs)
+
+    def get_froward_output(self: "Flow", index: int) -> Optional[List[Prop]]:
+        """Lazily get list of prop from flow forward outputs."""
+        return self.forward_outputs[index]
+
+    def get_input(self: "Flow", index: int) -> Optional[List[Prop]]:
+        """Lazily get list of prop from flow inputs."""
+        return self.inputs[index]

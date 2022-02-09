@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from blackcap.flow.flow import Flow, FlowExecError, FlowStatus
+from blackcap.flow.step import FuncProp, Prop
 
 
 @dataclass
@@ -20,6 +21,36 @@ class Executor:
         self.flow.status = FlowStatus.EXECUTING
         for index, step in enumerate(self.flow.steps):
             try:
+                # Prepare function inputs
+                functions_inputs = []
+                # Check the prop type
+                for item in self.flow.inputs[index]:
+                    if type(item) == FuncProp:
+                        try:
+                            input_from_func = item.func(**item.params)
+                        except Exception as e:
+                            raise FlowExecError(
+                                human_description="Invoking FuncProp failed",
+                                error=e,
+                                error_type=type(e),
+                                is_user_facing=False,
+                                error_in_function=item.func,
+                                step_index=index,
+                            ) from e
+                        functions_inputs.append(input_from_func)
+                    elif type(item) == Prop:
+                        functions_inputs.append(item)
+                    else:
+                        raise FlowExecError(
+                            human_description="Unkown type of input is used to invoke a step function",
+                            error=f"Input type: {type(self.flow.inputs[index])} is not recognised",
+                            error_type="Unkown input error",
+                            is_user_facing=False,
+                        )
+                # Replace current function input with the prepared inputs
+                self.flow.inputs[index] = functions_inputs
+
+                # Invoke function with prepared inputs
                 forward_out = step.forward_call(self.flow.inputs[index])
                 self.flow.forward_outputs.append(forward_out)
             except FlowExecError as e:
