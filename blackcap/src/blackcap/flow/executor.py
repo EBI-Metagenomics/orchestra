@@ -27,7 +27,7 @@ class Executor:
                 for item in self.flow.inputs[index]:
                     if type(item) == FuncProp:
                         try:
-                            input_from_func = item.func(**item.params)
+                            input_list_from_func = item.func(**item.params)
                         except Exception as e:
                             raise FlowExecError(
                                 human_description="Invoking FuncProp failed",
@@ -37,7 +37,7 @@ class Executor:
                                 error_in_function=item.func,
                                 step_index=index,
                             ) from e
-                        functions_inputs.append(input_from_func)
+                        functions_inputs += input_list_from_func
                     elif type(item) == Prop:
                         functions_inputs.append(item)
                     else:
