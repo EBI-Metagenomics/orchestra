@@ -1,12 +1,12 @@
 """Blackcap Cluster GET route schemas."""
 
 from enum import Enum, unique
-from typing import List
+from typing import Any, Dict, List, Union
+
+from pydantic import BaseModel
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.cluster import Cluster
-
-from pydantic import BaseModel
 
 
 @unique
@@ -25,4 +25,4 @@ class ClusterGetQueryParams(BaseModel):
 class ClusterGetResponse(ResponseSchema):
     """Cluster GET response schema."""
 
-    items: List[Cluster] = []
+    items: Dict[str, List[Union[Cluster, Any]]] = {}

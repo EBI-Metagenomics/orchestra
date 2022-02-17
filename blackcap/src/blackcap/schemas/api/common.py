@@ -1,6 +1,6 @@
 """Blackcap common schemas."""
 
-from typing import Any, List
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
@@ -9,5 +9,5 @@ class ResponseSchema(BaseModel):
     """API response schema."""
 
     msg: str
-    items: List[Any] = []
-    errors: List[Any] = []
+    items: Dict[str, List[Any]] = {}
+    errors: Dict[str, List[Any]] = {}

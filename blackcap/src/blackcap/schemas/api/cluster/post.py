@@ -1,28 +1,31 @@
 """Blackcap Cluster POST route schemas."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
+
+from pydantic import BaseModel
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.cluster import Cluster
-from blackcap.schemas.user import User
-
-from pydantic import BaseModel
 
 
 class ClusterCreate(BaseModel):
     """Schema to parse create Cluster requests."""
 
-    cluster: Cluster
-    user: Optional[User]
+    name: str
+    cluster_type: str
+    status: str = "ONLINE"
+    cluster_caps: Optional[str]
+    messenger: str
+    messenger_queue: str
 
 
 class ClusterPOSTRequest(BaseModel):
     """Cluster POST request schema."""
 
-    Clusters: List[ClusterCreate]
+    cluster_list: List[ClusterCreate]
 
 
 class ClusterPOSTResponse(ResponseSchema):
     """Cluster POST response schema."""
 
-    items: List[Cluster] = []
+    items: Dict[str, List[Union[Cluster, Any]]] = {}

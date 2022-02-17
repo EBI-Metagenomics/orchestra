@@ -1,6 +1,6 @@
 """Blackcap Auth POST route schemas."""
 
-from typing import List
+from typing import Any, Dict, List, Union
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
@@ -18,4 +18,4 @@ class AuthUserCreds(BaseModel):
 class AuthPOSTResponse(ResponseSchema):
     """User POST response schema."""
 
-    items: List[User] = []
+    items: Dict[str, List[Union[User, Any]]] = {}
