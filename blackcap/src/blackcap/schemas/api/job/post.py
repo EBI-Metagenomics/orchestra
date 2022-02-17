@@ -1,27 +1,31 @@
 """Blackcap Job POST route schemas."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-from blackcap.schemas.job import Job
-from blackcap.schemas.user import User
 
 from pydantic import BaseModel
 
-
-class JobPOSTResponse(BaseModel):
-    """Job POST response schema."""
-
-    items: List[Job] = []
+from blackcap.schemas.job import Job
 
 
 class JobCreate(BaseModel):
     """Schema to parse create job requests."""
 
-    job: Job
-    user: Optional[User]
+    name: str
+    description: Optional[str]
+    job_type: str = ""
+    specification: Dict = {}
+    job_metadata: Dict = {}
+    script: Optional[str]
 
 
 class JobPOSTRequest(BaseModel):
     """Job POST request schema."""
 
-    jobs: List[JobCreate]
+    job_list: List[JobCreate]
+
+
+class JobPOSTResponse(BaseModel):
+    """Job POST response schema."""
+
+    items: Dict[str, List[Union[Job, Any]]] = {}

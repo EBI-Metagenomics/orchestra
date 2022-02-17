@@ -1,18 +1,12 @@
 """Blackcap Job GET route schemas."""
 
 from enum import Enum, unique
-from typing import List, Optional
-
-from blackcap.schemas.api.common import ResponseSchema
-from blackcap.schemas.job import Job
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
-
-class JobGetResponse(ResponseSchema):
-    """Job GET response schema."""
-
-    items: List[Job] = []
+from blackcap.schemas.api.common import ResponseSchema
+from blackcap.schemas.job import Job
 
 
 @unique
@@ -38,3 +32,9 @@ class JobGetQueryParams(BaseModel):
     create_timerange: Optional[str]
     finished_timerange: Optional[str]
     job_status: Optional[str]
+
+
+class JobGetResponse(ResponseSchema):
+    """Job GET response schema."""
+
+    items: Dict[str, List[Union[Job, Any]]] = {}
