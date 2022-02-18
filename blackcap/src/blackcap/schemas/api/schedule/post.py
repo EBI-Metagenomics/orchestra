@@ -1,27 +1,25 @@
 """Blackcap Schedule POST route schemas."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Union
 
 from blackcap.schemas.schedule import Schedule
-from blackcap.schemas.user import User
 
-from pydantic import BaseModel
-
-
-class SchedulePOSTResponse(BaseModel):
-    """Schedule POST response schema."""
-
-    items: List[Schedule] = []
+from pydantic import BaseModel, UUID4
 
 
 class ScheduleCreate(BaseModel):
     """Schema to parse create schedule requests."""
 
-    schedule: Schedule
-    user: Optional[User]
+    job_id: UUID4
 
 
 class SchedulePOSTRequest(BaseModel):
     """Schedule POST request schema."""
 
-    schedules: List[ScheduleCreate]
+    schedule_list: List[ScheduleCreate]
+
+
+class SchedulePOSTResponse(BaseModel):
+    """Schedule POST response schema."""
+
+    items: Dict[str, List[Union[Schedule, Any]]] = {}
