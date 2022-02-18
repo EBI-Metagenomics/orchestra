@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Union
 
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel, UUID4
 
 from blackcap.schemas.job import Job
 
@@ -13,13 +13,13 @@ class JobDelete(BaseModel):
     job_id: UUID4
 
 
-class JobPUTRequest(BaseModel):
-    """Job PUT request schema."""
+class JobDELETERequest(BaseModel):
+    """Job DELETE request schema."""
 
     job_list: List[JobDelete]
 
 
-class JobPUTResponse(BaseModel):
-    """Job PUT response schema."""
+class JobDELETEResponse(BaseModel):
+    """Job DELETE response schema."""
 
     items: Dict[str, List[Union[Job, Any]]] = {}
