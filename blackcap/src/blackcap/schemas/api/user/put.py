@@ -1,6 +1,6 @@
 """Blackcap User PUT route schemas."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 from pydantic.types import UUID4
@@ -21,4 +21,4 @@ class UserUpdate(BaseModel):
 class UserPUTResponse(ResponseSchema):
     """User PUT response schema."""
 
-    items: List[User] = []
+    items: Dict[str, List[Union[User, Any]]] = {}

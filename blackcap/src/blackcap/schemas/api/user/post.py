@@ -1,6 +1,6 @@
 """Blackcap User POST route schemas."""
 
-from typing import List
+from typing import Any, Dict, List, Union
 
 from pydantic import BaseModel
 
@@ -24,4 +24,4 @@ class UserPOSTRequest(BaseModel):
 class UserPOSTResponse(ResponseSchema):
     """User POST response schema."""
 
-    items: List[User] = []
+    items: Dict[str, List[Union[User, Any]]] = {}

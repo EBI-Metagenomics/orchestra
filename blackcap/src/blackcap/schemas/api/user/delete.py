@@ -1,6 +1,6 @@
 """Blackcap User DELETE route schemas."""
 
-from typing import List
+from typing import Any, Dict, List, Union
 
 from pydantic import BaseModel
 from pydantic.types import UUID4
@@ -18,4 +18,4 @@ class UserDelete(BaseModel):
 class UserDELETEResponse(ResponseSchema):
     """User DELETE response schema."""
 
-    items: List[User] = []
+    items: Dict[str, List[Union[User, Any]]] = {}
