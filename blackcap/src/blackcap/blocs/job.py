@@ -2,6 +2,11 @@
 
 from typing import List
 
+from logzero import logger
+from pydantic import ValidationError
+from pydantic.error_wrappers import ErrorWrapper
+from sqlalchemy import select
+
 from blackcap.db import DBSession
 from blackcap.models.job import JobDB
 from blackcap.schemas.api.job.delete import JobDelete
@@ -9,17 +14,15 @@ from blackcap.schemas.api.job.get import JobGetQueryParams, JobQueryType
 from blackcap.schemas.api.job.post import JobCreate
 from blackcap.schemas.api.job.put import JobUpdate
 from blackcap.schemas.job import Job
-
-from logzero import logger
-
-from sqlalchemy import select
+from blackcap.schemas.user import User
 
 
-def create_job(job_create_list: List[JobCreate]) -> List[Job]:
+def create_job(job_create_list: List[JobCreate], user_creds: User) -> List[Job]:
     """Create jobs in the DB from JobCreate request.
 
     Args:
         job_create_list (List[JobCreate]): JobCreate request
+        user_creds (User): User credentials.
 
     Raises:
         Exception: error
@@ -32,27 +35,24 @@ def create_job(job_create_list: List[JobCreate]) -> List[Job]:
             job_db_create_list: List[JobDB] = [
                 JobDB(
                     protagonist_id=job_create.user.user_id,
-                    **job_create.job.dict(exclude={"job_id"}),  # noqa: E501
+                    **job_create.job.dict(),
                 )
                 for job_create in job_create_list
             ]
             JobDB.bulk_create(job_db_create_list, session)
-            return [
-                Job(job_id=obj.id, **obj.to_dict())
-                for obj in job_db_create_list  # noqa: E501
-            ]
+            return [Job(job_id=obj.id, **obj.to_dict()) for obj in job_db_create_list]
         except Exception as e:
             session.rollback()
             logger.error(f"Unable to create jobs: {e}")
             raise e
 
 
-def get_jobs(query_params: JobGetQueryParams) -> List[Job]:
+def get_job(query_params: JobGetQueryParams, user_creds: User) -> List[Job]:
     """Query DB for jobs.
 
     Args:
         query_params (JobGetQueryParams): Query params from request
-
+        user_creds (User): User credentials.
     Raises:
         Exception: error
 
@@ -64,20 +64,56 @@ def get_jobs(query_params: JobGetQueryParams) -> List[Job]:
     stmt = ""
 
     if query_params.query_type == JobQueryType.GET_ALL_JOBS:
-        stmt = select(JobDB)
+        stmt = select(JobDB).where(JobDB.protagonist_id == user_creds.user_id)
     if query_params.query_type == JobQueryType.GET_JOBS_BY_ID:
-        stmt = select(JobDB).where(JobDB.id == query_params.job_id)
+        if query_params.job_id is None:
+            e = ValidationError(
+                errors=[
+                    ErrorWrapper(ValueError("field required"), "job_id"),
+                ],
+                model=JobGetQueryParams,
+            )
+            raise e
+        stmt = (
+            select(JobDB)
+            .where(JobDB.protagonist_id == user_creds.user_id)
+            .where(JobDB.id == query_params.job_id)
+        )
     if query_params.query_type == JobQueryType.GET_JOBS_BY_CLUSTER_ID:
-        stmt = select(JobDB).where(JobDB.id == query_params.cluster_id)
+        if query_params.cluster_id is None:
+            e = ValidationError(
+                errors=[
+                    ErrorWrapper(ValueError("field required"), "cluster_id"),
+                ],
+                model=JobGetQueryParams,
+            )
+            raise e
+        stmt = (
+            select(JobDB)
+            .where(JobDB.protagonist_id == user_creds.user_id)
+            .where(JobDB.id == query_params.cluster_id)
+        )
     if query_params.query_type == JobQueryType.GET_JOBS_BY_PROTAGONIST_ID:
-        stmt = select(JobDB).where(JobDB.id == query_params.protagonist_id)
+        stmt = select(JobDB).where(JobDB.protagonist_id == user_creds.user_id)
     if query_params.query_type == JobQueryType.GET_JOBS_BY_STATUS:
-        stmt = select(JobDB).where(JobDB.id == query_params.job_status)
+        if query_params.job_status is None:
+            e = ValidationError(
+                errors=[
+                    ErrorWrapper(ValueError("field required"), "job_status"),
+                ],
+                model=JobGetQueryParams,
+            )
+            raise e
+        stmt = (
+            select(JobDB)
+            .where(JobDB.protagonist_id == user_creds.user_id)
+            .where(JobDB.id == query_params.job_status)
+        )
 
     with DBSession() as session:
         try:
-            job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
-            return [Job(job_id=obj.id, **obj.to_dict()) for obj in job_list]
+            job_db_list: List[JobDB] = session.execute(stmt).scalars().all()
+            job_list = [Job(job_id=obj.id, **obj.to_dict()) for obj in job_db_list]
         except Exception as e:
             session.rollback()
             logger.error(f"Unable to fetch jobs due to {e}")
@@ -86,65 +122,74 @@ def get_jobs(query_params: JobGetQueryParams) -> List[Job]:
     return job_list
 
 
-def update_job(job_update: JobUpdate) -> Job:
+def update_job(job_update_list: List[JobUpdate], user_creds: User) -> List[Job]:
     """Update job in the DB from JobUpdate request.
 
     Args:
-        job_update (JobUpdate): JobUpdate request
+        job_update_list (List[JobUpdate]): List of JobUpdate request
+        user_creds (User): User credentials.
 
     Raises:
         Exception: error
 
     Returns:
-        Job: Instance of Updated Job
+        List[Job]: List of Instance of Updated Job
     """
-    stmt = select(JobDB).where(JobDB.id == job_update.job_id)
+    stmt = (
+        select(JobDB)
+        .where(JobDB.protagonist_id == user_creds.user_id)
+        .where(JobDB.id.in_([job_update.template_id for job_update in job_update_list]))
+    )
     with DBSession() as session:
         try:
-            job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
-            if len(job_list) == 1:
-                job_update_dict = job_update.dict(exclude_defaults=True)
-                job_update_dict.pop("job_id")
-                updated_job = job_list[0].update(
-                    session, **job_update_dict
-                )  # noqa: E501
-                return Job(job_id=updated_job.id, **updated_job.to_dict())
-            if len(job_list) == 0:
-                # TODO: Raise not found
-                pass
+            job_db_update_list: List[JobDB] = session.execute(stmt).scalars().all()
+            updated_job_list = []
+            for job in job_db_update_list:
+                for job_update in job_update_list:
+                    if job_update.job_id == job.id:
+                        job_update_dict = job_update.dict(exclude_defaults=True)
+                        job_update_dict.pop("job_id")
+                        updated_job = job.update(session, **job_update_dict)
+                        updated_job_list.append(
+                            Job(
+                                job_id=updated_job.id,
+                                **updated_job.to_dict(),
+                            )
+                        )
+            return updated_job_list
         except Exception as e:
             session.rollback()
-            logger.error(
-                f"Unable to update job: {job_update.dict()} due to {e}"
-            )  # noqa: E501
+            logger.error(f"Unable to update job: {job.to_dict()} due to {e}")
             raise e
 
 
-def delete_job(job_delete: JobDelete) -> Job:
+def delete_job(job_delete_list: List[JobDelete], user_creds: User) -> List[Job]:
     """Delete job in the DB from JobDelete request.
 
     Args:
-        job_delete (JobDelete): JobDelete request
+        job_delete_list (List[JobDelete]): List of JobDelete request
+        user_creds (User): User credentials.
 
     Raises:
         Exception: error
 
     Returns:
-        Job: Instance of Deleted Job
+        List[Job]: List of Instance of Deleted Job
     """
-    stmt = select(JobDB).where(JobDB.id == job_delete.job_id)
+    stmt = (
+        select(JobDB)
+        .where(JobDB.protagonist_id == user_creds.user_id)
+        .where(JobDB.id.in_([job.job_id for job in job_delete_list]))
+    )
     with DBSession() as session:
         try:
-            job_list: List[JobDB] = session.execute(stmt).scalars().all()  # noqa: E501
-            if len(job_list) == 1:
-                deleted_job = job_list[0].delete(session)
-                return Job(job_id=deleted_job.id, **deleted_job.to_dict())
-            if len(job_list) == 0:
-                # TODO: Raise not found
-                pass
+            job_db_delete_list: List[JobDB] = session.execute(stmt).scalars().all()
+            deleted_job_list = []
+            for job in job_db_delete_list:
+                job.delete(session)
+                deleted_job_list.append(Job(job_id=job.id, **job.to_dict()))
+            return deleted_job_list
         except Exception as e:
             session.rollback()
-            logger.error(
-                f"Unable to delete job: {job_delete.dict()} due to {e}"
-            )  # noqa: E501
+            logger.error(f"Unable to delete job: {job.to_dict()} due to {e}")
             raise e
