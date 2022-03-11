@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blackcap"
-version = "0.35.0"
+version = "0.36.0"
 description = "Shared library for Orchestra"
 authors = ["Ankur Kumar <ank@leoank.me>"]
 license = "Apache License 2.0"
@@ -12,10 +12,10 @@ Flask-Cors = "^3.0.10"
 pydantic = { extras = ["dotenv"], version = "^1.8.2" }
 psycopg2-binary = "^2.8.6"
 logzero = "^1.7.0"
-click = "<8.0"
+click = "^8.0"
 google-cloud-pubsub = "^2.5.0"
 xdg = "^5.0.2"
-celery = "^5.1.0"
+celery = "^5.2.3"
 gunicorn = "^20.1.0"
 redis = "^3.5.3"
 bcrypt = "^3.2.0"
