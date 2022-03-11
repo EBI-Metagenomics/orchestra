@@ -15,7 +15,7 @@ class Executor:
     # TODO: Strongly type it in the future
     config: Dict
 
-    def run(self: "Executor") -> Flow:
+    def run(self: "Executor") -> Flow:  # noqa: C901
         """Execute flow."""
         # Set Flow status to executing
         self.flow.status = FlowStatus.EXECUTING

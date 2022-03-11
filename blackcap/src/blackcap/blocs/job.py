@@ -47,13 +47,17 @@ def create_job(job_create_list: List[JobCreate], user_creds: User) -> List[Job]:
             raise e
 
 
-def get_job(query_params: JobGetQueryParams, user_creds: User) -> List[Job]:
+def get_job(  # noqa: C901
+    query_params: JobGetQueryParams, user_creds: User
+) -> List[Job]:
     """Query DB for jobs.
 
     Args:
         query_params (JobGetQueryParams): Query params from request
         user_creds (User): User credentials.
+
     Raises:
+        e: error
         Exception: error
 
     Returns:

@@ -3,14 +3,11 @@
 
 from typing import Dict
 
-from bcrypt import gensalt, hashpw
-
-from conductor.models.job import JobDB
-
 from logzero import logger
-
 from sqlalchemy import select
 from sqlalchemy.orm.session import Session
+
+from blackcap.models.job import JobDB
 
 
 def test_get_all_jobs(db: Session, user_dict: Dict) -> None:

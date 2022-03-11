@@ -6,7 +6,7 @@ from flask import make_response, request, Response
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
-from blackcap.blocs.job import get_jobs
+from blackcap.blocs.job import get_job
 from blackcap.routes.job import job_bp
 from blackcap.schemas.api.job.get import JobGetQueryParams, JobGetResponse
 
@@ -34,7 +34,7 @@ def get() -> Response:
 
     # Get jobs from the DB
     try:
-        job_list = get_jobs(query_params)
+        job_list = get_job(query_params)
     except SQLAlchemyError:
         response_body = JobGetResponse(
             msg="internal databse error", errors={"main": ["unknown internal error"]}

@@ -16,7 +16,7 @@ class BaseObserver(ABC):
     CONFIG_KEY_VAL = "ELASTIC"
 
     @abstractclassmethod
-    def get_metrics(self: "BaseObserver", range: str) -> List[Metrics]:  # noqa: E501
+    def get_metrics(self: "BaseObserver", range: str) -> List[Metrics]:
         """Get cluster metrics.
 
         Args:

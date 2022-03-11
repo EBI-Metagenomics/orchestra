@@ -20,7 +20,7 @@ class SchedulerRegistry:
 
     def get_scheduler(
         self: "SchedulerRegistry", scheduler: str
-    ) -> Optional[BaseScheduler]:  # noqa: E501
+    ) -> Optional[BaseScheduler]:
         """Get scheduler.
 
         Args:

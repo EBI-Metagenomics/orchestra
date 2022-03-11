@@ -1,16 +1,13 @@
 """Job DBModel."""
 
+from sqlalchemy import Column, Integer, JSON, String
 
 from blackcap.models.meta.mixins import (
     DBModel,
     SurrogatePKUUID,
     TimestampMixin,
-)  # noqa: E501
+)
 from blackcap.models.meta.orm import reference_col
-
-from sqlalchemy import Column, Integer, String, JSON
-
-# from sqlalchemy.orm import relationship
 
 
 class JobDB(DBModel, TimestampMixin, SurrogatePKUUID):

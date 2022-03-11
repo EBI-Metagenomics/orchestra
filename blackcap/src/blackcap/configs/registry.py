@@ -1,7 +1,6 @@
 """Config registry."""
 
 from typing import Optional
-import os
 
 from blackcap.configs.base import BaseConfig, ConfigOfConfig
 
@@ -22,7 +21,7 @@ class ConfigRegistry:
 
     def get_config(
         self: "ConfigRegistry", config: str = config_of_config.BLACKCAP_CONFIG
-    ) -> Optional[BaseConfig]:  # noqa: E501
+    ) -> Optional[BaseConfig]:
         """Get config.
 
         Args:

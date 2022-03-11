@@ -2,13 +2,11 @@
 # flake8: noqa
 
 from bcrypt import gensalt, hashpw
-
-from conductor.models.protagonist import ProtagonistDB
-
 from logzero import logger
-
 from sqlalchemy import select
 from sqlalchemy.orm.session import Session
+
+from blackcap.models.protagonist import ProtagonistDB
 
 
 def test_get_all_users(db: Session) -> None:

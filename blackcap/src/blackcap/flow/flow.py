@@ -1,7 +1,7 @@
 """Flow Object."""
 
 from dataclasses import dataclass, field
-from enum import Enum, auto, unique
+from enum import auto, Enum, unique
 import inspect
 from typing import Any, List, Optional, Union
 
@@ -9,7 +9,12 @@ from blackcap.flow.step import FuncProp, Prop, Step
 
 
 class AutoName(Enum):
-    def _generate_next_value_(name, start, count, last_values):
+    """Helper class to auto name enum."""
+
+    def _generate_next_value_(
+        name: Any, start: Any, count: Any, last_values: Any  # noqa: B902
+    ) -> str:
+        """Generate names."""
         return name
 
 

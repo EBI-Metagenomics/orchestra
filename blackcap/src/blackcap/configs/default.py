@@ -20,7 +20,7 @@ class DefaultConfig(BaseConfig):
         Returns:
             str: uri of the sql database
         """
-        return f"{self.DB_TYPE}://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}/{self.DB_PATH}"  # noqa: E501
+        return f"{self.DB_TYPE}://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}/{self.DB_PATH}"  # noqa: B950
 
     @property
     def SQLALCHEMY_DATABASE_URI(self: "DefaultConfig") -> str:

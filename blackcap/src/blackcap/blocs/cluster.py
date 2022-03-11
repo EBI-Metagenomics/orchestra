@@ -2,18 +2,17 @@
 
 from typing import List
 
+from logzero import logger
+from sqlalchemy import select
+
 from blackcap.db import DBSession
 from blackcap.models.cluster import ClusterDB
 from blackcap.schemas.api.cluster.get import (
     ClusterGetQueryParams,
     ClusterQueryType,
-)  # noqa: E501
+)
 from blackcap.schemas.api.cluster.post import ClusterCreate
 from blackcap.schemas.cluster import Cluster
-
-from logzero import logger
-
-from sqlalchemy import select
 
 
 def create_cluster(

@@ -2,6 +2,10 @@
 
 from typing import Callable
 
+from flask import Flask
+from flask_cors import CORS
+from logzero import logger
+
 from blackcap.configs.base import BaseConfig
 from blackcap.routes.job import job_bp
 from blackcap.routes.schedule import schedule_bp
@@ -9,11 +13,6 @@ from blackcap.routes.status import status_bp
 from blackcap.routes.user import user_bp
 from blackcap.tasks import init_celery
 from blackcap.workers import celery_app
-
-from flask import Flask
-from flask_cors import CORS
-
-from logzero import logger
 
 
 def register_extensions(app: Flask) -> None:

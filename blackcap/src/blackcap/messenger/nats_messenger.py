@@ -4,14 +4,13 @@ from dataclasses import asdict
 import json
 from typing import Callable, Dict, Optional
 
+from logzero import logger
+from pynats import NATSClient, NATSMessage
+
 from blackcap.configs.base import BaseConfig
 from blackcap.messenger.base import BaseMessenger
 from blackcap.schemas.message import Message
 from blackcap.utils.json_encoders import UUIDEncoder
-
-from logzero import logger
-
-from pynats import NATSClient, NATSMessage
 
 
 class NATSMessenger(BaseMessenger):
@@ -25,7 +24,6 @@ class NATSMessenger(BaseMessenger):
         Args:
             config (BaseConfig): Config to initialize messenger
         """
-
         self.config = config
 
     @property
@@ -79,6 +77,14 @@ class NATSMessenger(BaseMessenger):
     def parse_messenger_msg(
         self: "NATSMessenger", messenger_msg: NATSMessage
     ) -> Message:
+        """Parse messenger msg to blackcap mesage schema.
+
+        Args:
+            messenger_msg (NATSMessage): NATSMessenger message
+
+        Returns:
+            Message: Parsed Message
+        """
         return Message.parse_obj(asdict(messenger_msg))
 
     def echo_msg(self: "NATSMessenger", msg: NATSMessage) -> None:

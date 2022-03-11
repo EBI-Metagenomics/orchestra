@@ -1,8 +1,8 @@
 """Blackcap workers."""
 
-from blackcap.configs import config_registry
-
 from celery import Celery
+
+from blackcap.configs import config_registry
 
 celery_app = Celery(
     __name__,

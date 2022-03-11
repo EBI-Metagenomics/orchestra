@@ -3,11 +3,11 @@
 from abc import ABC, abstractclassmethod
 from typing import List, Optional, Tuple
 
+from flask import Request
+
 from blackcap.schemas.api.auth.post import AuthUserCreds
 from blackcap.schemas.api.user.post import UserCreate
 from blackcap.schemas.user import User
-
-from flask import Request
 
 
 class BaseAuther(ABC):
@@ -22,7 +22,7 @@ class BaseAuther(ABC):
     @abstractclassmethod
     def register_user(
         self: "BaseAuther", user_create_list: List[UserCreate]
-    ) -> List[User]:  # noqa: E501
+    ) -> List[User]:
         """Register user.
 
         Args:
@@ -61,9 +61,7 @@ class BaseAuther(ABC):
         pass
 
     @abstractclassmethod
-    def extract_user_from_token(
-        self: "BaseAuther", token: str
-    ) -> Optional[User]:  # noqa: E501
+    def extract_user_from_token(self: "BaseAuther", token: str) -> Optional[User]:
         """Extract user from token.
 
         Args:
@@ -78,9 +76,7 @@ class BaseAuther(ABC):
         pass
 
     @abstractclassmethod
-    def authorize_user(
-        self: "BaseAuther", user: User, request: Request
-    ) -> bool:  # noqa: E501
+    def authorize_user(self: "BaseAuther", user: User, request: Request) -> bool:
         """Authorize user actions on resources.
 
         Args:

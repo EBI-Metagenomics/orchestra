@@ -2,19 +2,18 @@
 
 from typing import List
 
+from logzero import logger
+from sqlalchemy import select
+
+from blackcap.auther import auther_registry
 from blackcap.configs import config_registry
 from blackcap.db import DBSession
-from blackcap.auther import auther_registry
 from blackcap.models.protagonist import ProtagonistDB
 from blackcap.schemas.api.user.delete import UserDelete
 from blackcap.schemas.api.user.get import UserGetQueryParams, UserQueryType
 from blackcap.schemas.api.user.post import UserCreate
 from blackcap.schemas.api.user.put import UserUpdate
 from blackcap.schemas.user import User
-
-from logzero import logger
-
-from sqlalchemy import select
 
 
 config = config_registry.get_config()
@@ -58,13 +57,9 @@ def get_users(query_params: UserGetQueryParams) -> List[User]:
     if query_params.query_type == UserQueryType.GET_ALL_USERS:
         stmt = select(ProtagonistDB)
     if query_params.query_type == UserQueryType.GET_USER_BY_ID:
-        stmt = select(ProtagonistDB).where(
-            ProtagonistDB.id == query_params.user_id
-        )  # noqa: E501
+        stmt = select(ProtagonistDB).where(ProtagonistDB.id == query_params.user_id)
     if query_params.query_type == UserQueryType.GET_USERS_BY_EMAIL:
-        stmt = select(ProtagonistDB).where(
-            ProtagonistDB.email == query_params.email
-        )  # noqa: E501
+        stmt = select(ProtagonistDB).where(ProtagonistDB.email == query_params.email)
     if query_params.query_type == UserQueryType.GET_USERS_BY_ORGANISATION:
         stmt = select(ProtagonistDB).where(
             ProtagonistDB.organisation == query_params.organisation
@@ -72,12 +67,8 @@ def get_users(query_params: UserGetQueryParams) -> List[User]:
 
     with DBSession() as session:
         try:
-            user_list: List[ProtagonistDB] = (
-                session.execute(stmt).scalars().all()
-            )  # noqa: E501
-            user_list = [
-                User(user_id=obj.id, **obj.to_dict()) for obj in user_list
-            ]  # noqa: E501
+            user_list: List[ProtagonistDB] = session.execute(stmt).scalars().all()
+            user_list = [User(user_id=obj.id, **obj.to_dict()) for obj in user_list]
             return user_list
         except Exception as e:
             session.rollback()
@@ -97,24 +88,18 @@ def update_user(user_update: UserUpdate) -> User:
     stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_update.user_id)
     with DBSession() as session:
         try:
-            user_list: List[ProtagonistDB] = (
-                session.execute(stmt).scalars().all()
-            )  # noqa: E501
+            user_list: List[ProtagonistDB] = session.execute(stmt).scalars().all()
             if not user_list:
                 # TODO: raise not found error
                 pass
             if len(user_list) == 1:
                 user_update_dict = user_update.dict(exclude_defaults=True)
                 user_update_dict.pop("user_id")
-                updated_user = user_list[0].update(
-                    session, **user_update_dict
-                )  # noqa: E501
+                updated_user = user_list[0].update(session, **user_update_dict)
                 return User(user_id=updated_user.id, **updated_user.to_dict())
         except Exception as e:
             session.rollback()
-            logger.error(
-                f"Unable to update user: {user_update.dict()} due to {e}"
-            )  # noqa: E501
+            logger.error(f"Unable to update user: {user_update.dict()} due to {e}")
             # TODO: Raise error
 
 
@@ -133,9 +118,7 @@ def delete_user(user_delete: UserDelete) -> User:
     stmt = select(ProtagonistDB).where(ProtagonistDB.id == user_delete.user_id)
     with DBSession() as session:
         try:
-            user_list: List[ProtagonistDB] = (
-                session.execute(stmt).scalars().all()
-            )  # noqa: E501
+            user_list: List[ProtagonistDB] = session.execute(stmt).scalars().all()
             if not user_list:
                 # TODO: raise not found error
                 pass
@@ -144,7 +127,5 @@ def delete_user(user_delete: UserDelete) -> User:
                 return User(user_id=deleted_user.id, **deleted_user.to_dict())
         except Exception as e:
             session.rollback()
-            logger.error(
-                f"Unable to delete user: {user_delete.dict()} due to {e}"
-            )  # noqa: E501
+            logger.error(f"Unable to delete user: {user_delete.dict()} due to {e}")
             raise e

@@ -1,13 +1,12 @@
 """Protagonist DBModel."""
 
+from sqlalchemy import Boolean, Column, LargeBinary, String
 
 from blackcap.models.meta.mixins import (
     DBModel,
     SurrogatePKUUID,
     TimestampMixin,
-)  # noqa: E501
-
-from sqlalchemy import Boolean, Column, LargeBinary, String
+)
 
 
 class ProtagonistDB(DBModel, TimestampMixin, SurrogatePKUUID):

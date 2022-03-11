@@ -4,22 +4,18 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
 from bcrypt import checkpw, gensalt, hashpw
+from flask.wrappers import Request
+import jwt
+from logzero import logger
+from sqlalchemy import select
 
-from blackcap.db import DBSession
 from blackcap.auther.base import BaseAuther
 from blackcap.configs import config_registry
+from blackcap.db import DBSession
 from blackcap.models.protagonist import ProtagonistDB
 from blackcap.schemas.api.auth.post import AuthUserCreds
 from blackcap.schemas.api.user.post import UserCreate
 from blackcap.schemas.user import User
-
-from flask.wrappers import Request
-
-import jwt
-
-from logzero import logger
-
-from sqlalchemy import select
 
 config = config_registry.get_config()
 
@@ -47,17 +43,14 @@ class CookieAuther(BaseAuther):
             try:
                 protagonist_objs = [
                     ProtagonistDB(
-                        password=hashpw(
-                            user_create.password.encode(), gensalt()
-                        ),  # noqa:E501
+                        password=hashpw(user_create.password.encode(), gensalt()),
                         **user_create.user.dict(exclude={"user_id"}),
                     )
                     for user_create in user_create_list
                 ]
                 ProtagonistDB.bulk_create(protagonist_objs, session)
                 return [
-                    User(user_id=obj.id, **obj.to_dict())
-                    for obj in protagonist_objs  # noqa: E501
+                    User(user_id=obj.id, **obj.to_dict()) for obj in protagonist_objs
                 ]
             except Exception as e:
                 session.rollback()
@@ -76,7 +69,7 @@ class CookieAuther(BaseAuther):
             Exception: error
 
         Returns:
-            Optional[Tuple[User, str]]: Tuple containing user and cookie or None  # noqa: E501
+            Optional[Tuple[User, str]]: Tuple containing user and cookie or None
         """
         with DBSession() as session:
             try:
@@ -84,24 +77,18 @@ class CookieAuther(BaseAuther):
                 stmt = select(ProtagonistDB).where(
                     ProtagonistDB.email == user_creds.email
                 )
-                user_list: List[ProtagonistDB] = (
-                    session.execute(stmt).scalars().all()
-                )  # noqa: E501
+                user_list: List[ProtagonistDB] = session.execute(stmt).scalars().all()
                 # return early if user not found
                 if len(user_list) == 0:
                     return (None, "")
 
                 # Check password hash
-                if checkpw(
-                    user_creds.password.encode(), user_list[0].password
-                ):  # noqa: E501
+                if checkpw(user_creds.password.encode(), user_list[0].password):
                     # Create cookie and return user and cookie
                     user_cookie = jwt.encode(
                         {
                             "exp": datetime.utcnow()
-                            + timedelta(
-                                minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES  # noqa: E501
-                            ),
+                            + timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES),
                             "sub": user_list[0].email,
                             "email": user_list[0].email,
                             "name": user_list[0].name,
@@ -110,9 +97,7 @@ class CookieAuther(BaseAuther):
                         config.SECRET_KEY,
                     )
                     return (
-                        User(
-                            user_id=user_list[0].id, **user_list[0].to_dict()
-                        ),  # noqa: E501
+                        User(user_id=user_list[0].id, **user_list[0].to_dict()),
                         user_cookie,
                     )
                 else:
@@ -126,9 +111,7 @@ class CookieAuther(BaseAuther):
         """Logout user."""
         pass
 
-    def extract_user_from_token(
-        self: "BaseAuther", token: str
-    ) -> Optional[User]:  # noqa: E501
+    def extract_user_from_token(self: "BaseAuther", token: str) -> Optional[User]:
         """Extract user from token.
 
         Args:
@@ -150,7 +133,7 @@ class CookieAuther(BaseAuther):
                 user_cookie_decoded = jwt.decode(
                     user_cookie_encoded,
                     config.SECRET_KEY,
-                    algorithms=["HS256"],  # noqa: E501
+                    algorithms=["HS256"],
                 )
             except jwt.DecodeError as e:
                 # return none if failed to decode cookie
@@ -164,18 +147,14 @@ class CookieAuther(BaseAuther):
             stmt = select(ProtagonistDB).where(
                 ProtagonistDB.email == user_cookie_decoded["email"]
             )
-            user_list: List[ProtagonistDB] = (
-                session.execute(stmt).scalars().all()
-            )  # noqa: E501
+            user_list: List[ProtagonistDB] = session.execute(stmt).scalars().all()
             # return early if user not found
             if len(user_list) == 0:
                 return None
             else:
                 return User(user_id=user_list[0].id, **user_list[0].to_dict())
 
-    def authorize_user(
-        self: "BaseAuther", user: User, request: Request
-    ) -> bool:  # noqa: E501
+    def authorize_user(self: "BaseAuther", user: User, request: Request) -> bool:
         """Authorize user actions on resources.
 
         Args:

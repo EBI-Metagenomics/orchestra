@@ -3,18 +3,15 @@
 import json
 from typing import Callable, Dict, Optional
 
+from google.auth import jwt
+from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
+from logzero import logger
+
 from blackcap.configs.base import BaseConfig
 from blackcap.messenger.base import BaseMessenger
 from blackcap.schemas.message import Message
 from blackcap.utils.json_encoders import UUIDEncoder
-
-from google.auth import jwt
-from google.cloud import pubsub_v1
-from google.cloud.pubsub_v1.subscriber.message import Message as GCPMessage
-
-from logzero import logger
-
-from sqlalchemy import select
 
 
 class GCPMessenger(BaseMessenger):
@@ -107,6 +104,14 @@ class GCPMessenger(BaseMessenger):
                 streaming_pull_future.cancel()
 
     def parse_messenger_msg(self: "GCPMessenger", messenger_msg: GCPMessage) -> Message:
+        """Parse messenger msg to blackcap mesage schema.
+
+        Args:
+            messenger_msg (GCPMessage): GCPMessenger message
+
+        Returns:
+            Message: Parsed Message
+        """
         return Message.parse_raw(messenger_msg.data)
 
     def echo_msg(self: "GCPMessenger", msg: Message) -> None:

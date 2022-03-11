@@ -3,13 +3,11 @@
 
 from typing import Dict
 
-
-from conductor.models.schedule import ScheduleDB
-
 from logzero import logger
-
 from sqlalchemy import select
 from sqlalchemy.orm.session import Session
+
+from blackcap.models.schedule import ScheduleDB
 
 
 def test_get_all_schedules(

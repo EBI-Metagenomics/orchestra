@@ -1,15 +1,11 @@
 """Cluster model tests."""
 # flake8: noqa
 
-from typing import Dict
-
-
-from conductor.models.cluster import ClusterDB
-
 from logzero import logger
-
 from sqlalchemy import select
 from sqlalchemy.orm.session import Session
+
+from blackcap.models.cluster import ClusterDB
 
 
 def test_get_all_clusters(db: Session) -> None:

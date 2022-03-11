@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from pydantic import BaseSettings
-
 from xdg import xdg_config_home
 
 
@@ -66,7 +65,7 @@ class BaseConfig(ABC, BaseSettings):
 
 
 class ConfigOfConfig(BaseSettings):
-    "Config for loading config"
+    """Config for loading config."""
 
     BLACKCAP_CONFIG: str = "DEFAULT"
 

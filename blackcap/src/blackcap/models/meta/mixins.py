@@ -1,17 +1,15 @@
 """Mixins for database models."""
 
-import uuid
 from datetime import datetime
 from typing import Any, List, Optional, Union
+import uuid
 
-from blackcap.models.meta.helpers import GUID
-
-from sqlalchemy import delete, Column, DateTime, Integer
+from sqlalchemy import Column, DateTime, delete, Integer
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.session import Session
-
 from sqlalchemy_serializer import SerializerMixin
 
+from blackcap.models.meta.helpers import GUID
 
 # declarative base class
 Base = declarative_base()
@@ -65,7 +63,7 @@ class CRUDMixin(object):
         """Bulk create new records and save them to the database.
 
         Args:
-            list (List[Any]): List of self
+            obj_list (List[Any]): List of self
             session: (Session): database session to use
 
         Returns:
@@ -177,16 +175,14 @@ class SurrogatePK(object):
 
 
 class SurrogatePKUUID(object):
-    """Adds a surrogate int 'primary key' column named ``id`` to any orm class."""  # noqa: E501
+    """Adds a surrogate int 'primary key' column named ``id`` to any orm class."""  # noqa: B950
 
     __table_args__ = {"extend_existing": True}
 
     id = Column(GUID, primary_key=True, default=lambda: str(uuid.uuid4()))
 
     @classmethod
-    def get_by_uuid(
-        cls: Any, record_id: Union[str, uuid.UUID]
-    ) -> Optional[Any]:  # noqa: E501
+    def get_by_uuid(cls: Any, record_id: Union[str, uuid.UUID]) -> Optional[Any]:
         """Get record by ID.
 
         Args:

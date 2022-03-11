@@ -18,9 +18,7 @@ class AutherRegistry:
         """
         self.authers[auther.CONFIG_KEY_VAL] = auther
 
-    def get_auther(
-        self: "AutherRegistry", auther: str
-    ) -> Optional[BaseAuther]:  # noqa: E501
+    def get_auther(self: "AutherRegistry", auther: str) -> Optional[BaseAuther]:
         """Get auther.
 
         Args:

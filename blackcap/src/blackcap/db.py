@@ -1,11 +1,11 @@
 """Blackcap database."""
 
-from blackcap.configs import config_registry
-
 from logzero import logger
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from blackcap.configs import config_registry
+
 
 logger.info(
     f"Using SQLALCHEMY_DATABASE_URI: {config_registry.get_config().SQLALCHEMY_DATABASE_URI}"

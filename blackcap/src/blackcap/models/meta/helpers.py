@@ -1,7 +1,7 @@
 """SQL helpers."""
 
-import uuid
 from typing import Any
+import uuid
 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.types import CHAR, TypeDecorator

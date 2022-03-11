@@ -1,11 +1,11 @@
 """Task to publish msgs to GCP Pub/Sub topic."""
 
+from logzero import logger
+
 from blackcap.configs import config_registry
 from blackcap.messenger import messenger_registry
 from blackcap.schemas.message import Message
 from blackcap.workers import celery_app
-
-from logzero import logger
 
 config = config_registry.get_config()
 messenger = messenger_registry.get_messenger(config.MESSENGER)

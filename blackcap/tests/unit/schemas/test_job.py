@@ -2,10 +2,9 @@
 # flake8: noqa
 
 import json
-
 from uuid import uuid4
 
-from conductor.schemas.job import Job
+from blackcap.schemas.job import Job
 
 
 def test_job_schema_create() -> None:

@@ -5,8 +5,8 @@ import subprocess  # noqa: S404
 import sys
 from typing import List, Optional, Union
 
-from blackcap.configs.base import BaseConfig
 from blackcap.configs import config_registry
+from blackcap.configs.base import BaseConfig
 
 config = config_registry.get_config()
 

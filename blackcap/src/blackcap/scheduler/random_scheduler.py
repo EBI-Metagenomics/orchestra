@@ -3,16 +3,15 @@
 import random
 from typing import List
 
+from logzero import logger
+from sqlalchemy.sql.expression import select
+
 from blackcap.db import DBSession
 from blackcap.models.cluster import ClusterDB
 from blackcap.models.schedule import ScheduleDB
 from blackcap.scheduler.base import BaseScheduler
 from blackcap.schemas.api.schedule.post import ScheduleCreate
 from blackcap.schemas.schedule import Schedule
-
-from logzero import logger
-
-from sqlalchemy.sql.expression import select
 
 
 class RandomScheduler(BaseScheduler):

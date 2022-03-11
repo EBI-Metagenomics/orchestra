@@ -18,9 +18,7 @@ class ObserverRegistry:
         """
         self.observers[observer.CONFIG_KEY_VAL] = observer
 
-    def get_observer(
-        self: "ObserverRegistry", observer: str
-    ) -> Optional[BaseObserver]:  # noqa: E501
+    def get_observer(self: "ObserverRegistry", observer: str) -> Optional[BaseObserver]:
         """Get observer.
 
         Args:
