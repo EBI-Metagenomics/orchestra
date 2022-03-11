@@ -10,7 +10,6 @@ class Schedule(BaseModel):
     """Schedule schema."""
 
     schedule_id: UUID4
-    user_id: UUID4
     job_id: UUID4
     job: Job
     assigned_cluster_id: UUID4
