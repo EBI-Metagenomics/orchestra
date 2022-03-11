@@ -6,17 +6,23 @@ from flask import make_response, request, Response
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
-from blackcap.blocs.schedule import get_schedules
+from blackcap.blocs.schedule import get_schedule
 from blackcap.routes.schedule import schedule_bp
 from blackcap.schemas.api.schedule.get import (
     ScheduleGetQueryParams,
     ScheduleGetResponse,
 )
+from blackcap.schemas.user import User
+from blackcap.utils.auth import check_authentication
 
 
 @schedule_bp.get("/")
-def get_schedule() -> Response:
+@check_authentication
+def get(user: User) -> Response:
     """Get schedule.
+
+    Args:
+        user (User): Extracted user from request
 
     Returns:
         Response: Flask response
@@ -37,7 +43,7 @@ def get_schedule() -> Response:
 
     # Get s from the DB
     try:
-        schedule_list = get_schedules(query_params)
+        schedule_list = get_schedule(query_params, user)
     except SQLAlchemyError:
         response_body = ScheduleGetResponse(
             msg="internal databse error", errors={"main": ["unknown internal error"]}

@@ -10,18 +10,24 @@ from sqlalchemy.exc import SQLAlchemyError
 from blackcap.blocs.schedule import create_schedule
 from blackcap.routes.schedule import schedule_bp
 from blackcap.schemas.api.schedule.post import ScheduleCreate, SchedulePOSTResponse
+from blackcap.schemas.user import User
+from blackcap.utils.auth import check_authentication
 
 
 @schedule_bp.post("/")
-def post_schedule() -> Response:
+@check_authentication
+def post_schedule(user: User) -> Response:
     """Post schedule.
+
+    Args:
+        user (User): Extracted user from request
 
     Returns:
         Response: Flask response
     """
     # Parse json from request
     try:
-        schedule_create = ScheduleCreate.parse_obj(request.json)
+        schedule_create_request_list = ScheduleCreate.parse_obj(request.json)
     except ValidationError as e:
         response_body = SchedulePOSTResponse(
             msg="json validation failed", errors={"main": e.errors()}
@@ -35,7 +41,7 @@ def post_schedule() -> Response:
 
     # ceate schedule in DB and publish msg
     try:
-        schedule_list = create_schedule(schedule_create)
+        schedule_list = create_schedule(schedule_create_request_list, user)
     except SQLAlchemyError:
         response_body = SchedulePOSTResponse(
             msg="internal databse error", errors={"main": ["unknown internal error"]}

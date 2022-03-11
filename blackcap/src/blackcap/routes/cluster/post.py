@@ -4,24 +4,32 @@ from http import HTTPStatus
 import json
 
 from flask import make_response, request, Response
-from pydantic import ValidationError
+from pydantic import parse_obj_as, ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
 from blackcap.blocs.cluster import create_cluster
 from blackcap.routes.cluster import cluster_bp
-from blackcap.schemas.api.cluster.post import ClusterCreate, ClusterPOSTResponse
+from blackcap.schemas.api.cluster.post import ClusterPOSTRequest, ClusterPOSTResponse
+from blackcap.schemas.user import User
+from blackcap.utils.auth import check_authentication
 
 
 @cluster_bp.post("/")
-def post() -> Response:
+@check_authentication
+def post(user: User) -> Response:
     """Post cluster.
+
+    Args:
+        user (User): Extracted user from request
 
     Returns:
         Response: Flask response
     """
     # Parse json from request
     try:
-        cluster_create = ClusterCreate.parse_obj(json.loads(request.json))
+        cluster_create_request_list = parse_obj_as(
+            ClusterPOSTRequest, json.loads(request.data)
+        ).cluster_list
     except ValidationError as e:
         response_body = ClusterPOSTResponse(
             msg="json validation failed", errors={"main": e.errors()}
@@ -35,7 +43,7 @@ def post() -> Response:
 
     # ceate cluster in DB and publish msg
     try:
-        cluster_list = create_cluster(cluster_create)
+        cluster_list = create_cluster(cluster_create_request_list, user)
     except SQLAlchemyError:
         response_body = ClusterPOSTResponse(
             msg="internal databse error", errors={"main": ["unknown internal error"]}

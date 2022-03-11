@@ -1,6 +1,6 @@
 """Blackcap Schedule POST route schemas."""
 
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from blackcap.schemas.schedule import Schedule
 
@@ -11,6 +11,10 @@ class ScheduleCreate(BaseModel):
     """Schema to parse create schedule requests."""
 
     job_id: UUID4
+    assigned_cluster_id: Optional[UUID4]
+    messenger: Optional[str]
+    messenger_queue: Optional[str]
+    status: str = "PENDING"
 
 
 class SchedulePOSTRequest(BaseModel):

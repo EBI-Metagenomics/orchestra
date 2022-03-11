@@ -9,11 +9,17 @@ from sqlalchemy.exc import SQLAlchemyError
 from blackcap.blocs.job import get_job
 from blackcap.routes.job import job_bp
 from blackcap.schemas.api.job.get import JobGetQueryParams, JobGetResponse
+from blackcap.schemas.user import User
+from blackcap.utils.auth import check_authentication
 
 
 @job_bp.get("/")
-def get() -> Response:
+@check_authentication
+def get(user: User) -> Response:
     """Get job.
+
+    Args:
+        user (User): Extracted user from request
 
     Returns:
         Response: Flask response
@@ -34,7 +40,7 @@ def get() -> Response:
 
     # Get jobs from the DB
     try:
-        job_list = get_job(query_params)
+        job_list = get_job(query_params, user)
     except SQLAlchemyError:
         response_body = JobGetResponse(
             msg="internal databse error", errors={"main": ["unknown internal error"]}
