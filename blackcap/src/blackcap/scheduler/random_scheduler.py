@@ -8,10 +8,8 @@ from sqlalchemy.sql.expression import select
 
 from blackcap.db import DBSession
 from blackcap.models.cluster import ClusterDB
-from blackcap.models.schedule import ScheduleDB
 from blackcap.scheduler.base import BaseScheduler
 from blackcap.schemas.api.schedule.post import ScheduleCreate
-from blackcap.schemas.schedule import Schedule
 
 
 class RandomScheduler(BaseScheduler):
@@ -21,7 +19,7 @@ class RandomScheduler(BaseScheduler):
 
     def schedule(
         self: "BaseScheduler", schedule_create: ScheduleCreate
-    ) -> Schedule:  # noqa: E501
+    ) -> ScheduleCreate:
         """Create schedule from schedule request.
 
         Args:
@@ -31,14 +29,14 @@ class RandomScheduler(BaseScheduler):
             Exception: No cluster available
 
         Returns:
-            Schedule: Instance of Created Schedule
+            ScheduleCreate: Instance of Schedule Create
         """
         # fetch available clusters
         cluster_list: List[ClusterDB] = []
         with DBSession() as session:
             try:
                 stmt = select(ClusterDB)
-                cluster_list = session.execute(stmt).scalars().all()  # noqa: E501
+                cluster_list = session.execute(stmt).scalars().all()
             except Exception as e:
                 logger.error(f"Unable to fetch clusters: {e}")
                 raise e
@@ -50,28 +48,6 @@ class RandomScheduler(BaseScheduler):
 
         # Randomly selects a cluster
         selected_cluster = random.choice(cluster_list)  # noqa: S311
+        schedule_create.assigned_cluster_id = selected_cluster.id
 
-        schedule_create.schedule.assigned_cluster_id = selected_cluster.id
-
-        # Add schedule to DB
-        schedule_dict = schedule_create.schedule.dict(
-            exclude={"schedule_id", "messenger", "messenger_queue", "job"}
-        )
-        user_id = schedule_dict.pop("user_id")
-        try:
-            schedule = ScheduleDB(
-                protagonist_id=user_id,
-                **schedule_dict,
-            )
-            schedule.save(session)
-            return Schedule(
-                schedule_id=schedule.id,
-                user_id=user_id,
-                messenger=selected_cluster.messenger,
-                messenger_queue=selected_cluster.messenger_queue,
-                job=schedule_create.schedule.job,
-                **schedule.to_dict(),
-            )
-        except Exception as e:
-            logger.error(f"Unable to save schedule to DB: {e}")
-            raise e
+        return schedule_create
