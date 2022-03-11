@@ -6,7 +6,7 @@ import click
 
 from blackcap.auther import auther_registry
 from blackcap.blocs.cluster import create_cluster
-from blackcap.blocs.job import create_job, get_jobs, JobGetQueryParams, JobQueryType
+from blackcap.blocs.job import create_job, get_job, JobGetQueryParams, JobQueryType
 from blackcap.blocs.schedule import create_schedule
 from blackcap.blocs.user import create_user
 from blackcap.configs import config_registry
@@ -95,7 +95,7 @@ def schedule(job_id) -> None:
     auther = auther_registry.get_auther(config.AUTHER)
     user = auther.extract_user_from_token(user_access_token)
 
-    fetched_jobs = get_jobs(
+    fetched_jobs = get_job(
         JobGetQueryParams(query_type=JobQueryType.GET_JOBS_BY_ID, job_id=job_id)
     )
     if len(fetched_jobs) == 0:
