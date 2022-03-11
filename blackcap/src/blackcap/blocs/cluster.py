@@ -4,8 +4,10 @@ from typing import List
 
 from logzero import logger
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 
 from blackcap.db import DBSession
+from blackcap.flow import Flow, FlowExecError, get_outer_function, Prop, Step
 from blackcap.models.cluster import ClusterDB
 from blackcap.schemas.api.cluster.delete import ClusterDelete
 from blackcap.schemas.api.cluster.get import (
@@ -169,3 +171,153 @@ def delete_cluster(
             session.rollback()
             logger.error(f"Unable to delete cluster: {cluster.to_dict()} due to {e}")
             raise e
+
+
+###
+# Flow BLoCs
+###
+
+
+def create_cluster_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Create cluster db entry step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: cluster_create_request_list
+                    Prop(data=cluster_create_request_list, description="List of create cluster objects")
+                1: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Created cluster objects
+
+            Prop(data=created_cluster_list, description="List of created cluster Objects")
+    """
+    try:
+        cluster_create_request_list: List[ClusterCreate] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        created_cluster_list = create_cluster(cluster_create_request_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Creating DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=created_cluster_list, description="List of created cluster Objects")
+    ]
+
+
+def revert_cluster_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Delete db entry step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: cluster_create_request_list
+                    Prop(data=cluster_create_request_list, description="List of create cluster objects")
+                1: user
+                    Prop(data=user, description="User")
+                2: created_cluster_list
+                    Prop(data=created_data_list, description="List of created cluster objects")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Deleted data objects
+
+            Prop(data=deleted_cluster_list, description="List of deleted cluster Objects")
+    """
+    try:
+        created_cluster_list: List[Cluster] = inputs[2].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        deleted_cluster_list = delete_cluster(created_cluster_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Deleting DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=deleted_cluster_list, description="List of deleted cluster Objects")
+    ]
+
+
+def generate_create_cluster_flow(
+    cluster_create_request_list: List[ClusterCreate], user: User
+) -> Flow:
+    """Generate flow for creating the cluster resource.
+
+    Args:
+        cluster_create_request_list (List[ClusterCreate]): List of cluster objects to create.
+        user (User): User credentials.
+
+    Returns:
+        Flow: Create cluster flow
+    """
+    create_db_entry_step = Step(create_cluster_db_entry, revert_cluster_db_entry)
+    # create_messenger_topic_step = Step(create_messenger_topic, delete_meesenger_topic)
+
+    flow = Flow()
+
+    flow.add_step(
+        create_db_entry_step,
+        [
+            Prop(
+                data=cluster_create_request_list,
+                description="List of ClusterCreate Objects",
+            ),
+            Prop(data=user, description="User"),
+        ],
+    )
+
+    return flow
