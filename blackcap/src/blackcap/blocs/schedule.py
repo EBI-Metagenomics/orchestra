@@ -7,11 +7,18 @@ from logzero import logger
 from pydantic import ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+
 
 from blackcap.configs import config_registry
+from blackcap.blocs.job import get_job
 from blackcap.db import DBSession
+from blackcap.flow import Flow, FlowExecError, FuncProp, get_outer_function, Prop, Step
+from blackcap.flow.step import dummy_backward
+from blackcap.messenger import messenger_registry
 from blackcap.models.schedule import ScheduleDB
 from blackcap.scheduler import scheduler_registry
+from blackcap.schemas.api.job.get import JobGetQueryParams, JobQueryType
 from blackcap.schemas.api.schedule.delete import ScheduleDelete
 from blackcap.schemas.api.schedule.get import (
     ScheduleGetQueryParams,
@@ -19,6 +26,8 @@ from blackcap.schemas.api.schedule.get import (
 )
 from blackcap.schemas.api.schedule.post import ScheduleCreate
 from blackcap.schemas.api.schedule.put import ScheduleUpdate
+from blackcap.schemas.job import Job
+from blackcap.schemas.message import Message, MessageType
 from blackcap.schemas.schedule import Schedule
 from blackcap.schemas.user import User
 
@@ -66,7 +75,7 @@ def create_schedule(
             raise e
 
 
-def get_schedules(
+def get_schedule(
     query_params: ScheduleGetQueryParams, user_creds: User
 ) -> List[Schedule]:
     """Query DB for schedules.
@@ -239,3 +248,296 @@ def delete_schedule(
 ##################
 # Flows
 ##################
+
+
+def create_schedule_with_scheduler(inputs: List[Prop]) -> List[Prop]:
+    """Create schedule db entry step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: schedule_create_request_list
+                    Prop(data=schedule_create_request_list, description="List of jobs to schedule") # noqa: B950
+                2: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Created schedule objects
+
+            Prop(data=created_schedule_list, description="List of created schedule Objects") # noqa: B950
+    """
+    try:
+        schedule_create_request_list: List[ScheduleCreate] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        processed_schedule_create_request_list = [
+            scheduler.schedule(schedule_create)
+            for schedule_create in schedule_create_request_list
+        ]
+        created_schedule_list = create_schedule(
+            processed_schedule_create_request_list, user
+        )
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Creating DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=created_schedule_list, description="List of created schedule Objects")
+    ]
+
+
+def create_schedule_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Create schedule db entry step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: schedule_create_request_list
+                    Prop(data=schedule_create_request_list, description="List of create schedule objects") # noqa: B950
+                2: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Created schedule objects
+
+            Prop(data=created_schedule_list, description="List of created schedule Objects") # noqa: B950
+    """
+    try:
+        schedule_create_request_list: List[ScheduleCreate] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        created_schedule_list = create_schedule(schedule_create_request_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Creating DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=created_schedule_list, description="List of created schedule Objects")
+    ]
+
+
+def revert_schedule_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Delete db entry step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: schedule_create_request_list
+                    Prop(data=schedule_create_request_list, description="List of create schedule objects") # noqa: B950
+                1: user
+                    Prop(data=user, description="User")
+                2: created_schedule_list
+                    Prop(data=created_data_list, description="List of created schedule objects") # noqa: B950
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Deleted schedule objects
+
+            Prop(data=deleted_schedule_list, description="List of deleted schedule Objects") # noqa: B950
+    """
+    try:
+        created_schedule_list: List[Schedule] = inputs[2].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        deleted_schedule_list = delete_schedule(created_schedule_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Deleting DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=deleted_schedule_list, description="List of deleted schedule Objects")
+    ]
+
+
+def publish_schedule_message(inputs: List[Prop]) -> List[Prop]:
+    """Publish schedule message step function.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: created_schedule_list
+                    Prop(data=created_schedule_list, description="List of created schedule objects") # noqa: B950
+                1: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Created schedule objects
+
+            Prop(data=created_schedule_list, description="List of created schedule Objects") # noqa: B950
+    """
+    try:
+        created_schedule_list: List[ScheduleCreate] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        for schedule in created_schedule_list:
+            messenger = messenger_registry.get_messenger(schedule.messenger)
+            job = get_job(
+                JobGetQueryParams(
+                    query_type=JobQueryType.GET_JOBS_BY_ID, job_id=schedule.job_id
+                ),
+                user,
+            )
+            message = Message(data=job, msg_type=MessageType.TO_DEMON_SCHEDULE_MSG)
+            messenger.publish(message, schedule.messenger_queue)
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=created_schedule_list, description="List of created schedule Objects")
+    ]
+
+
+def generate_create_schedule_flow(
+    schedule_create_request_list: List[Job], user: User
+) -> Flow:
+    """Generate flow for creating the schedule resource.
+
+    Args:
+        schedule_create_request_list (List[ScheduleCreate]): List of schedule create objects.
+        user (User): User credentials.
+
+    Returns:
+        Flow: Create schedule flow
+    """
+    create_schedule_with_scheduler_step = Step(
+        create_schedule_with_scheduler, dummy_backward
+    )
+    create_db_entry_step = Step(create_schedule_db_entry, revert_schedule_db_entry)
+    publish_schedule_message_step = Step(publish_schedule_message, dummy_backward)
+
+    flow = Flow()
+
+    flow.add_step(
+        create_schedule_with_scheduler_step,
+        [
+            Prop(
+                data=schedule_create_request_list,
+                description="List of schedule create request objects",
+            ),
+            Prop(data=user, description="User"),
+        ],
+    )
+
+    create_db_entry_step_func_prop = FuncProp(
+        func=flow.get_froward_output,
+        params={"index": 0},
+        description="Created schedule create object list",
+    )
+    flow.add_step(
+        create_db_entry_step,
+        [
+            create_db_entry_step_func_prop,
+            Prop(data=user, description="User"),
+        ],
+    )
+
+    publish_schedule_message_step_func_prop = FuncProp(
+        func=flow.get_froward_output,
+        params={"index": 1},
+        description="Created schedule list",
+    )
+    flow.add_step(
+        publish_schedule_message_step,
+        [
+            publish_schedule_message_step_func_prop,
+            Prop(data=user, description="User"),
+        ],
+    )
+
+    return flow
