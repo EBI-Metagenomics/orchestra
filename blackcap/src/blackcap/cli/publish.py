@@ -48,7 +48,7 @@ def custom(topic: str, data: str) -> None:
     try:
         msg = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-            data={"msg": data},
+            data=data,
             timestamp=str(datetime.now()),
         )
         messenger.publish(msg.dict(), topic)
