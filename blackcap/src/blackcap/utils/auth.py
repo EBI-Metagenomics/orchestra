@@ -9,18 +9,19 @@ import click
 from flask import make_response, request
 
 from blackcap.auther import auther_registry
-from blackcap.configs import ComposeDefaultConfig, config_registry
+from blackcap.configs import config_registry
+from blackcap.configs.base import BaseConfig
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
 
 config = config_registry.get_config()
 
 
-def check_auth(config: ComposeDefaultConfig) -> User:
+def check_auth(config: BaseConfig) -> User:
     """Check authorization in CLI.
 
     Args:
-        config (ComposeDefaultConfig): config object
+        config (BaseConfig): config object
 
     Returns:
         User: User object
