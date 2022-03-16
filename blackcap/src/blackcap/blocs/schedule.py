@@ -447,7 +447,7 @@ def publish_schedule_message(inputs: List[Prop]) -> List[Prop]:
             Prop(data=created_schedule_list, description="List of created schedule Objects") # noqa: B950
     """
     try:
-        created_schedule_list: List[ScheduleCreate] = inputs[0].data
+        created_schedule_list: List[Schedule] = inputs[0].data
         user: User = inputs[1].data
     except Exception as e:
         raise FlowExecError(
@@ -466,8 +466,9 @@ def publish_schedule_message(inputs: List[Prop]) -> List[Prop]:
                     query_type=JobQueryType.GET_JOBS_BY_ID, job_id=schedule.job_id
                 ),
                 user,
-            )
-            message = Message(data=job, msg_type=MessageType.TO_DEMON_SCHEDULE_MSG)
+            )[0]
+            schedule.job = job
+            message = Message(data=schedule.dict(), msg_type=MessageType.TO_DEMON_SCHEDULE_MSG)
             messenger.publish(message, schedule.messenger_queue)
     except Exception as e:
         raise FlowExecError(

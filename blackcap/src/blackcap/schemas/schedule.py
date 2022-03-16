@@ -16,3 +16,4 @@ class Schedule(BaseModel):
     messenger: str
     messenger_queue: str
     status: str = "PENDING"
+    logs: str = ""

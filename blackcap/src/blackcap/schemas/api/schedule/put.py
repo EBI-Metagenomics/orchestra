@@ -1,6 +1,6 @@
 """Blackcap Schedule PUT route schemas."""
 
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 from pydantic import BaseModel
 from pydantic.types import UUID4
@@ -12,6 +12,9 @@ class ScheduleUpdate(BaseModel):
     """Schema to parse update schedule requests."""
 
     schedule_id: UUID4
+    protagonist_id: UUID4
+    status: Optional[str]
+    logs: Optional[str]
 
 
 class SchedulePUTRequest(BaseModel):
