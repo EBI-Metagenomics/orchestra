@@ -3,7 +3,7 @@
 
 from datetime import datetime
 import random
-from pathlib import Path
+import json
 
 import click
 
@@ -41,14 +41,14 @@ def chatter(topic: str) -> None:
 @click.option(
     "--topic", default="test-topic", help="Id of the topic to publish msgs on"
 )
-@click.option("--data", help="custom string to publish", required=True)
+@click.option("--data", help="custom json to publish", required=True)
 def custom(topic: str, data: str) -> None:
     """Publish user provided string."""
     logger.info("Trying to publish a custom string...")
     try:
         msg = Message(
             msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
-            data=data,
+            data=json.loads(data),
             timestamp=str(datetime.now()),
         )
         messenger.publish(msg.dict(), topic)
