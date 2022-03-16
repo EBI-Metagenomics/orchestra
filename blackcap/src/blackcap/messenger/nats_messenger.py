@@ -85,7 +85,7 @@ class NATSMessenger(BaseMessenger):
         Returns:
             Message: Parsed Message
         """
-        return Message.parse_obj(asdict(messenger_msg))
+        return Message.parse_raw(messenger_msg.payload.decode("utf-8"))
 
     def echo_msg(self: "NATSMessenger", msg: NATSMessage) -> None:
         """Echo msgs to stdout.
