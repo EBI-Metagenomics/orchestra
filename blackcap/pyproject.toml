@@ -24,6 +24,7 @@ SQLAlchemy = "^1.4.22"
 SQLAlchemy-serializer = "^1.4.1"
 alembic = "^1.6.5"
 nats-python = "^0.8.0"
+backoff = "^1.11.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
