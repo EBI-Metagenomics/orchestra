@@ -1,13 +1,14 @@
 """subscribe commands."""
 # flake8: noqa: DAR101
 
+from backoff import expo, on_exception
 import click
+from logzero import logger
 
 from blackcap.configs import config_registry
 from blackcap.messenger import messenger_registry
 from blackcap.cluster import cluster_registry
 
-from logzero import logger
 
 config = config_registry.get_config()
 messenger = messenger_registry.get_messenger(config.MESSENGER)
@@ -27,6 +28,7 @@ def echo(sub_id: str) -> None:
 
 @click.command()
 @click.option("--sub_id", default=config.MESSENGER_SUB_ID, help="Subscription Id")
+@on_exception(expo, Exception)
 def schedule(sub_id: str) -> None:
     """subscribe and save msgs to DB"""
     logger.info("Trying to subscribe and read messages...")

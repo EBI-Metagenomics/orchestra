@@ -58,6 +58,10 @@ class BaseCluster(ABC):
         Args:
             messenger_msg (Any): message in Messenger specific format
         """
-        schedule = messenger.parse_messenger_msg(messenger_msg).data
-        self.prepare_job(schedule)
-        self.submit_job(schedule)
+        try:
+            schedule = messenger.parse_messenger_msg(messenger_msg).data
+            self.prepare_job(schedule)
+            self.submit_job(schedule)
+        except Exception as e:
+            # Add to central logging
+            pass
