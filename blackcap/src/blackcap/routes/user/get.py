@@ -14,7 +14,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 @user_bp.get("/")
-def get_user() -> Response:
+def get() -> Response:
     """Get user.
 
     Returns:

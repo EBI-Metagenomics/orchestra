@@ -16,7 +16,7 @@ from blackcap.utils.auth import check_authentication
 
 @schedule_bp.post("/")
 @check_authentication
-def post_schedule(user: User) -> Response:
+def post(user: User) -> Response:
     """Post schedule.
 
     Args:

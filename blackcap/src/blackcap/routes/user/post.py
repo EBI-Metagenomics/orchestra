@@ -20,7 +20,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 @user_bp.post("/")
-def post_user() -> Response:
+def post() -> Response:
     """Post User.
 
     Returns:
