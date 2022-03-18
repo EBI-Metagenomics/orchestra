@@ -1,20 +1,20 @@
-"""Blackcap Auth PUT route schemas."""
-
-from typing import Any, Dict, List, Union
+"""Auth API PUT schema."""
+from typing import List, Optional
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.user import User
 from pydantic import BaseModel
 
 
-class AuthCredsUpdate(BaseModel):
-    """Schema to parse update user creds requests."""
+class AuthPUTRequest(BaseModel):
+    """Auth PUT request schema."""
 
-    update_token: str
-    new_password: str
+    email: str
+    password_reset_token: Optional[str]
+    new_password: Optional[str]
 
 
-class AuthPOSTResponse(ResponseSchema):
-    """User POST response schema."""
+class AuthPUTResponse(ResponseSchema):
+    """Auth POST response schema."""
 
-    items: Dict[str, List[Union[User, Any]]]
+    items: List[User] = []
