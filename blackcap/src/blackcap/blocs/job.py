@@ -6,8 +6,11 @@ from logzero import logger
 from pydantic import ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 
 from blackcap.db import DBSession
+from blackcap.flow import Flow, FlowExecError, FuncProp, get_outer_function, Prop, Step
+from blackcap.flow.step import dummy_backward
 from blackcap.models.job import JobDB
 from blackcap.schemas.api.job.delete import JobDelete
 from blackcap.schemas.api.job.get import JobGetQueryParams, JobQueryType
@@ -15,6 +18,10 @@ from blackcap.schemas.api.job.post import JobCreate
 from blackcap.schemas.api.job.put import JobUpdate
 from blackcap.schemas.job import Job
 from blackcap.schemas.user import User
+
+###
+# CRUD BLoCs
+###
 
 
 def create_job(job_create_list: List[JobCreate], user_creds: User) -> List[Job]:
@@ -197,3 +204,188 @@ def delete_job(job_delete_list: List[JobDelete], user_creds: User) -> List[Job]:
             session.rollback()
             logger.error(f"Unable to delete job: {job.to_dict()} due to {e}")
             raise e
+
+
+###
+# Flow BLoCs
+###
+
+
+def check_job_list_exist(inputs: List[Prop]) -> List[Prop]:
+    """Check data list exist step.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: job_id_list
+                    Prop(data=job_id_list, description="List of ids of job objects")
+                1: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+
+            Prop(data=job_list, description="List of job Objects ids")
+    """
+    try:
+        job_id_list: List[str] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        # Check job list existence
+        job_query = JobGetQueryParams(query_type=JobQueryType.GET_ALL_JOBS)
+        job_list: List[Job] = get_job(job_query, user)
+        job_list_ids = [str(job.job_id) for job in job_list]
+        # Use sets to optimize later
+        for job_id in job_id_list:
+            if job_id not in job_list_ids:
+                # Raise a user descriptive error later
+                raise Exception("JOB NOT FOUND")
+
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Querying DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=job_list, description="List of job Objects"),
+    ]
+
+
+def create_job_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Forward function for create db entry step.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: job_create_request_list
+                    Prop(data=job_create_request_list, description="List of create job objects")
+                2: user
+                    Prop(data=user, description="User")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Created job objects
+
+            Prop(data=created_job_list, description="List of created job Objects")
+    """
+    try:
+        job_create_request_list: List[JobCreate] = inputs[0].data
+        user: User = inputs[1].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        created_job_list = create_job(job_create_request_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Creating DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=created_job_list, description="List of created job Objects"),
+        Prop(data=user, description="User"),
+    ]
+
+
+def revert_job_db_entry(inputs: List[Prop]) -> List[Prop]:
+    """Revert function for create db entry step.
+
+    Args:
+        inputs (List[Prop]):
+            Expects
+                0: job_create_request_list
+                    Prop(data=job_create_request_list, description="List of create job objects")
+                1: user
+                    Prop(data=user, description="User")
+                2: created_job_list
+                    Prop(data=created_job_list, description="List of created job objects")
+
+    Raises:
+        FlowExecError: Flow execution failed
+
+    Returns:
+        List[Prop]:
+            Deleted job objects
+
+            Prop(data=deleted_job_list, description="List of deleted job Objects")
+    """
+    try:
+        created_job_list: List[Job] = inputs[2].data
+        user: User = inputs[3].data
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Parsing inputs failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=True,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    try:
+        deleted_job_list = delete_job(created_job_list, user)
+    except SQLAlchemyError as e:
+        raise FlowExecError(
+            human_description="Deleting DB object failed",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+    except Exception as e:
+        raise FlowExecError(
+            human_description="Something bad happened",
+            error=e,
+            error_type=type(e),
+            is_user_facing=False,
+            error_in_function=get_outer_function(),
+        ) from e
+
+    return [
+        Prop(data=deleted_job_list, description="List of deleted job Objects"),
+        Prop(data=user, description="User"),
+    ]

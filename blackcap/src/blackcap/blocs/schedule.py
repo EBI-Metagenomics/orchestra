@@ -1,5 +1,6 @@
 """Schedule BLoCs."""
 
+from datetime import datetime
 from typing import List
 
 
@@ -266,9 +267,9 @@ def create_schedule_with_scheduler(inputs: List[Prop]) -> List[Prop]:
 
     Returns:
         List[Prop]:
-            Created schedule objects
+            Processed create schedule objects
 
-            Prop(data=created_schedule_list, description="List of created schedule Objects") # noqa: B950
+            Prop(data=processed_create_schedule_list, description="List of processed create schedule Objects") # noqa: B950
     """
     try:
         schedule_create_request_list: List[ScheduleCreate] = inputs[0].data
@@ -287,17 +288,6 @@ def create_schedule_with_scheduler(inputs: List[Prop]) -> List[Prop]:
             scheduler.schedule(schedule_create)
             for schedule_create in schedule_create_request_list
         ]
-        created_schedule_list = create_schedule(
-            processed_schedule_create_request_list, user
-        )
-    except SQLAlchemyError as e:
-        raise FlowExecError(
-            human_description="Creating DB object failed",
-            error=e,
-            error_type=type(e),
-            is_user_facing=False,
-            error_in_function=get_outer_function(),
-        ) from e
     except Exception as e:
         raise FlowExecError(
             human_description="Something bad happened",
@@ -308,7 +298,10 @@ def create_schedule_with_scheduler(inputs: List[Prop]) -> List[Prop]:
         ) from e
 
     return [
-        Prop(data=created_schedule_list, description="List of created schedule Objects")
+        Prop(
+            data=processed_schedule_create_request_list,
+            description="List of processed create schedule Objects",
+        )
     ]
 
 
@@ -468,8 +461,12 @@ def publish_schedule_message(inputs: List[Prop]) -> List[Prop]:
                 user,
             )[0]
             schedule.job = job
-            message = Message(data=schedule.dict(), msg_type=MessageType.TO_DEMON_SCHEDULE_MSG)
-            messenger.publish(message, schedule.messenger_queue)
+            message = Message(
+                data=schedule.dict(),
+                msg_type=MessageType.TO_DEMON_SCHEDULE_MSG,
+                timestamp=str(datetime.now()),
+            )
+            messenger.publish(message.dict(), schedule.messenger_queue)
     except Exception as e:
         raise FlowExecError(
             human_description="Something bad happened",
@@ -518,7 +515,7 @@ def generate_create_schedule_flow(
     create_db_entry_step_func_prop = FuncProp(
         func=flow.get_froward_output,
         params={"index": 0},
-        description="Created schedule create object list",
+        description="Processed schedule create object list",
     )
     flow.add_step(
         create_db_entry_step,

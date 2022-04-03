@@ -49,5 +49,7 @@ class RandomScheduler(BaseScheduler):
         # Randomly selects a cluster
         selected_cluster = random.choice(cluster_list)  # noqa: S311
         schedule_create.assigned_cluster_id = selected_cluster.id
+        schedule_create.messenger = selected_cluster.messenger
+        schedule_create.messenger_queue = selected_cluster.messenger_queue
 
         return schedule_create

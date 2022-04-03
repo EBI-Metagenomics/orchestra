@@ -8,6 +8,7 @@ from blackcap.configs.default import DefaultConfig
 class TestingConfig(DefaultConfig):
     """Testing config."""
 
+    MESSENGER: str = "NATS"
     DB_NAME: str = "blackcap_test"
     DB_URI: str = f"sqlite:////{xdg_data_home() / ('orchestra') / ('blackcap_test.db')}"
 

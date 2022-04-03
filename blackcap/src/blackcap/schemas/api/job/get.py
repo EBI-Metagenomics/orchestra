@@ -3,7 +3,7 @@
 from enum import Enum, unique
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel
 
 from blackcap.schemas.api.common import ResponseSchema
 from blackcap.schemas.job import Job
@@ -26,7 +26,7 @@ class JobGetQueryParams(BaseModel):
     """Job GET request query params schema."""
 
     query_type: JobQueryType
-    job_id: Optional[str]
+    job_id: Optional[UUID4]
     protagonist_id: Optional[str]
     cluster_id: Optional[str]
     create_timerange: Optional[str]
