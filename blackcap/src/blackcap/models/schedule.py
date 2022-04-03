@@ -16,9 +16,11 @@ class ScheduleDB(DBModel, TimestampMixin, SurrogatePKUUID):
     __tablename__ = "schedule"
     job_id = reference_col("job")
     assigned_cluster_id = reference_col("cluster")
+    messenger = Column(String, nullable=False, default="GCP")
+    messenger_queue = Column(String, nullable=False, default="main")
     # TODO: this should be an Enum with the possible status values
     status = Column(String, nullable=False, default="PENDING")
-    logs = Column(String)
+    logs = Column(String, default="")
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
     protagonist_id = reference_col("protagonist")

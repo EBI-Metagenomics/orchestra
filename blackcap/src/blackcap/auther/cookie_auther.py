@@ -13,7 +13,7 @@ from blackcap.auther.base import BaseAuther
 from blackcap.configs import config_registry
 from blackcap.db import DBSession
 from blackcap.models.protagonist import ProtagonistDB
-from blackcap.schemas.api.auth.post import AuthUserCreds
+from blackcap.schemas.api.auth.post import AuthPOSTRequest
 from blackcap.schemas.api.user.post import UserCreate
 from blackcap.schemas.user import User
 
@@ -58,12 +58,12 @@ class CookieAuther(BaseAuther):
                 raise e
 
     def login_user(
-        self: "BaseAuther", user_creds: AuthUserCreds
+        self: "BaseAuther", user_creds: AuthPOSTRequest
     ) -> Optional[Tuple[User, str]]:
         """Login user.
 
         Args:
-            user_creds (AuthUserCreds): user creds
+            user_creds (AuthPOSTRequest): user creds
 
         Raises:
             Exception: error

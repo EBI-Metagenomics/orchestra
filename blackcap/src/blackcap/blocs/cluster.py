@@ -38,7 +38,7 @@ def create_cluster(
     with DBSession() as session:
         try:
             cluster_db_create_list: List[ClusterDB] = [
-                ClusterDB(**cluster_create.cluster.dict())
+                ClusterDB(**cluster_create.dict())
                 for cluster_create in cluster_create_list
             ]
             ClusterDB.bulk_create(cluster_db_create_list, session)

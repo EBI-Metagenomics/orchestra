@@ -34,12 +34,12 @@ def post() -> Response:
         )  # noqa: E501
     except ValidationError as e:
         response_body = UserPOSTResponse(
-            msg="json validation failed", errors=e.errors()
+            msg="json validation failed", errors={"main": e.errors()}
         )  # noqa: E501
         return make_response(response_body.json(), HTTPStatus.BAD_REQUEST)
     except Exception:
         response_body = UserPOSTResponse(
-            msg="unknown error", errors=["unknown internal error"]
+            msg="unknown error", errors={"main": ["unknown internal error"]}
         )
         return make_response(
             response_body.json(), HTTPStatus.INTERNAL_SERVER_ERROR
@@ -51,14 +51,14 @@ def post() -> Response:
         user_list = create_user(user_create_list)
     except SQLAlchemyError:
         response_body = UserPOSTResponse(
-            msg="internal databse error", errors=["internal database error"]
+            msg="internal databse error", errors={"main": ["unknown internal error"]}
         )
         return make_response(
             response_body.json(), HTTPStatus.INTERNAL_SERVER_ERROR
         )  # noqa: E501
     except Exception:
         response_body = UserPOSTResponse(
-            msg="unknown error", errors=["unknown internal error"]
+            msg="unknown error", errors={"main": ["unknown internal error"]}
         )
         return make_response(
             response_body.json(), HTTPStatus.INTERNAL_SERVER_ERROR
@@ -66,6 +66,6 @@ def post() -> Response:
 
     # return created users in response
     response_body = UserPOSTResponse(
-        msg="users successfully created", items=user_list
+        msg="users successfully created", items={"user_list": user_list}
     )  # noqa: E501
     return make_response(response_body.json(), HTTPStatus.OK)

@@ -1,5 +1,7 @@
 """Schedule schema."""
 
+from typing import Optional
+
 from pydantic import BaseModel
 from pydantic.types import UUID4
 
@@ -11,7 +13,7 @@ class Schedule(BaseModel):
 
     schedule_id: UUID4
     job_id: UUID4
-    job: Job
+    job: Optional[Job]
     assigned_cluster_id: UUID4
     messenger: str
     messenger_queue: str

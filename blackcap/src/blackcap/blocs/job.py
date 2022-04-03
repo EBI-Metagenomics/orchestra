@@ -34,8 +34,8 @@ def create_job(job_create_list: List[JobCreate], user_creds: User) -> List[Job]:
         try:
             job_db_create_list: List[JobDB] = [
                 JobDB(
-                    protagonist_id=job_create.user.user_id,
-                    **job_create.job.dict(),
+                    protagonist_id=user_creds.user_id,
+                    **job_create.dict(),
                 )
                 for job_create in job_create_list
             ]

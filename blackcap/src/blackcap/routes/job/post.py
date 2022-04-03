@@ -16,7 +16,7 @@ from blackcap.utils.auth import check_authentication
 
 @job_bp.post("/")
 @check_authentication
-def post_job(user: User) -> Response:
+def post(user: User) -> Response:
     """Post job.
 
     Args:

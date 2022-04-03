@@ -14,7 +14,7 @@ from blackcap.cli.schedule import sched
 from blackcap.cli.subscribe import sub
 from blackcap.configs import config_registry
 from blackcap.auther import auther_registry
-from blackcap.schemas.api.auth.post import AuthUserCreds
+from blackcap.schemas.api.auth.post import AuthPOSTRequest
 
 
 from .. import __version__
@@ -26,7 +26,7 @@ config = config_registry.get_config()
 @click.option("--email", required=True, help="email of user")
 @click.option("--password", required=True, help="password of user")
 def login(email, password) -> None:
-    auth_creds = AuthUserCreds(email=email, password=password)
+    auth_creds = AuthPOSTRequest(email=email, password=password)
     auther = auther_registry.get_auther(config.AUTHER)
     login_tuple = auther.login_user(auth_creds)
     if login_tuple is None:

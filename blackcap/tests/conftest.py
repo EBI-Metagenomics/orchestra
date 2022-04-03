@@ -45,8 +45,8 @@ def user() -> User:
         user=User(name="randomName", email="rand@random.com", organisation="RandomOrg"),
         password="password",
     )
-    created_user = create_user([user_create])[0]
-    return created_user
+    created_user_list = create_user([user_create])
+    return created_user_list[0]
 
 
 @pytest.fixture(scope="module")
@@ -59,11 +59,11 @@ def cluster(user: User) -> Cluster:
         messenger="NATS",
         messenger_queue="test-topic",
     )
-    created_cluster = create_cluster(cluster_create, user)
-    return created_cluster
+    created_cluster_list = create_cluster([cluster_create], user)
+    return created_cluster_list[0]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def job(user: User) -> Job:
     job_create = JobCreate(
         name="demo job",
@@ -71,8 +71,8 @@ def job(user: User) -> Job:
         job_type="script_job",
         script="#! /bin/bash\n\n/bin/hostname\nsrun -l /bin/hostname\nsrun -l /bin/hostname\n",  # noqa: B950
     )
-    created_job = create_job(job_create, user)
-    return created_job
+    created_job_list = create_job([job_create], user)
+    return created_job_list[0]
 
 
 @pytest.fixture(scope="module")
@@ -80,8 +80,8 @@ def schedule(user: User, job: Job, cluster: Cluster) -> Schedule:
     schedule_create = ScheduleCreate(
         job_id=job.job_id,
     )
-    created_schedule = create_schedule(schedule_create, user)
-    return created_schedule
+    created_schedule_list = create_schedule([schedule_create], user)
+    return created_schedule_list[0]
 
 
 @pytest.fixture(scope="session")
